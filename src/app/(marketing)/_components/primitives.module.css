@@ -1,0 +1,128 @@
+.container {
+  width: min(calc(100% - (var(--page-gutter) * 2)), var(--content-width));
+  margin-inline: auto;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  background: linear-gradient(180deg, var(--color-white) 0%, var(--color-white-63) 100%);
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-display-family);
+  font-size: var(--type-section-title);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--line-display);
+}
+
+.sectionAction {
+  color: var(--color-accent-blue);
+  font-family: var(--font-display-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-upper);
+  text-transform: uppercase;
+  transition:
+    color var(--transition-base),
+    opacity var(--transition-base);
+}
+
+.sectionAction:hover {
+  color: var(--color-white);
+}
+
+.actionLabelDesktop {
+  display: inline;
+}
+
+.actionLabelMobile {
+  display: none;
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  font-family: var(--font-display-family);
+  font-weight: 700;
+  line-height: 1;
+  transition:
+    transform var(--transition-base),
+    filter var(--transition-base);
+}
+
+.linkButton:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.linkButtonGradient {
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-blue) 0%,
+    var(--color-accent-purple) 100%
+  );
+  color: var(--color-white);
+  font-size: 1rem;
+}
+
+.linkButtonText {
+  padding: 0;
+  color: var(--color-white);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-upper);
+  text-transform: uppercase;
+}
+
+.linkButtonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panelCard {
+  border: var(--border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--surface-panel);
+  backdrop-filter: blur(2px);
+  box-shadow: var(--shadow-panel);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  color: currentColor;
+}
+
+@media (max-width: 47.999rem) {
+  .sectionHeading {
+    align-items: start;
+  }
+
+  .sectionAction {
+    display: none;
+  }
+}

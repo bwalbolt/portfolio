@@ -1,0 +1,109 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: clamp(4rem, 2.229rem + 7.218vw, 8rem) var(--page-gutter);
+  min-height: clamp(32rem, 25.801rem + 25.263vw, 46rem);
+  overflow: clip;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: 15% auto auto 50%;
+  width: min(54rem, 92vw);
+  height: min(54rem, 92vw);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(124, 77, 255, 0.28) 0%, rgba(124, 77, 255, 0) 58%),
+    radial-gradient(circle at 70% 30%, rgba(0, 176, 255, 0.24), transparent 30%);
+  transform: translateX(-50%);
+  filter: blur(16px);
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 46rem);
+  padding: clamp(2rem, 1.446rem + 2.256vw, 3.25rem);
+  border: var(--border-strong);
+  border-radius: var(--radius-panel);
+  background:
+    linear-gradient(180deg, rgba(4, 16, 25, 0.94), rgba(1, 12, 17, 0.98)),
+    var(--surface-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.eyebrow {
+  margin-bottom: var(--space-4);
+  color: var(--color-accent-blue);
+  font-family: var(--font-display-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-upper);
+  text-transform: uppercase;
+}
+
+.title {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-display-family);
+  font-size: clamp(2.25rem, 1.585rem + 2.707vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+}
+
+.description {
+  max-width: 38rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: var(--line-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.note {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.noteTitle {
+  color: var(--color-accent-pink);
+  font-family: var(--font-mono-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-upper);
+  text-transform: uppercase;
+}
+
+.noteBody {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.noteFoot {
+  color: var(--text-tertiary);
+  font-family: var(--font-display-family);
+  font-size: 0.75rem;
+  letter-spacing: var(--tracking-upper);
+  text-transform: uppercase;
+}

@@ -50,7 +50,7 @@ export type SkillCard = {
 
 export const SITE_NAME = "Brent Walbolt";
 export const SITE_TAGLINE = "Crafting performant, user-centered designs";
-export const COPYRIGHT_LABEL = "© 2024 Brent Walbolt. All rights reserved.";
+export const COPYRIGHT_LABEL = "© 2026 Brent Walbolt. All rights reserved.";
 export const CONTACT_SECTION_HREF = "/#contact";
 
 export const NAV_ITEMS: readonly NavigationItem[] = [
@@ -61,12 +61,11 @@ export const NAV_ITEMS: readonly NavigationItem[] = [
 ] as const;
 
 export const SOCIAL_LINKS: readonly SocialLink[] = [
-  { href: "#", label: "LinkedIn", external: false },
-  { href: "#", label: "Twitter", external: false },
-  { href: "#", label: "GitHub", external: false },
+  { href: "https://www.linkedin.com/in/brent-walbolt/", label: "LinkedIn", external: true },
+  { href: "https://x.com/brentwal23", label: "Twitter", external: true },
+  { href: "https://github.com/bwalbolt", label: "GitHub", external: true },
 ] as const;
 
-// The desktop frame is the canonical source when mobile and desktop copy diverged.
 export const INSIGHTS: readonly InsightCard[] = [
   {
     date: "APR 06, 2026 // 003",
@@ -154,7 +153,7 @@ export const SKILLS: readonly SkillCard[] = [
 
 export const TESTIMONIAL = {
   attribution: "Christa Garcia",
-  href: "#",
+  href: "https://www.linkedin.com/in/brent-walbolt/details/recommendations/",
   image: quoteChrista,
   quote:
     "He’s instinctively collaborative, has great EQ, and is genuinely invested in the success of the people around him.",

@@ -195,6 +195,7 @@
 
 .caseCard {
   position: relative;
+  isolation: isolate;
   overflow: clip;
   min-height: 18rem;
   padding: 1.5rem 1.5rem 4.5rem;
@@ -206,10 +207,13 @@
   pointer-events: none;
 }
 
-.caseArtworkPlate {
+.caseShape {
+  display: none;
+}
+
+.caseShapeInner {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
 }
 
 .caseArtworkDesktop {
@@ -218,20 +222,10 @@
 
 .caseArtworkMobile {
   position: absolute;
-}
-
-.caseArtworkDominoMobile {
-  right: -0.75rem;
-  bottom: 0.6rem;
-  width: 6.4rem;
-  transform: rotate(-10deg);
-}
-
-.caseArtworkPortfolioMobile {
-  right: -1.75rem;
-  bottom: 0.3rem;
-  width: 11rem;
-  transform: rotate(29deg);
+  right: 0;
+  bottom: 0;
+  width: clamp(7.25rem, 40vw, 10rem);
+  height: auto;
 }
 
 .caseContent {
@@ -354,7 +348,7 @@
   display: grid;
   gap: 0.5rem;
   padding: 1rem 1rem 1rem 1.25rem;
-  background: rgba(0, 0, 0, 0.66);
+  background: var(--surface-panel-elevated);
   backdrop-filter: blur(8px);
 }
 
@@ -384,9 +378,9 @@
   background: linear-gradient(
     90deg,
     var(--color-accent-blue) 0%,
-    var(--color-accent-purple) 24.5%,
-    var(--color-accent-pink) 49.5%,
-    #ee738b 80.28%,
+    var(--color-accent-purple) 25%,
+    var(--color-accent-pink) 50%,
+    #ee738b 80%,
     var(--color-accent-orange) 100%
   );
   background-clip: text;
@@ -434,17 +428,7 @@
 .contactSection {
   position: relative;
   padding-block: 5rem;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.contactSection::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 60% 16%, rgba(255, 179, 0, 0.18), transparent 9rem),
-    radial-gradient(circle at 64% 16%, rgba(124, 77, 255, 0.14), transparent 12rem);
-  pointer-events: none;
+  background: var(--color-black-40);
 }
 
 .contactLayout {
@@ -504,7 +488,7 @@
 }
 
 .textField:focus {
-  border-color: rgba(0, 176, 255, 0.3);
+  border-color: var(--color-white-80);
 }
 
 .textareaField {
@@ -664,30 +648,54 @@
 
   .caseCard {
     min-height: 15.625rem;
+    overflow: visible;
     padding: 2.5rem 2rem 2.5rem 3rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .caseShape {
+    display: block;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border: 1px solid var(--surface-panel-border);
+    border-radius: 1.25rem 0.375rem 1.25rem 0.375rem;
+    background: rgba(5, 23, 35, 0.9);
+    box-shadow: var(--shadow-panel);
+    transform: skewX(-10deg);
+    transform-origin: center;
+  }
+
+  .caseShapeInner {
+    inset: -0.5rem -2rem;
+    transform: skewX(10deg);
+    transform-origin: center;
   }
 
   .caseArtworkMobile {
     display: none;
   }
 
+  .caseArtwork {
+    display: none;
+  }
+
   .caseArtworkDesktop {
     display: block;
     position: absolute;
+    right: 0;
+    bottom: -0.625rem;
+    width: auto;
+    height: calc(100% + 1.25rem);
+    max-width: none;
   }
 
-  .caseArtworkDominoDesktop {
-    right: 1.1rem;
-    top: -0.45rem;
-    width: 9.4rem;
-    transform: rotate(-10deg);
-  }
-
-  .caseArtworkPortfolioDesktop {
-    right: -4.8rem;
-    top: -6.5rem;
-    width: 28rem;
-    transform: rotate(-17.5deg);
+  .caseContent {
+    z-index: 1;
   }
 
   .aboutSection::before {

@@ -52,34 +52,22 @@ function InsightPanel({ insight }: { insight: InsightCard }) {
 
 function CaseStudyPanel({ study }: { study: CaseStudyCard }) {
   return (
-    <PanelCard
-      as="article"
-      className={cx(
-        styles.caseCard,
-        study.layout === "domino" ? styles.caseCardDomino : styles.caseCardPortfolio,
-      )}
-    >
+    <PanelCard as="article" className={styles.caseCard}>
+      <div aria-hidden="true" className={styles.caseShape}>
+        <div className={styles.caseShapeInner}>
+          <Image
+            alt=""
+            className={styles.caseArtworkDesktop}
+            sizes="(min-width: 48rem) 18rem, 11rem"
+            src={study.artworkDesktop}
+          />
+        </div>
+      </div>
+
       <div aria-hidden="true" className={styles.caseArtwork}>
-        <div className={styles.caseArtworkPlate} />
         <Image
           alt=""
-          className={cx(
-            styles.caseArtworkDesktop,
-            study.layout === "domino"
-              ? styles.caseArtworkDominoDesktop
-              : styles.caseArtworkPortfolioDesktop,
-          )}
-          sizes="(min-width: 48rem) 18rem, 11rem"
-          src={study.artworkDesktop}
-        />
-        <Image
-          alt=""
-          className={cx(
-            styles.caseArtworkMobile,
-            study.layout === "domino"
-              ? styles.caseArtworkDominoMobile
-              : styles.caseArtworkPortfolioMobile,
-          )}
+          className={styles.caseArtworkMobile}
           sizes="11rem"
           src={study.artworkMobile}
         />
@@ -262,7 +250,12 @@ export function Homepage() {
                   />
                   <div className={styles.quoteAttribution}>
                     <p className={styles.quoteName}>{TESTIMONIAL.attribution}</p>
-                    <Link className={styles.quoteSource} href={TESTIMONIAL.href}>
+                    <Link
+                      className={styles.quoteSource}
+                      href={TESTIMONIAL.href}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
                       <span>{TESTIMONIAL.source}</span>
                       <Icon name="external" />
                     </Link>

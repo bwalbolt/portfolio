@@ -1,40 +1,45 @@
 <!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Next.js 16 Context
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+This project uses Next.js 16, which may differ from older conventions. Before changing Next APIs, routing, config, rendering, metadata, build behavior, or file conventions, read the relevant guide in `node_modules/next/dist/docs/` and heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-# Project Context & Agent Instructions
+# Portfolio Agent Guide
 
-Welcome to the Personal Portfolio project. This repository is a demonstration of senior-level front-end craftsmanship. As an AI agent working on this codebase, your highest priority is to output **expertly written, pristine code**.
+This repository is a senior front-end portfolio. Code should be polished enough for peers, hiring managers, and clients to inspect.
 
-## Project Goals & Standards
-Every piece of code you touch must reflect the highest industry standards:
-- **Performance First**: We are targeting a perfect 100 on Lighthouse (Performance, Accessibility, Best Practices, SEO). Optimize everything (lazy load images/animations, code split, build statically).
-- **Accessibility (a11y)**: Must be WCAG 2.2 AA compliant. Use semantic HTML, ARIA attributes where necessary, ensure keyboard navigability, visible focus states, and respect `prefers-reduced-motion`.
-- **Cleanliness & Craftsmanship**: The code itself is a portfolio piece. It must be highly legible, modular, and flawlessly typed (TypeScript). No hacky solutions. 
-- **Aesthetics & Motion**: The UI is lightly video-game inspired but highly professional. Animations should be smooth, intentional, and not interfere with performance or accessibility.
+## Standards
 
-## Using the `/docs/`
-Before proposing architectural changes or adding major features, review the documentation in `/docs/`:
-- **`product-requirements-document.md`**: Outlines the "Why" and the "Who." Use this to understand target audiences, user stories, and engagement goals.
-- **`software-requirements-specification.md`**: Outlines the "How." Reference this for architectural decisions (Jamstack, SSG), state management guidelines, routing, and data flow patterns.
-- **`user-interface-design-document.md`**: Outlines the "What - Look & Feel." Reference this for layout structures, visual design elements, typography choices, interaction patterns, and responsive behavior. Always ensure new UI aligns with these guidelines.
+- **Performance:** Preserve static rendering where possible, optimize images/fonts, avoid unnecessary client JavaScript, and keep Lighthouse 100 as the target.
+- **Accessibility:** Meet WCAG 2.2 AA. Use semantic HTML, visible focus states, keyboard-friendly interactions, labels, landmarks, and reduced-motion fallbacks.
+- **TypeScript:** Keep types strict. Do not introduce `any`; define clear interfaces and reusable domain types where they help comprehension.
+- **Craft:** Prefer small, legible components, local state, vanilla CSS modules, and existing project patterns over broad new abstractions.
+- **Motion/UI:** Keep the lightly game-inspired feel professional, intentional, performant, and non-blocking.
 
-## Using Skills
-You have access to specialized skills in this repository to assist with implementation. 
-- **Figma Integration**: When implementing UI components or dealing with a design spec, use the `figma-implement-design` skill located in `.agents/skills/`. This workflow utilizes the Figma MCP server to fetch design context, verify node structures, and ensure 1:1 visual fidelity between the codebase and the design.
+## Where To Look
 
-## Agent Workflow & Execution
-To maintain the high standards of this project, follow this workflow for every task:
-1.  **Analyze First**: Always review the relevant documentation in `/docs/` before writing code. Understand the "Why," "How," and "What" to ensure alignment with project goals.
-2.  **Define Strict Types**: This is a zero-tolerance `any` codebase. Define comprehensive TypeScript interfaces and types for all data structures and component props before implementation.
-3.  **Figma-First UI**: If instructed to build or modify a UI feature, you MUST either:
-    - Refer to an existing Figma node/URL provided in the task.
-    - Ask the user for the relevant Figma context if it is missing.
-    - Use the `figma-implement-design` skill to ensure 1:1 visual fidelity and accurate component generation using the Figma MCP.
+Consult docs by task instead of loading everything by default:
 
-## General Execution Reminders
-- You are writing code that peers, prospective freelance clients, and hiring managers will scrutinize. Impress them.
-- Build mobile-first and fully responsive designs.
-- Avoid heavy global state libraries; prefer local component state or lightweight context whenever possible.
+- `docs/product-requirements-document.md` - audience, goals, user stories, and success metrics.
+- `docs/software-requirements-specification.md` - architecture, routing, data flow, content model, and service expectations.
+- `docs/user-interface-design-document.md` - visual language, layout, interaction, typography, and accessibility guidance.
+- `docs/harness-best-practices.md` - harness engineering methodology and why verification/state artifacts matter.
+- `.agents/specs/` - existing implementation specs and decisions.
+- `.harness/README.md` - local harness workflow, plan format, and verification command.
+
+## Workflow
+
+- Start with targeted exploration: read the files and docs relevant to the requested change.
+- For UI work tied to a Figma design, use `.agents/skills/figma-implement-design` and the Figma MCP context. If no Figma context exists, ask for it before aiming for 1:1 design fidelity.
+- Keep each implementation focused on the requested task. Capture unrelated findings in `.harness/progress.md` or a future plan instead of expanding scope.
+- Run `npm run verify` before marking implementation complete. For quick inner-loop checks, use `npm run lint`, `npm run typecheck`, `npm run build`, or `npm run test:e2e` as appropriate.
+
+## Harness
+
+When handling feature requests, bugs, or improvements, prefer the harness loop:
+
+1. Triage the request into a concrete plan with acceptance criteria.
+2. Implement one focused task at a time.
+3. Verify with `npm run verify`.
+4. Use an independent evaluator/review pass before marking work complete.
+5. Append durable notes to `.harness/progress.md`.

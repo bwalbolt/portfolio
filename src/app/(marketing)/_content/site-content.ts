@@ -162,7 +162,7 @@ export const TESTIMONIAL = {
 
 export const AVAILABILITY = {
   eyebrow: "Currently Available",
-  message: "Currently seeking innovative collaborations for Q2 2026",
+  message: "Currently seeking innovative collaborations for Q3 2026",
 } as const;
 
 export const CONTACT_COPY = {

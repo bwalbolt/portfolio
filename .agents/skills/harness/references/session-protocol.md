@@ -51,8 +51,22 @@ After verification passes, spawn an **evaluator subagent** before marking the ta
 
 1. Mark the task `"complete"` in the plan JSON file - **only after evaluator PASS**
 2. If all tasks are complete, set the plan's top-level `status` to `"complete"`
-3. **Commit** - use the current agent's normal git workflow when the user requests commits.
+3. **Commit** - for interactive sessions, use the current agent's commit skill or normal git workflow when the user requests commits. For headless runner sessions, let the runner create its local implementation, evaluator-fix, and completion commits.
 4. Append session notes to `.harness/progress.md`
+
+## 6. Headless Commit Lifecycle
+
+The runner has a small agent-neutral git adapter. It does not push or open PRs.
+
+- The runner requires a clean worktree before starting.
+- If the worktree is dirty, commit or stash those changes before running the harness.
+- The implementation agent must not create commits itself; the runner commits explicit changed paths after verification and evaluator gates.
+
+Default local commit order:
+
+1. `harness: implement {slug} task {id}` after implementation verification passes.
+2. `harness: address evaluation for {slug} task {id}` only when evaluator feedback required fixes and those fixes verify.
+3. `harness: complete {slug} task {id}` after evaluator PASS and harness state is updated.
 
 ### Session Notes Format
 

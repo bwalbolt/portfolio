@@ -58,7 +58,7 @@ Summary:
 3. Implement - backend: TDD (write failing tests first, then implement). Frontend: implement directly, unit tests only for complex logic.
 4. Run verification to confirm implementation
 5. **Evaluate** - spawn evaluator subagent (see S5). This is a hard gate.
-6. Update state - mark task complete **only after evaluator returns PASS**, commit through the current agent's normal git workflow when requested, append to progress.md
+6. Update state - mark task complete **only after evaluator returns PASS**. Interactive agents should use their normal commit skill/workflow when commits are requested; the headless runner has its own local git commit adapter. Append to progress.md.
 
 ### 5. Evaluate (mandatory - subagent)
 
@@ -109,11 +109,13 @@ python3 .harness/runner.py --plan .harness/plans/{slug}.json --loop
 # Run a specific task
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --task 2
 
-# Dry run
+# Inspect the prompt and required commit lifecycle without executing
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --dry-run
 ```
 
-Current limitation: the checked-in runner launches Claude Code directly. The harness methodology is agent-neutral, but runner support for other agent CLIs is deferred.
+The runner requires a clean worktree before execution and creates local-only git commits: implementation after verification, evaluator-fix commits after verified review fixes, and a completion commit after evaluator PASS. It uses a small agent-neutral git adapter instead of relying on an interactive commit skill.
+
+Current limitation: the checked-in runner launches Claude Code directly. The harness methodology and commit adapter are agent-neutral, but runner support for other agent CLIs is deferred.
 
 ## File Locations
 

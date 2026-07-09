@@ -64,7 +64,7 @@ Every session should follow a predictable sequence:
 4. **Select one task** -- Pick the highest-priority incomplete item
 5. **Implement** -- Build the feature
 6. **Test** -- Verify through the actual UI/API, not just unit tests
-7. **Update state** -- Mark task complete, commit with descriptive message, write progress notes
+7. **Update state** -- Mark task complete after evaluation, commit with descriptive messages, write progress notes
 8. **Clean exit** -- Confirm the application is in a working state
 
 ### One task per session
@@ -181,7 +181,7 @@ Structure the codebase so agents can reason about the full business domain from 
 
 ### Git is your safety net
 
-- Commit after every successful task with descriptive messages
+- Commit after implementation verification and again after evaluator-driven fixes when useful; keep a final state commit for plan/progress/evaluator artifacts
 - Read recent git history at the start of each session
 - Use git tags to mark known-good states
 - When the agent produces a broken codebase, `git reset --hard` to the last good state and re-run

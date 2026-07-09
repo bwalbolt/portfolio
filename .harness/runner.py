@@ -15,6 +15,8 @@ Usage:
     python .harness/runner.py --plan .harness/plans/fix-csv-naming.json --eval-only 1
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import subprocess
@@ -50,6 +52,150 @@ def load_plan(plan_path: Path) -> dict:
 
 def save_plan(plan: dict, plan_path: Path) -> None:
     plan_path.write_text(json.dumps(plan, indent=2) + "\n")
+
+
+# ---------------------------------------------------------------------------
+# Git helpers
+# ---------------------------------------------------------------------------
+
+
+def run_git(args: list[str], *, capture: bool = True) -> subprocess.CompletedProcess:
+    """Run a git command from the repository root."""
+    return subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        capture_output=capture,
+        text=True,
+    )
+
+
+def rel_path(path: Path) -> str:
+    """Return a POSIX path relative to the repository root."""
+    return path.resolve().relative_to(ROOT).as_posix()
+
+
+def changed_paths() -> set[str]:
+    """Return tracked and untracked paths changed in the working tree."""
+    paths: set[str] = set()
+    commands = [
+        ["diff", "--name-only"],
+        ["diff", "--name-only", "--cached"],
+        ["ls-files", "--others", "--exclude-standard"],
+    ]
+    for args in commands:
+        result = run_git(args)
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr.strip() or f"git {' '.join(args)} failed")
+        paths.update(line.strip() for line in result.stdout.splitlines() if line.strip())
+    return paths
+
+
+def harness_state_paths(plan_path: Path, slug: str | None, task_id: str | None) -> set[str]:
+    """Paths the runner may update as harness bookkeeping."""
+    paths = {rel_path(plan_path), rel_path(PROGRESS_PATH)}
+    if slug and task_id:
+        paths.add(rel_path(FEEDBACK_DIR / f"{slug}_{task_id}.json"))
+        paths.add(rel_path(FEEDBACK_DIR / f"{task_id}.json"))
+    return paths
+
+
+def assert_clean_worktree(plan: dict) -> None:
+    """Require a clean tree before the runner starts changing files."""
+    current = changed_paths()
+    blocking = sorted(current)
+    if not blocking:
+        return
+
+    print("\nCannot run because the worktree is dirty.")
+    print("Commit, stash, or otherwise clear these changes before running the harness:")
+    for path in blocking:
+        print(f"  - {path}")
+    print(f"\nPlan: {plan.get('title', 'unknown plan')}")
+    sys.exit(1)
+
+
+def commit_lifecycle_lines() -> list[str]:
+    return [
+        "Commit lifecycle: required",
+        "- implementation commit after verification passes",
+        "- evaluator-fix commit after any verified review fixes",
+        "- completion commit after evaluator PASS",
+    ]
+
+
+def stage_paths(paths: set[str]) -> None:
+    if not paths:
+        return
+    result = run_git(["add", "--", *sorted(paths)])
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or "git add failed")
+
+
+def commit_paths(paths: set[str], subject: str, body_lines: list[str]) -> bool:
+    """Stage explicit paths and create a local commit. Returns True if committed."""
+    paths = {path for path in paths if path}
+    if not paths:
+        print(f"\n-- Commit skipped: no changes for '{subject}' --")
+        return False
+
+    stage_paths(paths)
+    message = subject
+    body = "\n".join(line for line in body_lines if line)
+    args = ["commit", "-m", message]
+    if body:
+        args.extend(["-m", body])
+
+    print(f"\n-- Commit: {subject} --")
+    result = run_git(args, capture=False)
+    if result.returncode != 0:
+        raise RuntimeError(f"git commit failed for: {subject}")
+    return True
+
+
+def task_body(plan: dict, task: dict, plan_path: Path) -> list[str]:
+    ac_lines = task.get("acceptance_criteria", [])
+    body = [
+        f"Task: {task['title']}",
+        f"Plan: {rel_path(plan_path)}",
+    ]
+    if ac_lines:
+        body.append("")
+        body.append("Acceptance criteria:")
+        body.extend(f"- {ac}" for ac in ac_lines)
+    return body
+
+
+def feedback_body(
+    plan: dict, task: dict, plan_path: Path, feedback: dict | None
+) -> list[str]:
+    body = task_body(plan, task, plan_path)
+    feedback_path = FEEDBACK_DIR / f"{plan['slug']}_{task['id']}.json"
+    body.extend(["", f"Evaluator feedback: {rel_path(feedback_path)}"])
+    issues = (feedback or {}).get("issues", [])
+    if issues:
+        body.append("")
+        body.append("Issues addressed:")
+        body.extend(f"- {issue}" for issue in issues)
+    return body
+
+
+def commit_task_changes(
+    *,
+    plan: dict,
+    task: dict,
+    plan_path: Path,
+    baseline: set[str],
+    subject: str,
+    body_lines: list[str],
+    include_harness_state: bool,
+) -> bool:
+    current = changed_paths()
+    state_paths = harness_state_paths(plan_path, plan.get("slug"), task.get("id"))
+    paths = current - baseline
+    if not include_harness_state:
+        paths -= state_paths
+        paths = {path for path in paths if not path.startswith(".harness/eval_feedback/")}
+    return commit_paths(paths, subject, body_lines)
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +277,8 @@ def build_prompt(plan: dict, task: dict, plan_path: Path) -> str:
         7. Do NOT mark task {task["id"]} complete yourself; the harness does that
            only after evaluator PASS.
         8. Append concise session notes to .harness/progress.md.
+        9. Do NOT create commits yourself. The harness runner creates required
+           local implementation, evaluator-fix, and completion commits.
 
         ## Task Focus
 
@@ -353,6 +501,9 @@ def main():
 
     plan = load_plan(plan_path)
 
+    if not args.dry_run and not args.eval_only:
+        assert_clean_worktree(plan)
+
     # --eval-only: just run the evaluator on an existing task
     if args.eval_only:
         _, task = find_task(plan, args.eval_only)
@@ -381,10 +532,13 @@ def main():
         if args.dry_run:
             print("\n[dry-run] Would execute this task. Prompt:")
             print(build_prompt(plan, task, plan_path))
+            print("\n[dry-run] " + "\n".join(commit_lifecycle_lines()))
             if not args.loop:
                 break
             task["status"] = "complete"
             continue
+
+        task_start_baseline = changed_paths()
 
         # Mark task as in progress
         task["status"] = "in_progress"
@@ -426,6 +580,24 @@ def main():
             save_plan(plan, plan_path)
             sys.exit(1)
 
+        try:
+            commit_task_changes(
+                plan=plan,
+                task=task,
+                plan_path=plan_path,
+                baseline=task_start_baseline,
+                subject=f"harness: implement {plan['slug']} task {task['id']}",
+                body_lines=task_body(plan, task, plan_path),
+                include_harness_state=False,
+            )
+        except RuntimeError as error:
+            print(f"\n{error}")
+            task["status"] = "pending"
+            save_plan(plan, plan_path)
+            sys.exit(1)
+
+        post_implementation_baseline = changed_paths()
+
         # Run evaluator with retry loop
         if not args.skip_eval:
             eval_passed = run_evaluator(
@@ -456,6 +628,24 @@ def main():
                     print("\nVerification failed after fix attempt.")
                     break
 
+                try:
+                    commit_task_changes(
+                        plan=plan,
+                        task=task,
+                        plan_path=plan_path,
+                        baseline=post_implementation_baseline,
+                        subject=(
+                            f"harness: address evaluation for "
+                            f"{plan['slug']} task {task['id']}"
+                        ),
+                        body_lines=feedback_body(plan, task, plan_path, feedback),
+                        include_harness_state=False,
+                    )
+                except RuntimeError as error:
+                    print(f"\n{error}")
+                    break
+                post_implementation_baseline = changed_paths()
+
                 eval_passed = run_evaluator(
                     task["id"], plan_path, auto_fix=False, verbose=args.verbose
                 )
@@ -472,6 +662,23 @@ def main():
         task["status"] = "complete"
         update_plan_status(plan)
         save_plan(plan, plan_path)
+
+        try:
+            commit_task_changes(
+                plan=plan,
+                task=task,
+                plan_path=plan_path,
+                baseline=set(),
+                subject=f"harness: complete {plan['slug']} task {task['id']}",
+                body_lines=task_body(plan, task, plan_path),
+                include_harness_state=True,
+            )
+        except RuntimeError as error:
+            print(f"\n{error}")
+            task["status"] = "pending"
+            save_plan(plan, plan_path)
+            sys.exit(1)
+
         print(f"\nTask {task['id']} completed successfully.")
 
         # Reload plan in case the agent modified it

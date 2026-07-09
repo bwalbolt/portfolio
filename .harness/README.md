@@ -64,6 +64,16 @@ python3 .harness/runner.py --plan .harness/plans/{slug}.json --eval-only 1
 
 The runner verifies with `npm run verify`, runs the evaluator, and only marks a task complete after evaluator PASS. If verification or evaluation fails after retries, it resets the task to `pending` and exits non-zero.
 
+The runner requires a clean worktree before execution and creates local-only commits with its own small git adapter:
+
+1. `harness: implement {slug} task {id}` after implementation verification passes.
+2. `harness: address evaluation for {slug} task {id}` only when evaluator-driven fixes were needed and verified.
+3. `harness: complete {slug} task {id}` after evaluator PASS and harness state updates.
+
+If the worktree is dirty, commit or stash those changes before running the harness. The runner stages explicit changed paths for each phase and never pushes or opens PRs.
+
+Interactive agents can use a commit skill or their normal git workflow when the user requests commits. The headless runner does not depend on an ambient commit skill because it needs deterministic, agent-neutral local commits.
+
 ## Evaluator Notes
 
 The evaluator checks:
@@ -73,6 +83,7 @@ The evaluator checks:
 - Tests are meaningful for the behavior under review.
 - Implementation files do not contain unfinished placeholders.
 - Test timing is noted for TDD awareness when relevant.
+- Harness implementation commits before evaluation and evaluator-fix commits after review are expected runner history, not failures by themselves.
 
 Placeholder checks should focus on unfinished implementation markers such as `TODO`, `FIXME`, `throw new Error("Not implemented")`, `NotImplementedError`, or empty stubs. Do not fail normal JSX/TypeScript spread syntax or legitimate form placeholder copy.
 

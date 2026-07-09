@@ -13,6 +13,8 @@ Usage:
     python .harness/evaluator.py --plan .harness/plans/fix-csv.json --task 1 --verbose
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import re

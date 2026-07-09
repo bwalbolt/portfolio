@@ -43,6 +43,14 @@ For each test, ask:
 
 Run `git log --oneline --name-only -5`. Check whether test files were modified before or alongside implementation. TDD violation is a warning, not automatic FAIL.
 
+For headless runner sessions, expect local harness commits in this shape:
+
+- `harness: implement {slug} task {id}` before evaluator review.
+- `harness: address evaluation for {slug} task {id}` only when review fixes were needed.
+- `harness: complete {slug} task {id}` after evaluator PASS for harness state.
+
+Do not treat the implementation commit happening before evaluation as a failure. Do not treat evaluator-fix commits as suspicious by themselves; use them to understand what changed after review.
+
 ## Verdict Format
 
 ```

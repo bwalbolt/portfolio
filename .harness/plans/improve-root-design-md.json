@@ -1,0 +1,27 @@
+{
+  "slug": "improve-root-design-md",
+  "title": "Create root DESIGN.md",
+  "type": "improvement",
+  "created": "2026-07-09",
+  "status": "complete",
+  "context": "The project needs a root DESIGN.md that captures the implemented portfolio visual system for humans and coding agents, following Google's DESIGN.md format guidance and the existing CSS/token conventions.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Document the implemented design system",
+      "status": "complete",
+      "acceptance_criteria": [
+        "DESIGN.md exists in the project root",
+        "DESIGN.md includes YAML front matter with colors, typography, rounded, spacing, and component tokens",
+        "DESIGN.md markdown sections follow the Google DESIGN.md section order",
+        "Content is grounded in the implemented globals.css, CSS modules, content records, and project UI guidance",
+        "The document includes practical do and don't guidance for future agents"
+      ],
+      "files": [
+        "DESIGN.md",
+        ".harness/progress.md"
+      ],
+      "depends_on": []
+    }
+  ]
+}

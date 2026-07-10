@@ -8,7 +8,7 @@ Local orchestration for turning feature requests, bugs, and improvements into ve
 User feedback -> Triage -> Clarify -> Plan -> Execute -> Verify -> Evaluate -> Done
 ```
 
-Use the `harness` skill interactively for planning and execution discipline. The optional headless runner can batch through plan tasks, but it currently launches Claude Code directly; broader agent launch support is a later improvement.
+Use the `harness` skill interactively for planning and execution discipline. Interactive Codex sessions are the primary path for this repo today. The optional headless runner can batch through plan tasks, but it currently launches Claude Code directly; broader agent launch support is a later improvement.
 
 ## Files
 
@@ -19,6 +19,8 @@ Use the `harness` skill interactively for planning and execution discipline. The
 | `runner.py`         | Headless executor + evaluator orchestrator                |
 | `evaluator.py`      | Skeptical evaluator session launcher                      |
 | `eval_feedback/`    | Evaluator verdict JSONs                                   |
+
+For the short architecture and verification map, start with `ARCHITECTURE.md`.
 
 ## Verification
 
@@ -39,6 +41,28 @@ npm run test:e2e
 
 Playwright uses `npm run start` against the production build. Run `npm run build` before `npm run test:e2e` when executing the smoke tests directly.
 
+In Codex's managed sandbox, Turbopack can fail during `next build` because its worker path attempts a local port bind. Use the sandbox-friendly non-browser check for fast feedback:
+
+```bash
+npm run verify:sandbox
+npm run harness:check:sandbox
+```
+
+These commands use `next build --webpack`, which is a supported Next.js 16 build mode, and avoid starting a browser server. They do not replace full browser verification.
+
+For harness work, use the isolated runtime scripts:
+
+```bash
+PORT=3100 npm run harness:verify
+PORT=3101 npm run harness:test:e2e
+```
+
+Harness Playwright runs set `HARNESS=1`, target `BASE_URL` or `http://127.0.0.1:$PORT`, and do not reuse an existing server. Use a unique port per git worktree so each agent drives the app instance for its own checkout.
+
+Playwright keeps browser QA evidence in ignored output directories: traces are retained on first retry and screenshots are captured on failure. For UI bugs, reproduce the issue with Playwright, inspect the DOM or screenshot evidence, implement the fix, then re-run the same browser path.
+
+Full browser verification needs a process that can bind to a local port. For interactive Codex sessions, grant narrow approval to `npm run harness:verify` or `npm run harness:test:e2e` when prompted. For future headless execution, run the harness in an environment/profile where those exact commands are allowlisted rather than broadly unsandboxing arbitrary shell commands.
+
 ## Interactive Workflow
 
 1. Read all feedback before acting.
@@ -53,6 +77,8 @@ Playwright uses `npm run start` against the production build. Run `npm run build
 Frontend work does not require TDD by default. Add or update tests when acceptance criteria involve navigation, user flows, accessibility behavior, complex state, data transformation, or regression-prone logic.
 
 ## Headless Runner
+
+The headless runner and evaluator are documented for continuity, but they are not the primary Codex path yet because both scripts launch `claude` directly. Treat Codex-compatible runner support as a separate follow-up task.
 
 ```bash
 python3 .harness/runner.py --plan .harness/plans/{slug}.json

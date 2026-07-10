@@ -21,6 +21,8 @@ This repository is a senior front-end portfolio. Code should be polished enough 
 Consult docs by task instead of loading everything by default:
 
 - `docs/product-requirements-document.md` - audience, goals, user stories, and success metrics.
+- `ARCHITECTURE.md` - concise map of app structure, runtime boundaries, and verification entrypoints.
+- `DESIGN.md` - implemented design system tokens, component guidance, and visual guardrails for UI work.
 - `docs/software-requirements-specification.md` - architecture, routing, data flow, content model, and service expectations.
 - `docs/user-interface-design-document.md` - visual language, layout, interaction, typography, and accessibility guidance.
 - `docs/harness-best-practices.md` - harness engineering methodology and why verification/state artifacts matter.
@@ -33,6 +35,8 @@ Consult docs by task instead of loading everything by default:
 - For UI work tied to a Figma design, use `.agents/skills/figma-implement-design` and the Figma MCP context. If no Figma context exists, ask for it before aiming for 1:1 design fidelity.
 - Keep each implementation focused on the requested task. Capture unrelated findings in `.harness/progress.md` or a future plan instead of expanding scope.
 - Run `npm run verify` before marking implementation complete. For quick inner-loop checks, use `npm run lint`, `npm run typecheck`, `npm run build`, or `npm run test:e2e` as appropriate.
+- When Codex sandboxing blocks Turbopack or server port binding, use `npm run verify:sandbox` for non-browser feedback, then run the full verification path with narrow approval.
+- For harness UI verification, prefer `PORT=3100 npm run harness:verify` or `PORT=<unique-port> npm run harness:test:e2e` so each worktree drives its own app instance.
 
 ## Harness
 

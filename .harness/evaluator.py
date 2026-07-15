@@ -4,8 +4,8 @@ Evaluator agent for the harness.
 
 Spawns a separate read-oriented review session that evaluates an implementation
 against acceptance criteria. Designed to be skeptical: the evaluator's job is to
-find problems, not to praise. This script currently launches Claude Code
-directly; cross-agent launch support is intentionally deferred.
+find problems, not to praise. Codex is the default spawned agent, with
+best-effort Claude support when Claude Code is installed.
 
 Usage:
     python .harness/evaluator.py --plan .harness/plans/fix-csv.json --task 1
@@ -23,6 +23,8 @@ import sys
 import textwrap
 from pathlib import Path
 
+from agent_adapter import AgentOptions, run_agent_session
+
 ROOT = Path(__file__).resolve().parent.parent
 FEEDBACK_DIR = ROOT / ".harness" / "eval_feedback"
 
@@ -31,6 +33,34 @@ VERIFY_CMD: list[str] = ["npm", "run", "verify"]
 
 # Source directories to search when evaluating.
 SOURCE_DIRS: list[str] = ["src/", "tests/"]
+
+
+def run_git(args: list[str], *, capture: bool = True) -> subprocess.CompletedProcess:
+    """Run a git command from the repository root."""
+    return subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        capture_output=capture,
+        text=True,
+    )
+
+
+def changed_paths() -> set[str]:
+    """Return tracked and untracked paths changed in the working tree."""
+    paths: set[str] = set()
+    commands = [
+        ["diff", "--name-only"],
+        ["diff", "--name-only", "--cached"],
+        ["ls-files", "--others", "--exclude-standard"],
+    ]
+    for git_args in commands:
+        result = run_git(git_args)
+        if result.returncode != 0:
+            raise RuntimeError(
+                result.stderr.strip() or f"git {' '.join(git_args)} failed"
+            )
+        paths.update(line.strip() for line in result.stdout.splitlines() if line.strip())
+    return paths
 
 
 def load_plan(plan_path: Path) -> dict:
@@ -92,6 +122,16 @@ def build_eval_prompt(plan: dict, task: dict, auto_fix: bool) -> str:
             2. Update or add tests as needed
             3. Run the verification command to verify your fix
             4. Re-evaluate and produce the final verdict
+        """
+        )
+    else:
+        fix_section = textwrap.dedent(
+            """
+            ## Read-Only Mode
+
+            Do NOT edit files. You may run verification and inspect code, but
+            leave the worktree unchanged. If you find issues, report them in the
+            verdict instead of fixing them.
         """
         )
 
@@ -302,6 +342,20 @@ def main():
         action="store_true",
         help="Show full evaluator output",
     )
+    parser.add_argument(
+        "--agent",
+        choices=["codex", "claude"],
+        default="codex",
+        help="Agent CLI to spawn for evaluation",
+    )
+    parser.add_argument("--model", help="Model to use for the evaluator session")
+    parser.add_argument("--profile", help="Codex profile to use for evaluation")
+    parser.add_argument(
+        "--codex-sandbox",
+        choices=["workspace-write", "read-only", "danger-full-access"],
+        default="workspace-write",
+        help="Codex sandbox mode for the evaluator session",
+    )
     args = parser.parse_args()
 
     plan_path = Path(args.plan)
@@ -322,24 +376,25 @@ def main():
     print(f"\n-- Evaluating task {task['id']}: {task['title']} --")
 
     prompt = build_eval_prompt(plan, task, auto_fix=args.fix)
+    agent_options = AgentOptions(
+        agent=args.agent,
+        model=args.model,
+        profile=args.profile,
+        codex_sandbox=args.codex_sandbox,
+    )
 
     allowed_tools = "Bash,Read,Glob,Grep"
     if args.fix:
         allowed_tools += ",Edit,Write"
 
-    result = subprocess.run(
-        [
-            "claude",
-            "-p",
-            prompt,
-            "--allowedTools",
-            allowed_tools,
-            "--output-format",
-            "text",
-        ],
-        cwd=ROOT,
+    pre_eval_paths = changed_paths()
+    result = run_agent_session(
+        prompt=prompt,
+        options=agent_options,
+        root=ROOT,
+        allowed_tools=allowed_tools,
+        output_format="text",
         capture_output=True,
-        text=True,
     )
 
     raw_output = result.stdout or ""
@@ -348,6 +403,27 @@ def main():
         if result.stderr:
             print(result.stderr)
         sys.exit(1)
+
+    if not args.fix:
+        changed_by_evaluator = sorted(changed_paths() - pre_eval_paths)
+        if changed_by_evaluator:
+            verdict = {
+                "overall": "FAIL",
+                "make_check": "UNKNOWN",
+                "acceptance_criteria": "UNKNOWN",
+                "test_coverage": "UNKNOWN",
+                "no_placeholders": "FAIL",
+                "tdd_compliance": "UNKNOWN",
+                "issues": [
+                    "Evaluator changed files in read-only mode: "
+                    + ", ".join(changed_by_evaluator)
+                ],
+            }
+            print_verdict(verdict, args.task, verbose=args.verbose, raw_output=raw_output)
+            FEEDBACK_DIR.mkdir(exist_ok=True)
+            feedback_path = FEEDBACK_DIR / f"{plan['slug']}_{args.task}.json"
+            feedback_path.write_text(json.dumps(verdict, indent=2) + "\n")
+            sys.exit(1)
 
     verdict = parse_verdict(raw_output)
     print_verdict(verdict, args.task, verbose=args.verbose, raw_output=raw_output)

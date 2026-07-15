@@ -8,7 +8,7 @@ Local orchestration for turning feature requests, bugs, and improvements into ve
 User feedback -> Triage -> Clarify -> Plan -> Execute -> Verify -> Evaluate -> Done
 ```
 
-Use the `harness` skill interactively for planning and execution discipline. Interactive Codex sessions are the primary path for this repo today. The optional headless runner can batch through plan tasks, but it currently launches Claude Code directly; broader agent launch support is a later improvement.
+Use the `harness` skill interactively for planning and execution discipline. Interactive Codex sessions are still the most transparent path for this repo, and the optional headless runner can batch through plan tasks by spawning Codex sessions by default. Claude support is available with `--agent claude` on machines where Claude Code is installed.
 
 ## Files
 
@@ -78,7 +78,7 @@ Frontend work does not require TDD by default. Add or update tests when acceptan
 
 ## Headless Runner
 
-The headless runner and evaluator are documented for continuity, but they are not the primary Codex path yet because both scripts launch `claude` directly. Treat Codex-compatible runner support as a separate follow-up task.
+The headless runner and evaluator spawn Codex by default and pass prompts through stdin. Model selection inherits the Codex CLI configuration unless you pass `--model`, `--implementer-model`, or `--evaluator-model`; Codex profiles can be selected with `--profile`.
 
 ```bash
 python3 .harness/runner.py --plan .harness/plans/{slug}.json
@@ -86,6 +86,7 @@ python3 .harness/runner.py --plan .harness/plans/{slug}.json --loop
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --task 2
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --dry-run
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --eval-only 1
+python3 .harness/runner.py --plan .harness/plans/{slug}.json --agent codex --model gpt-5.5
 ```
 
 The runner verifies with `npm run verify`, runs the evaluator, and only marks a task complete after evaluator PASS. If verification or evaluation fails after retries, it resets the task to `pending` and exits non-zero.
@@ -96,7 +97,7 @@ The runner requires a clean worktree before execution and creates local-only com
 2. `harness: address evaluation for {slug} task {id}` only when evaluator-driven fixes were needed and verified.
 3. `harness: complete {slug} task {id}` after evaluator PASS and harness state updates.
 
-If the worktree is dirty, commit or stash those changes before running the harness. The runner stages explicit changed paths for each phase and never pushes or opens PRs.
+If the worktree is dirty, commit or stash those changes before running the harness. The runner stages explicit changed paths for each phase and never pushes or opens PRs. In non-fix mode, the evaluator is practical read-only: it may run checks, but the harness fails evaluation if the evaluator leaves file changes behind.
 
 Interactive agents can use a commit skill or their normal git workflow when the user requests commits. The headless runner does not depend on an ambient commit skill because it needs deterministic, agent-neutral local commits.
 

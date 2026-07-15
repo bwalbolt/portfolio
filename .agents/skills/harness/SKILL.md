@@ -115,7 +115,7 @@ python3 .harness/runner.py --plan .harness/plans/{slug}.json --dry-run
 
 The runner requires a clean worktree before execution and creates local-only git commits: implementation after verification, evaluator-fix commits after verified review fixes, and a completion commit after evaluator PASS. It uses a small agent-neutral git adapter instead of relying on an interactive commit skill.
 
-Current limitation: the checked-in runner launches Claude Code directly. The harness methodology and commit adapter are agent-neutral, but runner support for other agent CLIs is deferred.
+The checked-in runner launches Codex by default and keeps best-effort Claude support behind `--agent claude` for machines where Claude Code is installed. Use `--model`, `--implementer-model`, `--evaluator-model`, `--profile`, and `--codex-sandbox` to tune spawned Codex sessions.
 
 ## File Locations
 

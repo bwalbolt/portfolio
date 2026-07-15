@@ -3,8 +3,8 @@
 Headless agent runner for the harness.
 
 Orchestrates headless implementation sessions from per-ticket plans, then runs
-verification and evaluation to ensure quality. This runner currently launches
-Claude Code directly; cross-agent launch support is intentionally deferred.
+verification and evaluation to ensure quality. Codex is the default spawned
+agent, with best-effort Claude support when Claude Code is installed.
 
 Usage:
     python .harness/runner.py --plan .harness/plans/fix-csv-naming.json
@@ -24,6 +24,9 @@ import sys
 import textwrap
 from pathlib import Path
 
+from agent_adapter import AgentOptions, build_agent_command, format_command_for_display
+from agent_adapter import run_agent_session as launch_agent_session
+
 ROOT = Path(__file__).resolve().parent.parent
 PROGRESS_PATH = ROOT / ".harness" / "progress.md"
 FEEDBACK_DIR = ROOT / ".harness" / "eval_feedback"
@@ -33,8 +36,8 @@ MAX_RETRIES = 2  # Max evaluator->generator retry cycles per task
 # Command to verify the project (lint + typecheck + build + smoke tests).
 VERIFY_CMD: list[str] = ["npm", "run", "verify"]
 
-# Path to your project's CLAUDE.md (relative to ROOT). Set to None if not used.
-CLAUDE_MD_PATH: str | None = "CLAUDE.md"
+# Path to project AGENTS.md instructions (relative to ROOT). Set to None if not used.
+AGENTS_MD_PATH: str | None = "AGENTS.md"
 
 # Source directories to reference in prompts (for developer orientation).
 # Examples: ["src/", "lib/"], ["app/", "tests/"]
@@ -243,9 +246,9 @@ def build_prompt(plan: dict, task: dict, plan_path: Path) -> str:
     ac_text = "\n".join(f"- {ac}" for ac in task.get("acceptance_criteria", []))
     files_text = "\n".join(f"- {f}" for f in task.get("files", []))
 
-    claude_md_line = ""
-    if CLAUDE_MD_PATH:
-        claude_md_line = f"1. Read the {CLAUDE_MD_PATH} for project context and rules."
+    context_line = ""
+    if AGENTS_MD_PATH:
+        context_line = f"1. Read {AGENTS_MD_PATH} for project context and rules."
 
     verify_cmd_str = " ".join(VERIFY_CMD)
 
@@ -267,7 +270,7 @@ def build_prompt(plan: dict, task: dict, plan_path: Path) -> str:
 
         ## Instructions
 
-        {claude_md_line}
+        {context_line}
         2. Read the plan at {plan_path.relative_to(ROOT)} to understand the full scope.
         3. Check git log --oneline -10 for recent changes.
         4. Run `{verify_cmd_str}` to verify the baseline is clean before starting.
@@ -293,9 +296,9 @@ def build_fix_prompt(plan: dict, task: dict, feedback: dict, plan_path: Path) ->
     issues_text = "\n".join(f"- {issue}" for issue in feedback.get("issues", []))
     ac_text = "\n".join(f"- {ac}" for ac in task.get("acceptance_criteria", []))
 
-    claude_md_line = ""
-    if CLAUDE_MD_PATH:
-        claude_md_line = f"1. Read {CLAUDE_MD_PATH} for project context."
+    context_line = ""
+    if AGENTS_MD_PATH:
+        context_line = f"1. Read {AGENTS_MD_PATH} for project context."
 
     verify_cmd_str = " ".join(VERIFY_CMD)
 
@@ -323,7 +326,7 @@ def build_fix_prompt(plan: dict, task: dict, feedback: dict, plan_path: Path) ->
 
         ## Instructions
 
-        {claude_md_line}
+        {context_line}
         2. Read the plan at {plan_path.relative_to(ROOT)}.
         3. Fix EACH issue listed above. Do not skip any.
         4. Run `{verify_cmd_str}` to verify everything passes.
@@ -344,9 +347,9 @@ def build_verify_fix_prompt(task: dict, check_output: str, context_name: str) ->
     if len(check_output) > max_chars:
         check_output = "...(truncated)...\n" + check_output[-max_chars:]
 
-    claude_md_line = ""
-    if CLAUDE_MD_PATH:
-        claude_md_line = f"1. Read {CLAUDE_MD_PATH} for project context."
+    context_line = ""
+    if AGENTS_MD_PATH:
+        context_line = f"1. Read {AGENTS_MD_PATH} for project context."
 
     verify_cmd_str = " ".join(VERIFY_CMD)
 
@@ -366,7 +369,7 @@ def build_verify_fix_prompt(task: dict, check_output: str, context_name: str) ->
 
         ## Instructions
 
-        {claude_md_line}
+        {context_line}
         2. Analyze the errors above - identify which are lint, type, or test failures.
         3. Fix EACH failure. Common fixes:
            - Test failures: fix the implementation bug (not the test) unless the test is wrong.
@@ -418,12 +421,24 @@ def run_verification() -> tuple[bool, str]:
 
 
 def run_evaluator(
-    task_id: str, plan_path: Path, auto_fix: bool = False, verbose: bool = False
+    task_id: str,
+    plan_path: Path,
+    *,
+    agent_options: AgentOptions,
+    auto_fix: bool = False,
+    verbose: bool = False,
 ) -> bool:
     """Run the evaluator agent against the completed task."""
     print(f"\n-- Evaluator: task {task_id} --")
+    baseline = changed_paths()
     cmd = [sys.executable, str(ROOT / ".harness" / "evaluator.py"), "--task", task_id]
     cmd.extend(["--plan", str(plan_path)])
+    cmd.extend(["--agent", agent_options.agent])
+    cmd.extend(["--codex-sandbox", agent_options.codex_sandbox])
+    if agent_options.model:
+        cmd.extend(["--model", agent_options.model])
+    if agent_options.profile:
+        cmd.extend(["--profile", agent_options.profile])
     if auto_fix:
         cmd.append("--fix")
     if verbose:
@@ -433,18 +448,38 @@ def run_evaluator(
         cwd=ROOT,
         capture_output=False,
     )
+    if not auto_fix:
+        plan = load_plan(plan_path)
+        allowed = harness_state_paths(plan_path, plan.get("slug"), task_id)
+        changed_by_evaluator = sorted((changed_paths() - baseline) - allowed)
+        if changed_by_evaluator:
+            print("\nEvaluator left file changes in read-only mode:")
+            for path in changed_by_evaluator:
+                print(f"  - {path}")
+            return False
     return result.returncode == 0
 
 
-def run_claude_session(prompt: str) -> int:
-    """Launch a headless Claude Code session with the given prompt."""
-    print("\n-- Launching headless implementation session --")
-    result = subprocess.run(
-        ["claude", "-p", prompt, "--allowedTools", "Bash,Read,Edit,Write,Glob,Grep"],
-        cwd=ROOT,
+def run_agent_session(prompt: str, agent_options: AgentOptions) -> int:
+    """Launch a headless implementation session with the given prompt."""
+    print(f"\n-- Launching headless {agent_options.agent} implementation session --")
+    result = launch_agent_session(
+        prompt=prompt,
+        options=agent_options,
+        root=ROOT,
+        allowed_tools="Bash,Read,Edit,Write,Glob,Grep",
         capture_output=False,
     )
     return result.returncode
+
+
+def print_dry_run_agent(agent_options: AgentOptions) -> None:
+    cmd = build_agent_command(
+        options=agent_options,
+        root=ROOT,
+        allowed_tools="Bash,Read,Edit,Write,Glob,Grep",
+    )
+    print(f"\n[dry-run] Agent command: {format_command_for_display(cmd)}")
 
 
 def update_plan_status(plan: dict) -> None:
@@ -489,7 +524,38 @@ def main():
     parser.add_argument(
         "--verbose", action="store_true", help="Show full evaluator output"
     )
+    parser.add_argument(
+        "--agent",
+        choices=["codex", "claude"],
+        default="codex",
+        help="Agent CLI to spawn for implementation and evaluation",
+    )
+    parser.add_argument("--model", help="Model to use for all spawned sessions")
+    parser.add_argument(
+        "--implementer-model", help="Model to use for implementation sessions"
+    )
+    parser.add_argument("--evaluator-model", help="Model to use for evaluator sessions")
+    parser.add_argument("--profile", help="Codex profile to use for spawned sessions")
+    parser.add_argument(
+        "--codex-sandbox",
+        choices=["workspace-write", "read-only", "danger-full-access"],
+        default="workspace-write",
+        help="Codex sandbox mode for spawned sessions",
+    )
     args = parser.parse_args()
+
+    implementer_options = AgentOptions(
+        agent=args.agent,
+        model=args.implementer_model or args.model,
+        profile=args.profile,
+        codex_sandbox=args.codex_sandbox,
+    )
+    evaluator_options = AgentOptions(
+        agent=args.agent,
+        model=args.evaluator_model or args.model,
+        profile=args.profile,
+        codex_sandbox=args.codex_sandbox,
+    )
 
     plan_path = Path(args.plan)
     if not plan_path.is_absolute():
@@ -511,7 +577,11 @@ def main():
             print(f"Task {args.eval_only} not found in plan.")
             sys.exit(1)
         passed = run_evaluator(
-            args.eval_only, plan_path, auto_fix=args.fix, verbose=args.verbose
+            args.eval_only,
+            plan_path,
+            agent_options=evaluator_options,
+            auto_fix=args.fix,
+            verbose=args.verbose,
         )
         sys.exit(0 if passed else 1)
 
@@ -531,6 +601,7 @@ def main():
 
         if args.dry_run:
             print("\n[dry-run] Would execute this task. Prompt:")
+            print_dry_run_agent(implementer_options)
             print(build_prompt(plan, task, plan_path))
             print("\n[dry-run] " + "\n".join(commit_lifecycle_lines()))
             if not args.loop:
@@ -546,7 +617,7 @@ def main():
 
         # Run the implementation session
         prompt = build_prompt(plan, task, plan_path)
-        exit_code = run_claude_session(prompt)
+        exit_code = run_agent_session(prompt, implementer_options)
 
         if exit_code != 0:
             print(f"\nImplementation session exited with code {exit_code}")
@@ -565,7 +636,7 @@ def main():
             )
 
             fix_prompt = build_verify_fix_prompt(task, check_output, context_name)
-            fix_exit = run_claude_session(fix_prompt)
+            fix_exit = run_agent_session(fix_prompt, implementer_options)
             if fix_exit != 0:
                 print(f"\nFix session exited with code {fix_exit}")
                 break
@@ -601,7 +672,11 @@ def main():
         # Run evaluator with retry loop
         if not args.skip_eval:
             eval_passed = run_evaluator(
-                task["id"], plan_path, auto_fix=False, verbose=args.verbose
+                task["id"],
+                plan_path,
+                agent_options=evaluator_options,
+                auto_fix=False,
+                verbose=args.verbose,
             )
             retries = 0
             slug = plan.get("slug")
@@ -618,7 +693,7 @@ def main():
                     break
 
                 fix_prompt = build_fix_prompt(plan, task, feedback, plan_path)
-                fix_exit = run_claude_session(fix_prompt)
+                fix_exit = run_agent_session(fix_prompt, implementer_options)
                 if fix_exit != 0:
                     print(f"\nFix session exited with code {fix_exit}")
                     break
@@ -647,7 +722,11 @@ def main():
                 post_implementation_baseline = changed_paths()
 
                 eval_passed = run_evaluator(
-                    task["id"], plan_path, auto_fix=False, verbose=args.verbose
+                    task["id"],
+                    plan_path,
+                    agent_options=evaluator_options,
+                    auto_fix=False,
+                    verbose=args.verbose,
                 )
 
             if not eval_passed:

@@ -32,3 +32,23 @@ Session notes are appended here after each completed task.
 
 - Added `DESIGN.md` to the `AGENTS.md` "Where To Look" list so future agents consult the implemented design system tokens and visual guardrails during UI work.
 - Verification: `npm run verify:sandbox` passed.
+
+## 2026-07-16 - improve-homepage-shell-hero: Task 1 - Apply the homepage background and hero cutaway treatment
+
+- Added the homepage foundation background using `--color-background` with `/images/nnnoise.svg` as a low-opacity overlay.
+- Reworked the hero cutaway to use the same background/noise treatment with a clipped angled polygon matching the Figma rotated-rectangle transition.
+- Made the lower homepage section stack transparent so the shared page foundation remains continuous across the hero transition.
+- Added a Playwright CSS contract test that checks the background, noise layer, transparent stack, and cutaway polygon at desktop, tablet, and mobile widths.
+- Verification: `npm run verify` passed.
+- Evaluator verdict: PASS after 2 retries; earlier retries requested automated coverage and stronger responsive/clip-path assertions.
+- Bugs found: none.
+- Next task: update fixed navigation and top hero gradient behavior.
+
+## 2026-07-16 - improve-homepage-shell-hero: Task 1 feedback - Body background and direct hero clip
+
+- Moved the baked `/images/nnnoise.svg` background to `body` with `--color-background` and removed the old body radial gradients.
+- Removed homepage-owned noise/overlay styling so page sections let the body background show through directly.
+- Removed the `heroCutaway` element and applied the angled `clip-path` directly to the hero.
+- Tightened the Playwright CSS contract to verify body ownership, no gradient/blend/pseudo overlay, no higher-level background images, no cutaway node, and direct hero clipping at desktop, tablet, and mobile widths.
+- Verification: `npm run verify` passed.
+- Evaluator verdict: PASS after 1 retry; the retry strengthened negative assertions for gradients, overlays, and higher-level background ownership.

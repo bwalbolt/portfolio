@@ -79,7 +79,7 @@
 
 html {
   min-height: 100%;
-  background: var(--surface-page);
+  background: var(--color-background);
 }
 
 html:focus-within {
@@ -89,10 +89,8 @@ html:focus-within {
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at top center, rgba(124, 77, 255, 0.18), transparent 28rem),
-    radial-gradient(circle at 80% 20%, rgba(0, 176, 255, 0.12), transparent 24rem),
-    var(--surface-page);
+  background-color: var(--color-background);
+  background-image: url("/images/nnnoise.svg");
   color: var(--text-primary);
   font-family: var(--font-serif-family);
   text-rendering: optimizeLegibility;

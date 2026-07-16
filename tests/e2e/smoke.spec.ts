@@ -22,6 +22,79 @@ test("renders the homepage and contact form landmarks", async ({ page }) => {
   await expect(page.getByLabel("Message")).toBeVisible();
 });
 
+test("body owns the noisy background and the hero clips its bottom edge", async ({
+  page,
+}) => {
+  const viewports = [
+    { height: 900, name: "desktop", width: 1280 },
+    { height: 900, name: "tablet", width: 768 },
+    { height: 740, name: "mobile", width: 390 },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+
+    const shellStyles = await page.locator("main").evaluate((main) => {
+      const pageShell = main.parentElement;
+      const hero = main.querySelector("section");
+      const sectionStack = hero?.nextElementSibling;
+
+      if (!pageShell || !hero || !sectionStack) {
+        throw new Error("Homepage shell structure was not found");
+      }
+
+      const bodyStyle = getComputedStyle(document.body);
+      const bodyBeforeStyle = getComputedStyle(document.body, "::before");
+      const pageStyle = getComputedStyle(pageShell);
+      const pageBeforeStyle = getComputedStyle(pageShell, "::before");
+      const heroStyle = getComputedStyle(hero);
+      const stackStyle = getComputedStyle(sectionStack);
+
+      return {
+        bodyBackgroundBlendMode: bodyStyle.backgroundBlendMode,
+        bodyBackgroundColor: bodyStyle.backgroundColor,
+        bodyBackgroundImage: bodyStyle.backgroundImage,
+        bodyBeforeBackgroundImage: bodyBeforeStyle.backgroundImage,
+        bodyBeforeContent: bodyBeforeStyle.content,
+        heroClipPath: heroStyle.clipPath,
+        heroCutawayCount: hero.querySelectorAll('[class*="heroCutaway"]').length,
+        pageBackgroundColor: pageStyle.backgroundColor,
+        pageBackgroundImage: pageStyle.backgroundImage,
+        pageBeforeBackgroundImage: pageBeforeStyle.backgroundImage,
+        pageBeforeContent: pageBeforeStyle.content,
+        sectionStackBackgroundColor: stackStyle.backgroundColor,
+        sectionStackBackgroundImage: stackStyle.backgroundImage,
+      };
+    });
+
+    expect(shellStyles.bodyBackgroundColor, viewport.name).toBe("rgb(2, 20, 29)");
+    expect(shellStyles.bodyBackgroundImage, viewport.name).toContain(
+      "/images/nnnoise.svg",
+    );
+    expect(shellStyles.bodyBackgroundImage, viewport.name).not.toContain(
+      "gradient",
+    );
+    expect(shellStyles.bodyBackgroundBlendMode, viewport.name).toBe("normal");
+    expect(shellStyles.bodyBeforeBackgroundImage, viewport.name).toBe("none");
+    expect(shellStyles.bodyBeforeContent, viewport.name).toBe("none");
+    expect(shellStyles.pageBackgroundColor, viewport.name).toBe(
+      "rgba(0, 0, 0, 0)",
+    );
+    expect(shellStyles.pageBackgroundImage, viewport.name).toBe("none");
+    expect(shellStyles.pageBeforeBackgroundImage, viewport.name).toBe("none");
+    expect(shellStyles.pageBeforeContent, viewport.name).toBe("none");
+    expect(shellStyles.sectionStackBackgroundColor, viewport.name).toBe(
+      "rgba(0, 0, 0, 0)",
+    );
+    expect(shellStyles.sectionStackBackgroundImage, viewport.name).toBe("none");
+    expect(shellStyles.heroCutawayCount, viewport.name).toBe(0);
+    expect(shellStyles.heroClipPath, viewport.name).toMatch(
+      /^polygon\(0(px)? 0(px)?, 100% 0(px)?, 100% 84%, 0(px)? 100%\)$/,
+    );
+  }
+});
+
 for (const route of primaryRoutes) {
   test(`primary navigation reaches ${route.title}`, async ({ page }) => {
     await page.goto("/");

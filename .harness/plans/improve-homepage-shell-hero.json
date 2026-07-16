@@ -9,7 +9,7 @@
     {
       "id": "1",
       "title": "Apply the homepage background and hero cutaway treatment",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The main homepage background uses `--color-background` with `/images/nnnoise.svg` layered above it",
         "The existing hero cutaway no longer reveals an incorrect texture or mismatched background",

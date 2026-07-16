@@ -143,7 +143,6 @@ export function Homepage() {
             </h1>
             <p className={styles.heroScroll}>Scroll</p>
           </Container>
-          <div aria-hidden="true" className={styles.heroCutaway} />
         </section>
 
         <div className={styles.sectionStack}>

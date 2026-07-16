@@ -11,6 +11,7 @@
   min-height: 25rem;
   overflow: clip;
   background: var(--surface-footer);
+  clip-path: polygon(0 0, 100% 0, 100% 84%, 0 100%);
 }
 
 .heroBackground {
@@ -87,23 +88,11 @@
   text-transform: uppercase;
 }
 
-.heroCutaway {
-  position: absolute;
-  left: 50%;
-  bottom: -3.25rem;
-  width: clamp(31rem, 24.755rem + 25.489vw, 82rem);
-  height: clamp(5rem, 3.382rem + 6.607vw, 13.25rem);
-  background: var(--color-background);
-  transform: translateX(-50%) rotate(-4.8deg);
-}
-
 .sectionStack {
   display: grid;
   gap: var(--space-section);
   padding-block: 2.5rem var(--space-section);
-  background:
-    linear-gradient(180deg, #051723 0%, #041019 100%),
-    radial-gradient(circle at top, rgba(0, 176, 255, 0.08), transparent 22rem);
+  background: transparent;
 }
 
 .section {
@@ -664,7 +653,7 @@
     overflow: hidden;
     border: 1px solid var(--surface-panel-border);
     border-radius: 1.25rem 0.375rem 1.25rem 0.375rem;
-    background: rgba(5, 23, 35, 0.9);
+    background: var(--surface-panel);
     box-shadow: var(--shadow-panel);
     transform: skewX(-10deg);
     transform-origin: center;

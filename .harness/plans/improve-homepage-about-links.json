@@ -1,0 +1,73 @@
+{
+  "slug": "improve-homepage-about-links",
+  "title": "Align homepage read-more links and About Me section with Figma",
+  "type": "improvement",
+  "created": "2026-07-16",
+  "status": "planned",
+  "context": "The homepage root page at `/` should better match the existing Figma desktop and mobile frames. Figma sources: desktop https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=1-549&t=AL7MiQ7CLvTxT4Cf-0 and mobile https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=79-219&t=AL7MiQ7CLvTxT4Cf-0. Desktop should match closely, mobile should match the mobile frame, and tablet should scale from mobile using Figma auto-layout as a guide. This plan covers mid-page link affordances and the About Me section layout, imagery, copy, and skill cards.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Resize read-more arrows and align mobile view-all links",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Read-more arrow icons render at the size shown in the Figma frames",
+        "The insights `View all` link is centered on mobile",
+        "The case studies `View all` link is centered on mobile",
+        "Mobile spacing around both `View all` links matches the Figma mobile frame",
+        "Desktop spacing and alignment for the links remains consistent with the Figma desktop frame",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_components/primitives.tsx",
+        "src/app/(marketing)/_components/primitives.module.css",
+        "public/images/icons/Arrow_Right_SM.svg"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Rework About Me image, paragraph, and mobile layout",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The About Me main image no longer has a linear gradient overlay applied over the image itself",
+        "A separate blurred gradient element is positioned and sized around the paragraph content to match the Figma blurred element",
+        "The About Me content renders as a single paragraph",
+        "The portrait frame has the slanted appearance from Figma while the portrait image itself remains visually unwarped",
+        "On mobile, the portrait and About Me headline are centered",
+        "On mobile, the portrait size is reduced to match the Figma mobile frame more closely",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_content/site-content.ts",
+        "public/images/portrait-brent.png"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "3",
+      "title": "Restyle About Me skill cards to match Figma",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Skill cards have no border radius",
+        "Each skill card uses a left border that matches that skill's color",
+        "Skill cards match the paragraph width at applicable desktop and tablet sizes",
+        "Skill cards render at equal height regardless of copy differences",
+        "The skill-card layout remains readable and non-overlapping on mobile",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_content/site-content.ts"
+      ],
+      "depends_on": [
+        "2"
+      ]
+    }
+  ]
+}

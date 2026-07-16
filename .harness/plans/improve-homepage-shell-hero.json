@@ -1,0 +1,73 @@
+{
+  "slug": "improve-homepage-shell-hero",
+  "title": "Align homepage shell, navigation, and hero with Figma",
+  "type": "improvement",
+  "created": "2026-07-16",
+  "status": "planned",
+  "context": "The homepage root page at `/` should better match the existing Figma desktop and mobile frames. Figma sources: desktop https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=1-549&t=AL7MiQ7CLvTxT4Cf-0 and mobile https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=79-219&t=AL7MiQ7CLvTxT4Cf-0. Desktop should match closely, mobile should match the mobile frame, and tablet should scale from mobile using Figma auto-layout as a guide. This plan covers the foundational page background, fixed nav behavior, top gradient treatment, and hero sizing/positioning.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Apply the homepage background and hero cutaway treatment",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The main homepage background uses `--color-background` with `/images/nnnoise.svg` layered above it",
+        "The existing hero cutaway no longer reveals an incorrect texture or mismatched background",
+        "The hero uses a clip-path or equivalent CSS treatment to match the Figma cutaway shape based on the rotated rectangle",
+        "The background and cutaway treatment remain visually continuous across desktop, tablet, and mobile widths",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/globals.css",
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "public/images/nnnoise.svg"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Update fixed navigation and top hero gradient behavior",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The site nav is fixed over the homepage hero",
+        "On desktop, nav spacing matches the current layout intent while the hero fits underneath without content collision",
+        "On mobile, the nav is transparent at the top of the page",
+        "The hero includes a black-to-transparent top gradient that is fully black behind the nav element",
+        "On mobile, the nav gains a black background that fades in on scroll",
+        "Keyboard focus states remain visible and accessible with the fixed nav treatment",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/site-header.tsx",
+        "src/app/(marketing)/_components/site-header.module.css",
+        "src/app/(marketing)/_components/homepage.module.css"
+      ],
+      "depends_on": [
+        "1"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Match hero sizing, headline position, and scroll indicator spacing",
+      "status": "pending",
+      "acceptance_criteria": [
+        "On desktop, the hero height is 95vh",
+        "On desktop, the hero headline is centered in the hero area relative to the Figma composition",
+        "On desktop, the scroll indicator sits near the bottom of the hero as shown in Figma",
+        "On mobile, hero spacing follows the Figma mobile frame rather than viewport-height sizing",
+        "On mobile, the headline does not use a max-width that causes unwanted wrapping compared with Figma",
+        "The headline gradient stops visually match Figma more closely, including the appearance of stops spanning the total headline width rather than only individual gradient words",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css"
+      ],
+      "depends_on": [
+        "1",
+        "2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "slug": "improve-homepage-lower-sections",
+  "title": "Align testimonial, contact form, and footer with Figma",
+  "type": "improvement",
+  "created": "2026-07-16",
+  "status": "planned",
+  "context": "The homepage root page at `/` should better match the existing Figma desktop and mobile frames. Figma sources: desktop https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=1-549&t=AL7MiQ7CLvTxT4Cf-0 and mobile https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=79-219&t=AL7MiQ7CLvTxT4Cf-0. Desktop should match closely, mobile should match the mobile frame, and tablet should scale from mobile using Figma auto-layout as a guide. This plan covers the lower homepage sections: testimonial quote treatment, contact form background and mobile gutters, and footer sizing/content alignment.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Match testimonial quote styling across desktop and mobile",
+      "status": "pending",
+      "acceptance_criteria": [
+        "On desktop, the testimonial quote matches the Figma treatment with an approximately 7px white outside stroke",
+        "The quote gradient and stroke do not reduce readability or create visual artifacts at desktop sizes",
+        "On mobile, the testimonial quote has no outline",
+        "On mobile, the testimonial quote renders white instead of gradient text",
+        "The testimonial layout remains non-overlapping and accessible across desktop, tablet, and mobile widths",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "public/images/quote-christa.jpg"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Align contact form background and mobile gutters with Figma",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The contact form background uses the bg-flare asset anchored to the top right corner as shown in Figma",
+        "The contact background treatment scales cleanly without creating unwanted seams or overflow on desktop, tablet, or mobile",
+        "On mobile, the contact form gutter is only the site gutter",
+        "On mobile, the social links section has added padding so its text aligns with the availability card text below it",
+        "Contact form labels, inputs, buttons, and focus states remain accessible after the layout changes",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_components/primitives.tsx",
+        "src/app/(marketing)/_components/primitives.module.css",
+        "public/images/bg-flare.jpg",
+        "public/images/bg-flare.png"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "3",
+      "title": "Tighten footer height, typography, and mobile logo behavior",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Footer height is reduced to match Figma more closely, including removing the roughly 10px excess height",
+        "The `Brent Walbolt` footer text is larger to match Figma",
+        "There is no visual gap between the contact area and footer",
+        "The bottom padding on `.homepage-module__ISUhRG__sectionStack` or its source CSS no longer creates a contact-to-footer gap",
+        "On mobile, the footer logo is hidden",
+        "Footer content remains semantically correct and keyboard/focus accessible",
+        "`npm run verify` passes after the change"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_components/site-footer.tsx",
+        "src/app/(marketing)/_components/site-footer.module.css"
+      ],
+      "depends_on": [
+        "2"
+      ]
+    }
+  ]
+}

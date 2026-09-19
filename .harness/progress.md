@@ -62,3 +62,14 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS on first try.
 - Bugs found: none.
 - Next task: match hero sizing, headline position, and scroll indicator spacing.
+
+## 2026-09-18 - improve-homepage-shell-hero: Task 3 - Match hero sizing, headline position, and scroll indicator spacing
+
+- Matched the responsive hero composition to Figma with a fixed 400px mobile frame and a 95vh desktop hero, centering the headline within the desktop hero area.
+- Positioned the desktop scroll indicator near the Figma reference at the lower edge of the hero and kept it hidden on mobile.
+- Removed the mobile headline max-width constraint and moved gradient ownership to each full-width headline line so the highlighted words sample shared color stops rather than restarting their own gradients.
+- Added Playwright coverage for desktop hero geometry, exact gradient colors/stops, per-word gradient removal, and fixed mobile sizing across two viewport heights.
+- Verification: `CI=1 PORT=3102 npm run verify` passed with 10 Playwright tests. The isolated port avoided a user-owned server already listening on port 3000.
+- Evaluator verdict: PASS after 1 retry; the first review requested exact gradient-stop assertions and a second mobile viewport height.
+- Bugs found: none. The apparent mobile hydration failure on the default verification port was caused by Playwright reusing the existing port-3000 server while the build output changed.
+- Next task: none; the plan is complete.

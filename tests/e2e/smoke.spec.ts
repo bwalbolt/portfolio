@@ -131,6 +131,70 @@ test("desktop navigation stays fixed over the hero without colliding with conten
   expect(desktopHeroBackground).toContain("rgb(0, 0, 0) 54px");
 });
 
+test("hero geometry and headline gradients follow the responsive Figma composition", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 900, width: 1280 });
+  await page.goto("/");
+
+  const hero = page.locator("main > section").first();
+  const title = hero.getByRole("heading", { level: 1 });
+  const titleLines = title.locator('[class*="heroLine"]');
+  const highlights = title.locator('[class*="heroHighlight"]');
+  const scrollIndicator = hero.getByText("Scroll", { exact: true });
+
+  const [heroBox, titleBox, scrollBox] = await Promise.all([
+    hero.boundingBox(),
+    title.boundingBox(),
+    scrollIndicator.boundingBox(),
+  ]);
+
+  expect(heroBox).not.toBeNull();
+  expect(titleBox).not.toBeNull();
+  expect(scrollBox).not.toBeNull();
+  expect(heroBox?.height).toBeCloseTo(900 * 0.95, 0);
+  expect(
+    (titleBox?.y ?? 0) + (titleBox?.height ?? 0) / 2,
+  ).toBeCloseTo((heroBox?.y ?? 0) + (heroBox?.height ?? 0) / 2, 0);
+  expect((scrollBox?.y ?? 0) / (heroBox?.height ?? 1)).toBeGreaterThan(0.78);
+  expect((scrollBox?.y ?? 0) / (heroBox?.height ?? 1)).toBeLessThan(0.84);
+
+  await expect(titleLines).toHaveCount(2);
+  const lineGradients = await titleLines.evaluateAll((lines) =>
+    lines.map((line) => getComputedStyle(line).backgroundImage),
+  );
+  expect(lineGradients[0]).toContain(
+    "rgb(0, 176, 255) 20%, rgb(102, 208, 255) 35%, rgb(124, 77, 255) 50%",
+  );
+  expect(lineGradients[1]).toContain(
+    "rgb(124, 77, 255) 15%, rgb(221, 178, 255) 32%, rgb(228, 79, 255) 53%",
+  );
+  for (const highlight of await highlights.all()) {
+    await expect(highlight).toHaveCSS("background-image", "none");
+    await expect(highlight).toHaveCSS("color", "rgba(0, 0, 0, 0)");
+  }
+
+  for (const height of [667, 844]) {
+    await page.setViewportSize({ height, width: 390 });
+    await page.goto("/");
+
+    const mobileHero = page.locator("main > section").first();
+    const mobileTitle = mobileHero.getByRole("heading", { level: 1 });
+    const [mobileHeroBox, mobileTitleMaxWidth] = await Promise.all([
+      mobileHero.boundingBox(),
+      mobileTitle.evaluate((element) => getComputedStyle(element).maxWidth),
+    ]);
+
+    expect(mobileHeroBox?.height, `${height}px-tall mobile viewport`).toBeCloseTo(
+      400,
+      0,
+    );
+    expect(mobileTitleMaxWidth).toBe("none");
+    await expect(mobileTitle).toHaveCSS("width", "342px");
+    await expect(mobileHero.getByText("Scroll", { exact: true })).toBeHidden();
+  }
+});
+
 test("mobile navigation is transparent at the top and gains a scroll surface", async ({
   page,
 }) => {

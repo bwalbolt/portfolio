@@ -3,7 +3,7 @@
   "title": "Align homepage shell, navigation, and hero with Figma",
   "type": "improvement",
   "created": "2026-07-16",
-  "status": "planned",
+  "status": "complete",
   "context": "The homepage root page at `/` should better match the existing Figma desktop and mobile frames. Figma sources: desktop https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=1-549&t=AL7MiQ7CLvTxT4Cf-0 and mobile https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=79-219&t=AL7MiQ7CLvTxT4Cf-0. Desktop should match closely, mobile should match the mobile frame, and tablet should scale from mobile using Figma auto-layout as a guide. This plan covers the foundational page background, fixed nav behavior, top gradient treatment, and hero sizing/positioning.",
   "tasks": [
     {
@@ -50,7 +50,7 @@
     {
       "id": "3",
       "title": "Match hero sizing, headline position, and scroll indicator spacing",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "On desktop, the hero height is 95vh",
         "On desktop, the hero headline is centered in the hero area relative to the Figma composition",

@@ -8,7 +8,7 @@
   position: relative;
   display: grid;
   align-items: center;
-  min-height: 25rem;
+  height: 25rem;
   overflow: clip;
   background: var(--surface-footer);
   clip-path: polygon(0 0, 100% 0, 100% 84%, 0 100%);
@@ -35,17 +35,15 @@
   position: relative;
   z-index: 1;
   display: grid;
+  height: 100%;
   justify-items: center;
-  gap: var(--space-6);
-  padding-top: 6.25rem;
-  padding-bottom: 4.5rem;
+  align-items: center;
   text-align: center;
 }
 
 .heroTitle {
   display: grid;
-  gap: 0.1em;
-  max-width: 18rem;
+  width: 100%;
   font-family: var(--font-display-family);
   font-size: var(--type-hero);
   font-weight: 600;
@@ -55,32 +53,35 @@
 
 .heroLine {
   display: block;
+  background-clip: text;
+  color: transparent;
+}
+
+.heroLine:first-child {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-accent-blue) 20%,
+    var(--color-accent-blue-soft) 35%,
+    var(--color-accent-purple) 50%
+  );
+}
+
+.heroLine:last-child {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-accent-purple) 15%,
+    #ddb2ff 32%,
+    #e44fff 53%
+  );
+}
+
+.heroLine > span:not(.heroHighlightBlue, .heroHighlightPurple) {
+  color: var(--color-white);
 }
 
 .heroHighlightBlue,
 .heroHighlightPurple {
   font-weight: 800;
-}
-
-.heroHighlightBlue {
-  background: linear-gradient(
-    90deg,
-    var(--color-accent-blue) 33%,
-    var(--color-accent-blue-soft) 42%,
-    var(--color-accent-purple) 69%
-  );
-  background-clip: text;
-  color: transparent;
-}
-
-.heroHighlightPurple {
-  background: linear-gradient(
-    90deg,
-    var(--color-accent-purple) 20%,
-    #ddb2ff 40%,
-    #e44fff 80%
-  );
-  background-clip: text;
   color: transparent;
 }
 
@@ -592,7 +593,7 @@
 
 @media (min-width: 48rem) {
   .hero {
-    min-height: 45rem;
+    height: 95vh;
   }
 
   .heroBackground {
@@ -608,9 +609,7 @@
   }
 
   .heroInner {
-    gap: 3rem;
-    padding-top: 5rem;
-    padding-bottom: 6rem;
+    position: relative;
   }
 
   .heroTitle {
@@ -620,6 +619,10 @@
 
   .heroScroll {
     display: block;
+    position: absolute;
+    bottom: 16%;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .sectionStack {

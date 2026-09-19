@@ -28,7 +28,7 @@
     {
       "id": "2",
       "title": "Update fixed navigation and top hero gradient behavior",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The site nav is fixed over the homepage hero",
         "On desktop, nav spacing matches the current layout intent while the hero fits underneath without content collision",

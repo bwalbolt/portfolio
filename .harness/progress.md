@@ -52,3 +52,13 @@ Session notes are appended here after each completed task.
 - Tightened the Playwright CSS contract to verify body ownership, no gradient/blend/pseudo overlay, no higher-level background images, no cutaway node, and direct hero clipping at desktop, tablet, and mobile widths.
 - Verification: `npm run verify` passed.
 - Evaluator verdict: PASS after 1 retry; the retry strengthened negative assertions for gradients, overlays, and higher-level background ownership.
+
+## 2026-09-18 - improve-homepage-shell-hero: Task 2 - Update fixed navigation and top hero gradient behavior
+
+- Fixed the homepage navigation over the hero with a 54px bar matching the Figma composition while leaving non-homepage headers in normal document flow.
+- Kept the mobile header transparent at the top, added a passive scroll-aware black surface transition, and added a hero-owned black-to-transparent gradient that remains fully black behind the navigation.
+- Expanded Playwright coverage for desktop spacing and collision avoidance, mobile transparent/scrolled states, the hero gradient, mobile menu hydration, and visible keyboard focus.
+- Verification: `PORT=3101 npm run harness:verify` and evaluator verification via `CI=1 PORT=3102 npm run verify` passed with 9 Playwright tests. A pre-existing server on port 3000 was left untouched.
+- Evaluator verdict: PASS on first try.
+- Bugs found: none.
+- Next task: match hero sizing, headline position, and scroll indicator spacing.

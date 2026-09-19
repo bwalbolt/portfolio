@@ -6,14 +6,23 @@
 }
 
 .headerOverlay {
-  position: absolute;
+  position: fixed;
   inset: 0 0 auto;
-  background: rgba(0, 0, 0, 0.92);
+  background: transparent;
+  border-bottom-color: transparent;
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.headerOverlayScrolled {
+  background: var(--color-black);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .bar {
   width: min(calc(100% - (var(--page-gutter) * 2)), var(--content-width));
-  min-height: 5rem;
+  min-height: 3.375rem;
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -139,8 +148,13 @@
 }
 
 @media (min-width: 48rem) {
+  .headerOverlay {
+    background: var(--color-black);
+    border-bottom-color: rgba(255, 255, 255, 0.02);
+  }
+
   .bar {
-    min-height: 4.5rem;
+    min-height: 3.375rem;
   }
 
   .brand {

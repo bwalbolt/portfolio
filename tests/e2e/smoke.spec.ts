@@ -95,6 +95,64 @@ test("body owns the noisy background and the hero clips its bottom edge", async 
   }
 });
 
+test("desktop navigation stays fixed over the hero without colliding with content", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 900, width: 1280 });
+  await page.goto("/");
+
+  const banner = page.getByRole("banner");
+  const navigationBar = banner.locator("div").first();
+  const hero = page.locator("main > section").first();
+  const heroTitle = hero.getByRole("heading", { level: 1 });
+
+  await expect(banner).toHaveCSS("position", "fixed");
+  await expect(banner).toHaveCSS("background-color", "rgb(0, 0, 0)");
+
+  const desktopLayout = await Promise.all([
+    navigationBar.boundingBox(),
+    hero.boundingBox(),
+    heroTitle.boundingBox(),
+  ]);
+  const [navigationBarBox, heroBox, titleBox] = desktopLayout;
+
+  expect(navigationBarBox).not.toBeNull();
+  expect(heroBox).not.toBeNull();
+  expect(titleBox).not.toBeNull();
+  expect(navigationBarBox?.height).toBeCloseTo(54, 0);
+  expect(heroBox?.y).toBe(0);
+  expect(titleBox?.y).toBeGreaterThan(navigationBarBox?.height ?? 0);
+
+  const desktopHeroBackground = await hero
+    .locator('[class*="heroBackground"]')
+    .evaluate((element) => getComputedStyle(element).backgroundImage);
+  expect(desktopHeroBackground).toContain("linear-gradient");
+  expect(desktopHeroBackground).toContain("rgb(0, 0, 0) 0px");
+  expect(desktopHeroBackground).toContain("rgb(0, 0, 0) 54px");
+});
+
+test("mobile navigation is transparent at the top and gains a scroll surface", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 740, width: 390 });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const banner = page.getByRole("banner");
+
+  await expect(banner).toHaveCSS("position", "fixed");
+  await expect(banner).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+
+  const menuButton = banner.getByRole("button", { name: "Toggle navigation" });
+  await menuButton.click();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "true");
+  await menuButton.click();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+
+  await page.evaluate(() => window.scrollTo({ behavior: "instant", top: 160 }));
+  await expect.poll(async () => page.evaluate(() => window.scrollY)).toBeGreaterThan(8);
+  await expect(banner).toHaveCSS("background-color", "rgb(0, 0, 0)");
+});
+
 for (const route of primaryRoutes) {
   test(`primary navigation reaches ${route.title}`, async ({ page }) => {
     await page.goto("/");
@@ -126,6 +184,9 @@ test("keyboard users can reach primary navigation and the contact CTA", async ({
   await expect(
     banner.getByRole("link", { name: "Brent Walbolt" }),
   ).toBeFocused();
+  await expect(
+    banner.getByRole("link", { name: "Brent Walbolt" }),
+  ).not.toHaveCSS("box-shadow", "none");
 
   await page.keyboard.press("Tab");
   await expect(

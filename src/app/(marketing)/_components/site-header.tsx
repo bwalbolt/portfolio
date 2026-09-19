@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { NavigationItem } from "../_content/site-content";
 import { SITE_NAME } from "../_content/site-content";
@@ -22,13 +22,37 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!overlay) {
+      return;
+    }
+
+    const updateScrolledState = () => {
+      setIsScrolled(window.scrollY > 8);
+    };
+
+    updateScrolledState();
+    window.addEventListener("scroll", updateScrolledState, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateScrolledState);
+    };
+  }, [overlay]);
 
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
 
   return (
-    <header className={cx(styles.header, overlay && styles.headerOverlay)}>
+    <header
+      className={cx(
+        styles.header,
+        overlay && styles.headerOverlay,
+        overlay && isScrolled && styles.headerOverlayScrolled,
+      )}
+    >
       <div className={styles.bar}>
         <Link className={styles.brand} href="/" onClick={closeMenu}>
           {SITE_NAME}

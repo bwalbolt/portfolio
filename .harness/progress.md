@@ -84,3 +84,14 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS on the completed implementation. The evaluator also forced a failure and confirmed cleanup/restoration still ran; TDD was WARN because runtime behavior was exercised directly rather than through a dedicated wrapper unit test.
 - Bugs found: custom Next.js `distDir` builds rewrite generated TypeScript config references unless explicitly restored.
 - Next task: none.
+
+## 2026-09-20 - improve-homepage-about-links: Task 1 - Resize read-more arrows and align mobile view-all links
+
+- Sized homepage read-more arrows to 16px with a 4px label gap, reusing the existing glyph that matches the Figma asset.
+- Centered both mobile View all links with a 24px gap above and 8px label/icon gap. Matched callout separation to 64px on mobile and 48px on desktop, with 80px before About Me.
+- Used Figma design context and screenshots from desktop `1:549` and mobile `79:219` in file `0J2JF0nYrI8EJrttdHNes4`. Kept unrelated section spacing and shared icon styles intact.
+- Added browser geometry assertions at 390, 640, 768, and 1280px for arrow size, link visibility/alignment, and spacing.
+- Verification: baseline passed; implementation and independent evaluator `npm run verify` passed with 11 Playwright tests. The sandboxed CSS build stalled; rerunning full verification with narrow escalation passed. `git diff --check` passed.
+- Evaluator verdict: PASS on first try; frontend implementation and regression coverage were added together, with a non-blocking TDD history warning.
+- Bugs found: none.
+- Next task: task 2, rework About Me image, paragraph, and mobile layout. Tasks 2 and 3 remain pending.

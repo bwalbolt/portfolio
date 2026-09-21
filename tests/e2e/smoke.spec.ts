@@ -269,3 +269,47 @@ test("keyboard users can reach primary navigation and the contact CTA", async ({
   await page.keyboard.press("Tab");
   await expect(banner.getByRole("link", { name: "Get in Touch" })).toBeFocused();
 });
+
+test("homepage links follow Figma sizing and responsive spacing", async ({ page }) => {
+  for (const width of [390, 640, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    const sections = [page.locator("#insights"), page.locator("#case-studies")];
+    for (const section of sections) {
+      const arrows = section.getByRole("link", { name: "Read more", exact: true }).locator("svg");
+      for (const arrow of await arrows.all()) {
+        if (await arrow.isVisible()) {
+          await expect(arrow).toHaveCSS("width", "16px");
+          await expect(arrow).toHaveCSS("height", "16px");
+        }
+      }
+      const headingLink = section.getByRole("link", { name: "View All", exact: true });
+      const mobileLink = section.getByRole("link", { name: /View All Insights|View More Work/ });
+      const grid = section.locator("ul").first();
+      const gridBox = (await grid.boundingBox())!;
+      if (width < 768) {
+        await expect(headingLink).toBeHidden();
+        await expect(mobileLink).toBeVisible();
+        const linkBox = (await mobileLink.boundingBox())!;
+        expect(linkBox.x + linkBox.width / 2).toBeCloseTo(width / 2, 1);
+        expect(linkBox.y - gridBox.y - gridBox.height).toBeCloseTo(24, 1);
+        await expect(mobileLink).toHaveCSS("gap", "8px");
+      } else {
+        await expect(mobileLink).toBeHidden();
+        await expect(headingLink).toBeVisible();
+        const linkBox = (await headingLink.boundingBox())!;
+        expect(linkBox.x + linkBox.width).toBeCloseTo(gridBox.x + gridBox.width, 1);
+        const headingBox = (await section.getByRole("heading", { level: 2 }).boundingBox())!;
+        expect(linkBox.y + linkBox.height).toBeCloseTo(headingBox.y + headingBox.height, 1);
+        expect(gridBox.y - headingBox.y - headingBox.height).toBeCloseTo(24, 1);
+      }
+    }
+    const insights = (await sections[0].boundingBox())!;
+    const studies = (await sections[1].boundingBox())!;
+    const about = (await page.locator("#about").boundingBox())!;
+    expect(studies.y - insights.y - insights.height).toBeCloseTo(width < 768 ? 64 : 48, 1);
+    expect(about.y - studies.y - studies.height).toBeCloseTo(80, 1);
+  }
+});

@@ -1,12 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const isHarnessRun = process.env.HARNESS === "1";
 const baseURLFromEnv = process.env.BASE_URL;
 const port =
   process.env.PORT ??
   (baseURLFromEnv ? new URL(baseURLFromEnv).port : undefined) ??
-  (isHarnessRun ? "3100" : "3000");
+  "3100";
 const baseURL = baseURLFromEnv ?? `http://127.0.0.1:${port}`;
+const reuseExistingServer =
+  process.env.PLAYWRIGHT_REUSE_EXISTING_SERVER === "1";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -21,7 +22,7 @@ export default defineConfig({
   webServer: {
     command: `npm run start -- -H 127.0.0.1 -p ${port}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI && !isHarnessRun,
+    reuseExistingServer,
     timeout: 120_000,
   },
   projects: [

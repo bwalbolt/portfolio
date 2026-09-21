@@ -73,3 +73,14 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS after 1 retry; the first review requested exact gradient-stop assertions and a second mobile viewport height.
 - Bugs found: none. The apparent mobile hydration failure on the default verification port was caused by Playwright reusing the existing port-3000 server while the build output changed.
 - Next task: none; the plan is complete.
+
+## 2026-09-20 - fix-isolated-verification: Task 1 - Isolate verification runtime and document narrow approvals
+
+- Replaced the chained verification script with a Node wrapper that builds into `.next-verify`, selects an available loopback port, and launches Playwright without attaching to an existing server.
+- Added success/failure cleanup for the isolated build and snapshot/restore protection for `next-env.d.ts` and `tsconfig.json`, which Next.js can rewrite when using a custom `distDir`.
+- Made Playwright server reuse opt-in via `PLAYWRIGHT_REUSE_EXISTING_SERVER=1` and updated agent, architecture, and harness documentation around the safe defaults.
+- Documented a narrow Codex rule for the repository's named npm verification scripts, explicitly avoiding broad `npm`, `node`, or `node -e` allowlists and full-access mode.
+- Verification: `npm run verify` passed with 10 Playwright tests on dynamically selected ports while the existing port-3000 server retained PID 76918; `.next-verify` was removed and generated config hashes were unchanged.
+- Evaluator verdict: PASS on the completed implementation. The evaluator also forced a failure and confirmed cleanup/restoration still ran; TDD was WARN because runtime behavior was exercised directly rather than through a dedicated wrapper unit test.
+- Bugs found: custom Next.js `distDir` builds rewrite generated TypeScript config references unless explicitly restored.
+- Next task: none.

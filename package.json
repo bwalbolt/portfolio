@@ -10,13 +10,13 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "verify": "npm run lint && npm run typecheck && npm run build && npm run test:e2e",
-    "verify:sandbox": "npm run lint && npm run typecheck && npm run build:sandbox",
+    "verify": "node scripts/verify.mjs",
+    "verify:sandbox": "node scripts/verify.mjs --sandbox",
     "harness:build": "npm run build",
     "harness:check:sandbox": "npm run verify:sandbox",
     "harness:start": "next start -H 127.0.0.1 -p ${PORT:-3100}",
     "harness:test:e2e": "HARNESS=1 playwright test",
-    "harness:verify": "npm run lint && npm run typecheck && npm run harness:build && npm run harness:test:e2e"
+    "harness:verify": "npm run verify"
   },
   "dependencies": {
     "next": "16.2.2",

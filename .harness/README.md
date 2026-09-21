@@ -41,6 +41,13 @@ npm run test:e2e
 
 Playwright uses `npm run start` against the production build. Run `npm run build` before `npm run test:e2e` when executing the smoke tests directly.
 
+The default verification command is self-isolating:
+
+- it builds into the dedicated `.next-verify` directory instead of `.next`, so a running `next dev` or `next start` process is not invalidated;
+- it asks the operating system for an available loopback port instead of assuming port 3000;
+- it forces Playwright to start the production server for that build rather than reusing an unrelated process; and
+- it removes the isolated build directory and restores Next.js-generated config files after either success or failure.
+
 In Codex's managed sandbox, Turbopack can fail during `next build` because its worker path attempts a local port bind. Use the sandbox-friendly non-browser check for fast feedback:
 
 ```bash
@@ -50,18 +57,46 @@ npm run harness:check:sandbox
 
 These commands use `next build --webpack`, which is a supported Next.js 16 build mode, and avoid starting a browser server. They do not replace full browser verification.
 
-For harness work, use the isolated runtime scripts:
+For targeted harness browser work, use an explicit free port:
 
 ```bash
-PORT=3100 npm run harness:verify
 PORT=3101 npm run harness:test:e2e
 ```
 
-Harness Playwright runs set `HARNESS=1`, target `BASE_URL` or `http://127.0.0.1:$PORT`, and do not reuse an existing server. Use a unique port per git worktree so each agent drives the app instance for its own checkout.
+`npm run harness:verify` is an alias of `npm run verify` and therefore chooses its own available port. Direct Playwright runs target `BASE_URL` or `http://127.0.0.1:$PORT` and refuse to reuse an existing server by default. Set `PLAYWRIGHT_REUSE_EXISTING_SERVER=1` only for an intentional test against a server you started yourself.
 
 Playwright keeps browser QA evidence in ignored output directories: traces are retained on first retry and screenshots are captured on failure. For UI bugs, reproduce the issue with Playwright, inspect the DOM or screenshot evidence, implement the fix, then re-run the same browser path.
 
-Full browser verification needs a process that can bind to a local port. For interactive Codex sessions, grant narrow approval to `npm run harness:verify` or `npm run harness:test:e2e` when prompted. For future headless execution, run the harness in an environment/profile where those exact commands are allowlisted rather than broadly unsandboxing arbitrary shell commands.
+Full browser verification needs permission to bind a loopback port and launch Chromium. Keep Codex in `workspace-write` / on-request mode and add a narrow command rule instead of enabling full access. For example, place this in `~/.codex/rules/default.rules`, then restart Codex:
+
+```python
+prefix_rule(
+    pattern = ["npm", "run", ["verify", "verify:sandbox", "harness:verify", "harness:test:e2e", "test:e2e"]],
+    decision = "allow",
+    justification = "Allow this portfolio's test and verification scripts outside the sandbox",
+    match = [
+        "npm run verify",
+        "npm run verify:sandbox",
+        "npm run harness:verify",
+        "npm run harness:test:e2e",
+        "npm run test:e2e",
+    ],
+    not_match = [
+        "npm run start",
+        "node -e arbitrary-code",
+    ],
+)
+```
+
+Check the rule before relying on it:
+
+```bash
+codex execpolicy check --pretty \
+  --rules ~/.codex/rules/default.rules \
+  -- npm run verify
+```
+
+Codex rules match argument prefixes, so keep the allowed npm script names specific and do not allow broad prefixes such as `npm`, `node`, or `node -e`. See the [official Codex rules documentation](https://learn.chatgpt.com/docs/agent-configuration/rules).
 
 ## Interactive Workflow
 
@@ -89,7 +124,7 @@ python3 .harness/runner.py --plan .harness/plans/{slug}.json --eval-only 1
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --agent codex --model gpt-5.5
 ```
 
-The runner verifies with `npm run verify`, runs the evaluator, and only marks a task complete after evaluator PASS. If verification or evaluation fails after retries, it resets the task to `pending` and exits non-zero.
+The runner verifies with the isolated `npm run verify`, runs the evaluator, and only marks a task complete after evaluator PASS. If verification or evaluation fails after retries, it resets the task to `pending` and exits non-zero.
 
 The runner requires a clean worktree before execution and creates local-only commits with its own small git adapter:
 

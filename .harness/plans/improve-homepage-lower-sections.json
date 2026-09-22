@@ -3,15 +3,16 @@
   "title": "Align testimonial, contact form, and footer with Figma",
   "type": "improvement",
   "created": "2026-07-16",
-  "status": "planned",
+  "status": "in_progress",
   "context": "The homepage root page at `/` should better match the existing Figma desktop and mobile frames. Figma sources: desktop https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=1-549&t=AL7MiQ7CLvTxT4Cf-0 and mobile https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=79-219&t=AL7MiQ7CLvTxT4Cf-0. Desktop should match closely, mobile should match the mobile frame, and tablet should scale from mobile using Figma auto-layout as a guide. This plan covers the lower homepage sections: testimonial quote treatment, contact form background and mobile gutters, and footer sizing/content alignment.",
   "tasks": [
     {
       "id": "1",
       "title": "Match testimonial quote styling across desktop and mobile",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "On desktop, the testimonial quote matches the Figma treatment with an approximately 7px white outside stroke",
+        "The desktop outline is fully opaque and precisely aligned with the gradient text layer",
         "The quote gradient and stroke do not reduce readability or create visual artifacts at desktop sizes",
         "On mobile, the testimonial quote has no outline",
         "On mobile, the testimonial quote renders white instead of gradient text",

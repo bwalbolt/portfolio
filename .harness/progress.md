@@ -133,3 +133,22 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS after 1 retry; the first review found that equal height only held on desktop, prompting equal implicit rows and all-breakpoint height assertions.
 - Bugs found: none.
 - Next task: none; the plan is complete.
+
+## 2026-09-22 - improve-homepage-lower-sections: Task 1 - Match testimonial quote styling across desktop and mobile
+
+- Matched the Figma testimonial treatment with a mobile-first white quote and a desktop-only gradient fill plus approximately 7px white outline. Kept the outline in a separate aria-hidden layer so the browser cannot paint it over the readable gradient.
+- Matched desktop attribution sizing, kept tablet on the mobile quote treatment until the 62rem desktop bucket, and added padding/spacing that keeps the quote and attribution separated across responsive layouts.
+- Added browser coverage at 390, 768, 991, 992, and 1280px for quote colors, outline state, stroke size, breakpoint ownership, typography, vertical separation, and horizontal overflow. Narrowly repaired the stale About paragraph locator that made the baseline verification fail after the prior skill-card changes.
+- Verification: `npm run verify` passed lint, TypeScript, production build, and all 15 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS after 2 retries; the first review found the direct stroke obscured the gradient, and the follow-up review requested softer outline/readability and breakpoint-edge coverage. The final evaluator found no blocking issues; TDD chronology remains a warning because changes are uncommitted.
+- Bugs found: none.
+- Next task: task 2, align contact form background and mobile gutters with Figma.
+
+## 2026-09-22 - improve-homepage-lower-sections: Task 1 feedback - Align quote outline and restore full opacity
+
+- Corrected the desktop outline offset caused by positioning the absolute outline layer at the parent edge while the gradient layer was inset by 7px of padding. The outline now uses the same 7px inset, so both text layers share identical geometry.
+- Removed the unjustified `0.82` opacity; the Figma white stroke now renders at full opacity.
+- Added browser assertions at the 62rem boundary and desktop width that compare the outline and gradient bounding boxes exactly and require opacity `1`.
+- Verification: `npm run verify` passed lint, TypeScript, production build, and all 15 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first review with no issues.
+- Next task: task 2, align contact form background and mobile gutters with Figma.

@@ -234,7 +234,12 @@ export function Homepage() {
 
               <figure className={styles.quoteBlock}>
                 <blockquote className={styles.quoteText}>
-                  “{TESTIMONIAL.quote}”
+                  <span aria-hidden="true" className={styles.quoteOutline}>
+                    “{TESTIMONIAL.quote}”
+                  </span>
+                  <span className={styles.quoteGradient}>
+                    “{TESTIMONIAL.quote}”
+                  </span>
                 </blockquote>
                 <figcaption className={styles.quoteMeta}>
                   <Image

@@ -446,27 +446,27 @@
   gap: 1.5rem;
   justify-items: center;
   margin-top: 1rem;
+  padding-block: 2.5rem 1rem;
   text-align: center;
 }
 
 .quoteText {
+  position: relative;
   max-width: 61rem;
-  background: linear-gradient(
-    90deg,
-    var(--color-accent-blue) 0%,
-    var(--color-accent-purple) 25%,
-    var(--color-accent-pink) 50%,
-    #ee738b 80%,
-    var(--color-accent-orange) 100%
-  );
-  background-clip: text;
-  color: transparent;
   font-family: var(--font-display-family);
   font-size: var(--type-quote);
   font-weight: 700;
   line-height: 1.05;
-  letter-spacing: -0.03em;
-  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  letter-spacing: -0.075rem;
+}
+
+.quoteOutline {
+  display: none;
+}
+
+.quoteGradient {
+  display: block;
+  color: var(--color-white);
 }
 
 .quoteMeta {
@@ -815,6 +815,63 @@
 }
 
 @media (width >= 62rem) {
+  /* Keep the heavier Figma outline in the desktop bucket; tablet stays on the mobile treatment while its type scales fluidly. */
+  .quoteBlock {
+    gap: 2rem;
+    padding-block: 0;
+  }
+
+  .quoteText {
+    /* Separate the outline from the gradient so the browser cannot paint the stroke over the readable fill. */
+    padding: 0.4375rem;
+  }
+
+  .quoteOutline {
+    display: block;
+    position: absolute;
+    z-index: 0;
+    inset: 0.4375rem;
+    color: var(--color-white);
+    -webkit-text-stroke: 0.8rem var(--color-white);
+    paint-order: stroke fill;
+    pointer-events: none;
+  }
+
+  .quoteGradient {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(
+      90deg,
+      var(--color-accent-blue) 0%,
+      var(--color-accent-purple) 25%,
+      var(--color-accent-pink) 50%,
+      #ee738b 80%,
+      var(--color-accent-orange) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .quoteAvatar {
+    width: 3.125rem;
+    height: 3.125rem;
+  }
+
+  .quoteName {
+    font-size: 1.5rem;
+  }
+
+  .quoteSource {
+    font-size: 1.125rem;
+  }
+
+  .quoteSource svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
   .skillGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;

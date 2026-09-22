@@ -336,7 +336,7 @@ test("About Me keeps its blur local and its portrait unwarped across layouts", a
     const frame = portrait.locator("..");
     const title = about.getByRole("heading", { name: "About Me", exact: true });
     const copy = title.locator("..");
-    const paragraph = copy.locator("p");
+    const paragraph = copy.locator("p").filter({ hasText: "Senior Design Engineer" });
     await expect(paragraph).toHaveCount(1);
     await expect(paragraph).toContainText("experiences. Expert at translating");
     await expect(paragraph).toContainText("modern web technologies.");
@@ -428,6 +428,81 @@ test("About Me skill cards follow the responsive Figma layout", async ({ page })
     }
 
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+  }
+});
+
+test("testimonial quote uses the responsive Figma treatment without overlap", async ({ page }) => {
+  const viewports = [
+    { width: 390, height: 900, name: "mobile" },
+    { width: 768, height: 900, name: "tablet" },
+    { width: 991, height: 900, name: "tablet-edge" },
+    { width: 992, height: 900, name: "desktop-edge" },
+    { width: 1280, height: 900, name: "desktop" },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    const quote = page.locator("#about blockquote");
+    const quoteOutline = quote.locator('span[aria-hidden="true"]');
+    const quoteGradient = quote.locator('span:not([aria-hidden="true"])');
+    const attribution = page.locator("#about figcaption");
+    const quoteStyles = await quoteGradient.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        backgroundImage: style.backgroundImage,
+        color: style.color,
+        fontSize: style.fontSize,
+        letterSpacing: style.letterSpacing,
+        stroke: style.webkitTextStroke,
+      };
+    });
+    const outlineStyles = await quoteOutline.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        display: style.display,
+        opacity: style.opacity,
+        stroke: style.webkitTextStroke,
+      };
+    });
+    const quoteBox = (await quote.boundingBox())!;
+    const attributionBox = (await attribution.boundingBox())!;
+
+    if (viewport.width < 992) {
+      expect(quoteStyles.backgroundImage, viewport.name).toBe("none");
+      expect(quoteStyles.color, viewport.name).toBe("rgb(255, 255, 255)");
+      expect(Number.parseFloat(quoteStyles.fontSize), viewport.name).toBeGreaterThanOrEqual(24);
+      expect(Number.parseFloat(quoteStyles.fontSize), viewport.name).toBeLessThan(48);
+      expect(outlineStyles.display, viewport.name).toBe("none");
+    } else {
+      expect(quoteStyles.backgroundImage, viewport.name).toContain("linear-gradient");
+      expect(quoteStyles.color, viewport.name).toBe("rgba(0, 0, 0, 0)");
+      const fontSize = Number.parseFloat(quoteStyles.fontSize);
+      expect(fontSize, viewport.name).toBeGreaterThan(24);
+      expect(fontSize, viewport.name).toBeLessThanOrEqual(48);
+      expect(outlineStyles.display, viewport.name).toBe("block");
+      expect(outlineStyles.opacity, viewport.name).toBe("1");
+      expect(outlineStyles.stroke, viewport.name).toContain("7px");
+      const outlineBox = (await quoteOutline.boundingBox())!;
+      const gradientBox = (await quoteGradient.boundingBox())!;
+      expect(outlineBox.x, viewport.name).toBeCloseTo(gradientBox.x, 1);
+      expect(outlineBox.y, viewport.name).toBeCloseTo(gradientBox.y, 1);
+      expect(outlineBox.width, viewport.name).toBeCloseTo(gradientBox.width, 1);
+      expect(outlineBox.height, viewport.name).toBeCloseTo(gradientBox.height, 1);
+      if (viewport.width >= 1280) {
+        expect(Number.parseFloat(quoteStyles.fontSize), viewport.name).toBeCloseTo(48, 0);
+      }
+    }
+
+    expect(quoteStyles.letterSpacing, viewport.name).toBe("-1.2px");
+    expect(attributionBox.y, viewport.name).toBeGreaterThanOrEqual(
+      quoteBox.y + quoteBox.height,
+    );
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), viewport.name).toBe(
+      viewport.width,
+    );
   }
 });
 

@@ -1,0 +1,44 @@
+{
+  "slug": "improve-responsive-breakpoints",
+  "title": "Adopt a shared responsive breakpoint strategy",
+  "type": "improvement",
+  "created": "2026-09-21",
+  "status": "complete",
+  "context": "Prefer shared breakpoint buckets with documented bespoke exceptions, using native CSS and review rather than new dependencies or automated enforcement.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Document and normalize responsive breakpoints",
+      "status": "complete",
+      "acceptance_criteria": [
+        "DESIGN.md defines the 30rem, 48rem, 62rem, and 80rem thresholds, mobile-first range syntax, exact-boundary ownership, fluid sizing, image sizes alignment, and commented bespoke exceptions; AGENTS.md links to the strategy.",
+        "Existing width queries use native range syntax; existing 48rem transitions remain, About desktop layout and portrait sizes switch at 62rem, and the mobile mosaic applies only below 30rem.",
+        "No new dependencies, breakpoint checker, public component APIs, browser JavaScript, or unnecessary 80rem overrides are introduced.",
+        "Browser coverage checks below and at 480, 768, 992, and 1280 pixels for navigation visibility, About layout and artwork selection, and horizontal overflow; image-loading assertions reflect the new boundaries.",
+        "Representative mobile, tablet, and desktop screenshots are reviewed, and npm run verify passes."
+      ],
+      "files": [
+        "DESIGN.md",
+        "AGENTS.md",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/primitives.module.css",
+        "src/app/(marketing)/_components/site-header.module.css",
+        "src/app/(marketing)/_components/site-footer.module.css",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Remove redundant above-breakpoint test iterations",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Both responsive test loops use only 390, 479, 480, 767, 768, 991, 992, 1279, and 1280 pixels, preserving existing assertions.",
+        "The width-list comment matches the reduced coverage and npm run verify passes."
+      ],
+      "files": ["tests/e2e/smoke.spec.ts"],
+      "depends_on": ["1"]
+    }
+  ]
+}

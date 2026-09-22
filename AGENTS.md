@@ -14,6 +14,7 @@ This repository is a senior front-end portfolio. Code should be polished enough 
 - **Accessibility:** Meet WCAG 2.2 AA. Use semantic HTML, visible focus states, keyboard-friendly interactions, labels, landmarks, and reduced-motion fallbacks.
 - **TypeScript:** Keep types strict. Do not introduce `any`; define clear interfaces and reusable domain types where they help comprehension.
 - **Craft:** Prefer small, legible components, local state, vanilla CSS modules, and existing project patterns over broad new abstractions.
+- **Responsive layout:** Follow the breakpoint strategy in [DESIGN.md](DESIGN.md#responsive-breakpoints): prefer `30rem`, `48rem`, `62rem`, and `80rem`, mobile-first styles, and native range queries with exact thresholds in the larger bucket. Document bespoke thresholds with a nearby comment explaining the specific text, image, or layout issue, and keep image `sizes` conditions aligned with layout changes.
 - **Motion/UI:** Keep the lightly game-inspired feel professional, intentional, performant, and non-blocking.
 
 ## Where To Look

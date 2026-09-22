@@ -304,7 +304,7 @@
   background-size: max(100%, 110rem) auto;
 }
 
-@media (max-width: 30rem) {
+@media (width < 30rem) {
   .aboutSection::before {
     background-image: url("/images/mosaic-broken-mobile.png");
     background-size: 100% auto;
@@ -383,7 +383,7 @@
   line-height: var(--line-body);
 }
 
-@media (min-width: 64rem) {
+@media (width >= 62rem) {
   .aboutSection::before {
     background-size: 100% auto;
   }
@@ -664,7 +664,7 @@
   line-height: 1.4;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
   .hero {
     height: 95vh;
   }

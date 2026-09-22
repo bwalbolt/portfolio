@@ -58,7 +58,7 @@ function CaseStudyPanel({ study }: { study: CaseStudyCard }) {
           <Image
             alt=""
             className={styles.caseArtworkDesktop}
-            sizes="(min-width: 48rem) 18rem, 11rem"
+            sizes="(width >= 48rem) 18rem, 11rem"
             src={study.artworkDesktop}
           />
         </div>
@@ -205,7 +205,7 @@ export function Homepage() {
                   <Image
                     alt={PORTRAIT.alt}
                     className={styles.portraitImage}
-                    sizes="(min-width: 64rem) 22rem, 11rem"
+                    sizes="(width >= 62rem) 22rem, 11rem"
                     src={PORTRAIT.image}
                   />
                 </div>

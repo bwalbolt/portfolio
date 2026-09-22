@@ -117,7 +117,7 @@
   color: currentColor;
 }
 
-@media (max-width: 47.999rem) {
+@media (width < 48rem) {
   .sectionHeading {
     align-items: start;
   }

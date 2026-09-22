@@ -166,6 +166,47 @@ The homepage begins with an immersive hero image and centered headline, then use
 
 Cards and panels should use real content density. Favor scan-friendly titles, short descriptions, tags, and clear links over decorative copy blocks.
 
+### Responsive breakpoints
+
+Prefer these shared viewport buckets for layout changes:
+
+| Bucket | Viewport width |
+| --- | --- |
+| Mobile | Below `30rem` |
+| Large mobile | `30rem` to below `48rem` |
+| Tablet | `48rem` to below `62rem` |
+| Desktop | `62rem` to below `80rem` |
+| Large desktop | `80rem` and above |
+
+The large-desktop threshold matches the `76rem` content cap plus two `2rem` page gutters. At the default browser font size, the thresholds correspond to 480, 768, 992, and 1280 CSS pixels. Media-query `rem` units use the browser's initial font size, so these pixel equivalents can change with user font preferences.
+
+Start with mobile base styles and use native range queries for wider layouts. Exact thresholds belong to the larger bucket; use `<` for rules below a threshold to avoid gaps or overlap from approximate values such as `47.999rem`.
+
+```css
+.exampleGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 48rem) {
+  .exampleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width < 48rem) {
+  .exampleHeadingAction {
+    display: none;
+  }
+}
+```
+
+Components need changes only where their content requires them, not at every threshold. Keep fluid sizing (`clamp()`, flexible grids, and content caps) where it already works. The bucket names describe viewport ranges, not device detection or a requirement that all desktop-looking components switch at `62rem`.
+
+Bespoke thresholds are allowed for a specific text, image, or layout problem when the shared values do not fit. Add a nearby comment explaining the problem and why the custom threshold is needed. Keep image `sizes` media conditions aligned with the corresponding layout transitions.
+
+Use literal `rem` thresholds in CSS queries. CSS custom properties cannot supply media-query thresholds through `var()`. This preference is maintained through documentation and review, without a custom checker or additional CSS processing.
+
 ## Elevation & Depth
 
 Depth is created through tonal layering, translucent borders, selective blur, and moderate shadow. The default panel shadow is `0 18px 48px rgba(0, 0, 0, 0.18)`. Use it for cards and floating mobile panels, not for every section.

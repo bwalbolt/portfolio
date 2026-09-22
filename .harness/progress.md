@@ -106,3 +106,20 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS on first review; frontend implementation and regression coverage were added together, with a non-blocking TDD history warning.
 - Bugs found: visual review caught blur overlapping the heading and a narrow tablet mosaic; both were corrected before completion.
 - Next task: task 3, restyle About Me skill cards. The plan remains in progress.
+
+## 2026-09-21 - improve-responsive-breakpoints: Task 1 - Document and normalize responsive breakpoints
+
+- Documented preferred 30rem, 48rem, 62rem, and 80rem thresholds in DESIGN.md and linked the strategy from AGENTS.md. Defined mobile-first range syntax, larger-bucket boundary ownership, fluid sizing, image sizes alignment, and commented bespoke exceptions without adding dependencies or a checker.
+- Converted existing width conditions to native ranges, preserved 48rem transitions, moved About desktop layout and portrait sizes to 62rem, and limited the mobile mosaic to widths below 30rem.
+- Extended browser checks to 390px and immediately below, at, and above 480, 768, 992, and 1280px, covering navigation visibility, About geometry, artwork selection/loading, and horizontal overflow. Reviewed full-page screenshots at 390, 768, and 1280px plus the About layout at 992px.
+- Verification: baseline, implementation, and independent evaluator npm run verify passed lint, TypeScript, static production build, and all 13 Playwright tests. git diff --check passed.
+- Evaluator verdict: PASS on first review; non-blocking TDD chronology warning because implementation and test changes remain uncommitted.
+- Unrelated follow-up: existing tablet case-study artwork crowds text, and the contact form inputs are narrow around 768px. Retained the approved 48rem transitions; consider these in a separate tablet-layout refinement.
+- Next task: none for this plan.
+
+## 2026-09-22 - improve-responsive-breakpoints: Task 2 - Remove redundant above-breakpoint test iterations
+
+- Removed 481, 769, 993, and 1281px from the shared responsive width list at the user's request. Both loops now run nine widths: representative 390px mobile plus immediately below and at each threshold. Existing assertions remain intact.
+- Updated the list comment and plan criteria to reflect the reduced coverage.
+- Verification: implementation and independent evaluator npm run verify passed lint, TypeScript, production build, and all 13 Playwright tests. Evaluator verdict: PASS, no issues.
+- Next task: none for this plan.

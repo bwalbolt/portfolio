@@ -147,7 +147,7 @@
   color: var(--color-white);
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
   .headerOverlay {
     background: var(--color-black);
     border-bottom-color: rgba(255, 255, 255, 0.02);

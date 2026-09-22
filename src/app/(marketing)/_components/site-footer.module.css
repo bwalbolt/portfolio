@@ -55,7 +55,7 @@
   line-height: 1.33;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
   .inner {
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;

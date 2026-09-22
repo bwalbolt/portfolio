@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+// Representative mobile width plus immediately below and at each shared threshold.
+const responsiveWidths = [390, 479, 480, 767, 768, 991, 992, 1279, 1280];
+
 const primaryRoutes = [
   { href: "/case-studies", label: "Case Studies", title: "Case Studies" },
   { href: "/blog", label: "Blog", title: "Blog" },
@@ -315,10 +318,19 @@ test("homepage links follow Figma sizing and responsive spacing", async ({ page 
 });
 
 test("About Me keeps its blur local and its portrait unwarped across layouts", async ({ page }, testInfo) => {
-  for (const width of [390, 768, 1280]) {
+  for (const width of responsiveWidths) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
+    const primaryNav = page.getByRole("navigation", { name: "Primary" });
+    const menuToggle = page.getByRole("button", { name: "Toggle navigation" });
+    if (width < 768) {
+      await expect(primaryNav).toBeHidden();
+      await expect(menuToggle).toBeVisible();
+    } else {
+      await expect(primaryNav).toBeVisible();
+      await expect(menuToggle).toBeHidden();
+    }
     const about = page.locator("#about");
     const portrait = about.getByRole("img", { name: "Portrait of Brent Walbolt" });
     const frame = portrait.locator("..");
@@ -330,7 +342,7 @@ test("About Me keeps its blur local and its portrait unwarped across layouts", a
     await expect(paragraph).toContainText("modern web technologies.");
     await expect(paragraph).toHaveCSS("font-size", "18px");
     const backdrop = await about.evaluate((element) => getComputedStyle(element, "::before").backgroundImage);
-    expect(backdrop).toContain(width > 480 ? "mosaic-broken.png" : "mosaic-broken-mobile.png");
+    expect(backdrop).toContain(width >= 480 ? "mosaic-broken.png" : "mosaic-broken-mobile.png");
     expect(backdrop).not.toContain("gradient");
     const blur = await paragraph.locator("..").evaluate((element) => {
       const style = getComputedStyle(element, "::before");
@@ -351,7 +363,7 @@ test("About Me keeps its blur local and its portrait unwarped across layouts", a
     expect(transform.fit).toBe("cover");
     const frameBox = (await frame.boundingBox())!;
     const titleBox = (await title.boundingBox())!;
-    if (width < 1024) {
+    if (width < 992) {
       await expect(frame).toHaveCSS("width", "160px");
       expect(frameBox.height).toBeCloseTo(179.168, 1);
       expect(frameBox.x + frameBox.width / 2).toBeCloseTo(width / 2, 1);
@@ -367,12 +379,17 @@ test("About Me keeps its blur local and its portrait unwarped across layouts", a
     await portrait.scrollIntoViewIfNeeded();
     await expect(portrait).toBeVisible();
     await expect.poll(() => portrait.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    await expect(portrait).toHaveAttribute("sizes", "(width >= 62rem) 22rem, 11rem");
     await about.screenshot({ path: testInfo.outputPath(`about-${width}.png`) });
+    if ([390, 768, 1280].includes(width)) {
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await page.screenshot({ path: testInfo.outputPath(`homepage-${width}.png`), fullPage: true });
+    }
   }
 });
 
 test("About mosaic loads only the appropriate crop at the 30rem breakpoint", async ({ browser }) => {
-  for (const width of [390, 480, 481, 768, 1024, 1280]) {
+  for (const width of responsiveWidths) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });
     const mosaicRequests: string[] = [];
     page.on("request", (request) => {
@@ -385,7 +402,7 @@ test("About mosaic loads only the appropriate crop at the 30rem breakpoint", asy
       const style = getComputedStyle(element, "::before");
       return { image: style.backgroundImage, position: style.backgroundPosition, size: style.backgroundSize };
     });
-    const asset = width <= 480 ? "/images/mosaic-broken-mobile.png" : "/images/mosaic-broken.png";
+    const asset = width < 480 ? "/images/mosaic-broken-mobile.png" : "/images/mosaic-broken.png";
     expect(background.image).toContain(asset);
     expect(background.position.split(" ").map(Number.parseFloat)).toEqual([0, 0]);
     // Browsers may omit the implicit auto height in the serialized value.

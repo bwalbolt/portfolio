@@ -125,10 +125,8 @@ export const CASE_STUDIES: readonly CaseStudyCard[] = [
   },
 ] as const;
 
-export const ABOUT_PARAGRAPHS: readonly string[] = [
-  "Senior Design Engineer with 17+ years of experience designing and building accessible, high-quality front-end experiences.",
-  "Expert at translating client and stakeholder goals into intuitive, user-centered interfaces through empathy, design judgment, and hands-on engineering. Extensive experience collaborating directly with clients, project managers, and software engineers to ship scalable UI using modern web technologies.",
-] as const;
+export const ABOUT_PARAGRAPH =
+  "Senior Design Engineer with 17+ years of experience designing and building accessible, high-quality front-end experiences. Expert at translating client and stakeholder goals into intuitive, user-centered interfaces through empathy, design judgment, and hands-on engineering. Extensive experience collaborating directly with clients, project managers, and software engineers to ship scalable UI using modern web technologies.";
 
 export const SKILLS: readonly SkillCard[] = [
   {

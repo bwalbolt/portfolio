@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import {
-  ABOUT_PARAGRAPHS,
+  ABOUT_PARAGRAPH,
   AVAILABILITY,
   CASE_STUDIES,
   CONTACT_COPY,
@@ -205,7 +205,7 @@ export function Homepage() {
                   <Image
                     alt={PORTRAIT.alt}
                     className={styles.portraitImage}
-                    sizes="(min-width: 48rem) 17rem, 14rem"
+                    sizes="(min-width: 64rem) 22rem, 11rem"
                     src={PORTRAIT.image}
                   />
                 </div>
@@ -213,11 +213,7 @@ export function Homepage() {
                 <div className={styles.aboutCopy}>
                   <h2 className={styles.aboutTitle}>About Me</h2>
                   <div className={styles.aboutTextGroup}>
-                    {ABOUT_PARAGRAPHS.map((paragraph) => (
-                      <p className={styles.aboutText} key={paragraph}>
-                        {paragraph}
-                      </p>
-                    ))}
+                    <p className={styles.aboutText}>{ABOUT_PARAGRAPH}</p>
                   </div>
                 </div>
               </div>

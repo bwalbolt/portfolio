@@ -30,7 +30,7 @@
     {
       "id": "2",
       "title": "Rework About Me image, paragraph, and mobile layout",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The About Me main image no longer has a linear gradient overlay applied over the image itself",
         "A separate blurred gradient element is positioned and sized around the paragraph content to match the Figma blurred element",
@@ -38,6 +38,7 @@
         "The portrait frame has the slanted appearance from Figma while the portrait image itself remains visually unwarped",
         "On mobile, the portrait and About Me headline are centered",
         "On mobile, the portrait size is reduced to match the Figma mobile frame more closely",
+        "The mosaic background stays left aligned and scales proportionally, using the full image above 30rem and the cropped mobile asset only at or below 30rem",
         "`npm run verify` passes after the change"
       ],
       "files": [

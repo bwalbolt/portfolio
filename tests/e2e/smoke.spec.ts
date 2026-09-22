@@ -313,3 +313,85 @@ test("homepage links follow Figma sizing and responsive spacing", async ({ page 
     expect(about.y - studies.y - studies.height).toBeCloseTo(80, 1);
   }
 });
+
+test("About Me keeps its blur local and its portrait unwarped across layouts", async ({ page }, testInfo) => {
+  for (const width of [390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    const about = page.locator("#about");
+    const portrait = about.getByRole("img", { name: "Portrait of Brent Walbolt" });
+    const frame = portrait.locator("..");
+    const title = about.getByRole("heading", { name: "About Me", exact: true });
+    const copy = title.locator("..");
+    const paragraph = copy.locator("p");
+    await expect(paragraph).toHaveCount(1);
+    await expect(paragraph).toContainText("experiences. Expert at translating");
+    await expect(paragraph).toContainText("modern web technologies.");
+    await expect(paragraph).toHaveCSS("font-size", "18px");
+    const backdrop = await about.evaluate((element) => getComputedStyle(element, "::before").backgroundImage);
+    expect(backdrop).toContain(width > 480 ? "mosaic-broken.png" : "mosaic-broken-mobile.png");
+    expect(backdrop).not.toContain("gradient");
+    const blur = await paragraph.locator("..").evaluate((element) => {
+      const style = getComputedStyle(element, "::before");
+      return { inset: style.inset, filter: style.filter, background: style.backgroundColor, zIndex: style.zIndex, pointerEvents: style.pointerEvents };
+    });
+    expect(blur).toEqual({ inset: "-20px", filter: "blur(40px)", background: "rgb(255, 255, 255)", zIndex: "-1", pointerEvents: "none" });
+    const transform = await portrait.evaluate((element) => {
+      const imageStyle = getComputedStyle(element);
+      const frameStyle = getComputedStyle(element.parentElement!);
+      const outer = new DOMMatrix(frameStyle.transform);
+      const combined = outer.multiply(new DOMMatrix(imageStyle.transform));
+      return { skew: outer.c, a: combined.a, b: combined.b, c: combined.c, d: combined.d, fit: imageStyle.objectFit };
+    });
+    expect(transform.skew).toBeCloseTo(-Math.tan(Math.PI / 30), 5);
+    expect(transform.b).toBeCloseTo(0, 5);
+    expect(transform.c).toBeCloseTo(0, 5);
+    expect(transform.a).toBeCloseTo(transform.d, 5);
+    expect(transform.fit).toBe("cover");
+    const frameBox = (await frame.boundingBox())!;
+    const titleBox = (await title.boundingBox())!;
+    if (width < 1024) {
+      await expect(frame).toHaveCSS("width", "160px");
+      expect(frameBox.height).toBeCloseTo(179.168, 1);
+      expect(frameBox.x + frameBox.width / 2).toBeCloseTo(width / 2, 1);
+      expect(titleBox.x + titleBox.width / 2).toBeCloseTo(width / 2, 1);
+      await expect(title).toHaveCSS("text-align", "center");
+      expect(titleBox.y - frameBox.y - frameBox.height).toBeCloseTo(32, 1);
+    } else {
+      expect(frameBox.height).toBeCloseTo(347.248, 1);
+      expect(titleBox.x).toBeGreaterThan(frameBox.x + frameBox.width);
+      await expect(title).toHaveCSS("text-align", "left");
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    await portrait.scrollIntoViewIfNeeded();
+    await expect(portrait).toBeVisible();
+    await expect.poll(() => portrait.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    await about.screenshot({ path: testInfo.outputPath(`about-${width}.png`) });
+  }
+});
+
+test("About mosaic loads only the appropriate crop at the 30rem breakpoint", async ({ browser }) => {
+  for (const width of [390, 480, 481, 768, 1024, 1280]) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    const mosaicRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/\/mosaic-broken(?:-mobile)?\.png/.test(request.url())) {
+        mosaicRequests.push(new URL(request.url()).pathname);
+      }
+    });
+    await page.goto("/");
+    const background = await page.locator("#about").evaluate((element) => {
+      const style = getComputedStyle(element, "::before");
+      return { image: style.backgroundImage, position: style.backgroundPosition, size: style.backgroundSize };
+    });
+    const asset = width <= 480 ? "/images/mosaic-broken-mobile.png" : "/images/mosaic-broken.png";
+    expect(background.image).toContain(asset);
+    expect(background.position.split(" ").map(Number.parseFloat)).toEqual([0, 0]);
+    // Browsers may omit the implicit auto height in the serialized value.
+    const sizeAxes = background.size.replace(/\([^)]*\)/g, "(width)").split(" ");
+    expect(sizeAxes[1] ?? "auto").toBe("auto");
+    expect(mosaicRequests).toEqual([asset]);
+    await page.close();
+  }
+});

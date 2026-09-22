@@ -95,3 +95,14 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS on first try; frontend implementation and regression coverage were added together, with a non-blocking TDD history warning.
 - Bugs found: none.
 - Next task: task 2, rework About Me image, paragraph, and mobile layout. Tasks 2 and 3 remain pending.
+
+## 2026-09-20 - improve-homepage-about-links: Task 2 - Rework About Me image, paragraph, and mobile layout
+
+- Removed the gradient overlay from the mosaic and added a paragraph-owned white backdrop with 40px blur and 20px outset, matching Figma nodes `29:204` and `79:308`. The design uses a blurred white fill rather than a literal linear gradient. Isolated the backdrop behind the copy so it cannot wash out the heading.
+- Consolidated the existing copy into one paragraph, matched 18px body text and responsive heading sizes, and centered the 160 × 179px mobile portrait. Applied a -6° frame skew and inverse image skew with uniform scaling to keep the portrait unwarped.
+- Kept tablet intro content stacked until 1024px, expanded the mobile mosaic across tablet width, and matched the desktop portrait dimensions and intro columns. Skill-card changes remain scoped to task 3.
+- Added responsive browser checks and inspected screenshots at 390, 768, and 1280px for paragraph structure, backdrop styling, transform cancellation, centering, image loading, and overflow.
+- Verification: baseline and final `npm run verify` passed; independent evaluator verification passed lint, TypeScript, static production build, and all 12 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first review; frontend implementation and regression coverage were added together, with a non-blocking TDD history warning.
+- Bugs found: visual review caught blur overlapping the heading and a narrow tablet mosaic; both were corrected before completion.
+- Next task: task 3, restyle About Me skill cards. The plan remains in progress.

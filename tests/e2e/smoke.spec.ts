@@ -388,6 +388,49 @@ test("About Me keeps its blur local and its portrait unwarped across layouts", a
   }
 });
 
+test("About Me skill cards follow the responsive Figma layout", async ({ page }) => {
+  for (const width of responsiveWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    const about = page.locator("#about");
+    const paragraph = about.getByText("Senior Design Engineer", { exact: false });
+    const skillList = about.locator("ul");
+    const cards = skillList.locator("article");
+    await expect(cards).toHaveCount(3);
+
+    const paragraphBox = (await paragraph.boundingBox())!;
+    const listBox = (await skillList.boundingBox())!;
+    expect(listBox.x).toBeCloseTo(paragraphBox.x, 1);
+    expect(listBox.width).toBeCloseTo(paragraphBox.width, 1);
+
+    const expectedColors = ["rgb(255, 179, 0)", "rgb(228, 79, 217)", "rgb(0, 176, 255)"];
+    const boxes = [];
+    for (let index = 0; index < 3; index += 1) {
+      const card = cards.nth(index);
+      await expect(card).toHaveCSS("border-radius", "0px");
+      await expect(card).toHaveCSS("border-left-width", "4px");
+      await expect(card).toHaveCSS("border-left-color", expectedColors[index]);
+      await expect(card).toHaveCSS("background-color", "rgba(0, 0, 0, 0.66)");
+      await expect(card).toHaveCSS("column-gap", "8px");
+      boxes.push((await card.boundingBox())!);
+    }
+
+    expect(boxes[0].height).toBeCloseTo(boxes[1].height, 1);
+    expect(boxes[1].height).toBeCloseTo(boxes[2].height, 1);
+    if (width < 992) {
+      expect(boxes[1].y).toBeGreaterThanOrEqual(boxes[0].y + boxes[0].height + 16);
+      expect(boxes[2].y).toBeGreaterThanOrEqual(boxes[1].y + boxes[1].height + 16);
+    } else {
+      expect(boxes[0].y).toBeCloseTo(boxes[1].y, 1);
+      expect(boxes[1].y).toBeCloseTo(boxes[2].y, 1);
+    }
+
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+  }
+});
+
 test("About mosaic loads only the appropriate crop at the 30rem breakpoint", async ({ browser }) => {
   for (const width of responsiveWidths) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });

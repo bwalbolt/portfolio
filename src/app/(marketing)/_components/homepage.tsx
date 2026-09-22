@@ -215,22 +215,22 @@ export function Homepage() {
                   <div className={styles.aboutTextGroup}>
                     <p className={styles.aboutText}>{ABOUT_PARAGRAPH}</p>
                   </div>
+
+                  <ul className={styles.skillGrid}>
+                    {SKILLS.map((skill) => (
+                      <li key={skill.title}>
+                        <PanelCard
+                          as="article"
+                          className={cx(styles.skillCard, toneClassNames[skill.tone])}
+                        >
+                          <h3 className={styles.skillTitle}>{skill.title}</h3>
+                          <p className={styles.skillBody}>{skill.description}</p>
+                        </PanelCard>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-
-              <ul className={styles.skillGrid}>
-                {SKILLS.map((skill) => (
-                  <li key={skill.title}>
-                    <PanelCard
-                      as="article"
-                      className={cx(styles.skillCard, toneClassNames[skill.tone])}
-                    >
-                      <h3 className={styles.skillTitle}>{skill.title}</h3>
-                      <p className={styles.skillBody}>{skill.description}</p>
-                    </PanelCard>
-                  </li>
-                ))}
-              </ul>
 
               <figure className={styles.quoteBlock}>
                 <blockquote className={styles.quoteText}>

@@ -411,14 +411,21 @@
 
 .skillGrid {
   grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: 1rem;
 }
 
 .skillCard {
   display: grid;
+  height: 100%;
   gap: 0.5rem;
   padding: 1rem 1rem 1rem 1.25rem;
+  border: 0;
+  border-left: 0.25rem solid currentColor;
+  border-radius: 0;
   background: var(--surface-panel-elevated);
   backdrop-filter: blur(8px);
+  box-shadow: none;
 }
 
 .skillTitle {
@@ -779,11 +786,6 @@
     z-index: 1;
   }
 
-  .skillGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.5rem;
-  }
-
   .contactSection {
     padding-block: 7.5rem;
   }
@@ -809,5 +811,12 @@
 
   .socialGroup {
     padding-inline: 1.5rem;
+  }
+}
+
+@media (width >= 62rem) {
+  .skillGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
   }
 }

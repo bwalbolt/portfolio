@@ -3,7 +3,7 @@
   "title": "Align homepage read-more links and About Me section with Figma",
   "type": "improvement",
   "created": "2026-07-16",
-  "status": "in_progress",
+  "status": "complete",
   "context": "The homepage root page at `/` should better match the existing Figma desktop and mobile frames. Figma sources: desktop https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=1-549&t=AL7MiQ7CLvTxT4Cf-0 and mobile https://www.figma.com/design/0J2JF0nYrI8EJrttdHNes4/Portfolio?node-id=79-219&t=AL7MiQ7CLvTxT4Cf-0. Desktop should match closely, mobile should match the mobile frame, and tablet should scale from mobile using Figma auto-layout as a guide. This plan covers mid-page link affordances and the About Me section layout, imagery, copy, and skill cards.",
   "tasks": [
     {
@@ -52,7 +52,7 @@
     {
       "id": "3",
       "title": "Restyle About Me skill cards to match Figma",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "Skill cards have no border radius",
         "Each skill card uses a left border that matches that skill's color",

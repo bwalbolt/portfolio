@@ -123,3 +123,13 @@ Session notes are appended here after each completed task.
 - Updated the list comment and plan criteria to reflect the reduced coverage.
 - Verification: implementation and independent evaluator npm run verify passed lint, TypeScript, production build, and all 13 Playwright tests. Evaluator verdict: PASS, no issues.
 - Next task: none for this plan.
+
+## 2026-09-22 - improve-homepage-about-links: Task 3 - Restyle About Me skill cards to match Figma
+
+- Matched the Figma skill-card treatment with square corners, 4px skill-colored left borders, the existing translucent black elevated surface, 8px backdrop blur, and 16px spacing between cards.
+- Kept cards stacked and paragraph-width through tablet, then aligned a three-column grid to the desktop paragraph column at 62rem. Equalized implicit grid rows so differing copy lengths produce equal-height cards at every viewport.
+- Added browser coverage across all nine shared responsive widths for paragraph alignment, exact borders and colors, surface styling, equal heights, mobile separation, and horizontal overflow.
+- Verification: baseline and final `npm run verify` passed lint, TypeScript, production build, and all 14 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS after 1 retry; the first review found that equal height only held on desktop, prompting equal implicit rows and all-breakpoint height assertions.
+- Bugs found: none.
+- Next task: none; the plan is complete.

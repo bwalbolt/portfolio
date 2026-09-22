@@ -484,7 +484,7 @@ test("testimonial quote uses the responsive Figma treatment without overlap", as
       expect(fontSize, viewport.name).toBeLessThanOrEqual(48);
       expect(outlineStyles.display, viewport.name).toBe("block");
       expect(outlineStyles.opacity, viewport.name).toBe("1");
-      expect(outlineStyles.stroke, viewport.name).toContain("7px");
+      expect(outlineStyles.stroke, viewport.name).toContain("12.8px");
       const outlineBox = (await quoteOutline.boundingBox())!;
       const gradientBox = (await quoteGradient.boundingBox())!;
       expect(outlineBox.x, viewport.name).toBeCloseTo(gradientBox.x, 1);
@@ -500,6 +500,75 @@ test("testimonial quote uses the responsive Figma treatment without overlap", as
     expect(attributionBox.y, viewport.name).toBeGreaterThanOrEqual(
       quoteBox.y + quoteBox.height,
     );
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), viewport.name).toBe(
+      viewport.width,
+    );
+  }
+});
+
+test("contact section uses the Figma flare and preserves responsive form gutters", async ({ page }) => {
+  const viewports = [
+    { width: 390, height: 900, name: "mobile" },
+    { width: 768, height: 900, name: "tablet" },
+    { width: 992, height: 900, name: "desktop-edge" },
+    { width: 1280, height: 900, name: "desktop" },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    const contact = page.locator("#contact");
+    const layout = contact.locator(":scope > div");
+    const form = contact.locator("form");
+    const socialGroup = contact.getByText("Social Links", { exact: true }).locator("..");
+    const socialEyebrow = contact.getByText("Social Links", { exact: true });
+    const availabilityBody = contact.getByText("Currently seeking innovative", { exact: false });
+    const availability = contact.getByText("Currently Available", { exact: false }).locator("../..");
+    const flare = contact.locator('div[aria-hidden="true"]');
+    const layoutBox = (await layout.boundingBox())!;
+    const formBox = (await form.boundingBox())!;
+    const socialBox = (await socialGroup.boundingBox())!;
+    const socialEyebrowBox = (await socialEyebrow.boundingBox())!;
+    const availabilityBodyBox = (await availabilityBody.boundingBox())!;
+    const availabilityBox = (await availability.boundingBox())!;
+
+    expect(formBox.x, viewport.name).toBeCloseTo(layoutBox.x, 1);
+    expect(socialBox.x, viewport.name).toBeCloseTo(availabilityBox.x, 1);
+    expect(socialBox.width, viewport.name).toBeCloseTo(availabilityBox.width, 1);
+    expect(socialEyebrowBox.x, viewport.name).toBeCloseTo(availabilityBodyBox.x, 1);
+
+    const flareStyles = await flare.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        backgroundImage: style.backgroundImage,
+        backgroundPosition: style.backgroundPosition,
+        backgroundRepeat: style.backgroundRepeat,
+        backgroundSize: style.backgroundSize,
+        display: style.display,
+      };
+    });
+
+    if (viewport.width < 992) {
+      expect(flareStyles.display, viewport.name).toBe("none");
+    } else {
+      expect(flareStyles.display, viewport.name).toBe("block");
+      expect(flareStyles.backgroundImage, viewport.name).toContain("/images/bg-flare.png");
+      expect(flareStyles.backgroundPosition, viewport.name).toBe("100% 0px");
+      expect(flareStyles.backgroundRepeat, viewport.name).toBe("no-repeat");
+      const flareBox = (await flare.boundingBox())!;
+      expect(flareBox.width, viewport.name).toBeCloseTo(336, 1);
+      expect(flareBox.height, viewport.name).toBeCloseTo((336 * 548) / 690, 1);
+      expect(flareBox.y, viewport.name).toBeLessThan(layoutBox.y);
+    }
+
+    const nameField = page.getByLabel("Name");
+    await nameField.focus();
+    await expect(nameField).toHaveCSS("border-top-color", "rgba(255, 255, 255, 0.8)");
+    await expect(nameField).toHaveAttribute("id", "contact-name");
+    await expect(page.getByLabel("Email")).toHaveAttribute("id", "contact-email");
+    await expect(page.getByLabel("Message")).toHaveAttribute("id", "contact-message");
     expect(await page.evaluate(() => document.documentElement.scrollWidth), viewport.name).toBe(
       viewport.width,
     );

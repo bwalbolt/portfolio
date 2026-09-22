@@ -11,7 +11,7 @@
       "title": "Match testimonial quote styling across desktop and mobile",
       "status": "complete",
       "acceptance_criteria": [
-        "On desktop, the testimonial quote matches the Figma treatment with an approximately 7px white outside stroke",
+        "On desktop, the testimonial quote matches the Figma treatment with a 0.8rem white outside stroke",
         "The desktop outline is fully opaque and precisely aligned with the gradient text layer",
         "The quote gradient and stroke do not reduce readability or create visual artifacts at desktop sizes",
         "On mobile, the testimonial quote has no outline",
@@ -29,7 +29,7 @@
     {
       "id": "2",
       "title": "Align contact form background and mobile gutters with Figma",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The contact form background uses the bg-flare asset anchored to the top right corner as shown in Figma",
         "The contact background treatment scales cleanly without creating unwanted seams or overflow on desktop, tablet, or mobile",

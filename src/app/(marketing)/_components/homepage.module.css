@@ -514,10 +514,14 @@
   gap: 4rem;
 }
 
+.contactFlare {
+  display: none;
+}
+
 .contactForm {
   display: grid;
   gap: 1.5rem;
-  padding: 1.5rem;
+  padding: 0;
   border-radius: var(--radius-md);
   background: var(--surface-contact);
 }
@@ -609,6 +613,8 @@
 .socialGroup {
   display: grid;
   gap: 1.5rem;
+  /* Match the availability copy's 24px inset plus its 1px border. */
+  padding-inline: 1.625rem;
 }
 
 .socialEyebrow {
@@ -797,7 +803,7 @@
   }
 
   .contactForm {
-    padding: 1.5rem 3rem 2rem;
+    padding: 1.5rem 3rem 2rem 0;
   }
 
   .contactFieldGrid {
@@ -809,9 +815,6 @@
     min-width: 14rem;
   }
 
-  .socialGroup {
-    padding-inline: 1.5rem;
-  }
 }
 
 @media (width >= 62rem) {
@@ -875,5 +878,23 @@
   .skillGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
+  }
+
+  .contactFlare {
+    display: block;
+    position: absolute;
+    z-index: 0;
+    top: -4rem;
+    right: 16rem;
+    width: 21rem;
+    aspect-ratio: 690 / 548;
+    background: url("/images/bg-flare.png") top right / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  .contactForm,
+  .contactAside {
+    position: relative;
+    z-index: 1;
   }
 }

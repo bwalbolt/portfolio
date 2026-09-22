@@ -267,6 +267,8 @@ export function Homepage() {
 
           <section className={styles.contactSection} id="contact">
             <Container className={styles.contactLayout}>
+              <div aria-hidden="true" className={styles.contactFlare} />
+
               <form className={styles.contactForm}>
                 <h2 className={styles.contactTitle}>{CONTACT_COPY.heading}</h2>
 

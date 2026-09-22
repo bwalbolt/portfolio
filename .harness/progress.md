@@ -152,3 +152,23 @@ Session notes are appended here after each completed task.
 - Verification: `npm run verify` passed lint, TypeScript, production build, and all 15 Playwright tests. `git diff --check` passed.
 - Evaluator verdict: PASS on first review with no issues.
 - Next task: task 2, align contact form background and mobile gutters with Figma.
+
+## 2026-09-22 - improve-homepage-lower-sections: Task 2 - Align contact form background and mobile gutters with Figma
+
+- Added a desktop-only 345 × 274px `bg-flare` treatment from the 690 × 548px asset, positioned above the contact form and hidden below the desktop bucket to avoid mobile/tablet seams or overflow.
+- Removed the mobile form inset so fields use only the site gutter, and aligned social-link copy to the availability content with a 26px inset accounting for the availability card border.
+- Added browser coverage at 390, 768, 992, and 1280px for flare visibility and geometry, responsive gutters, text alignment, focus styling, label IDs, and horizontal overflow. Also corrected the pre-existing 7px testimonial stroke regression before task verification.
+- Verification: `npm run verify` passed with 16 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first try; the evaluator noted only a non-blocking TDD chronology warning because task 2 remains uncommitted.
+- Bugs found: none.
+- Next task: task 3, tighten footer height, typography, and mobile logo behavior.
+
+## 2026-09-22 - improve-homepage-lower-sections: Task 2 follow-up - Restore quote outline stroke and adjust contact flare position
+
+- Restored the desktop testimonial outline to the requested `0.8rem` stroke while retaining the separate z-indexed outline layer and matching inset so the gradient text remains readable and aligned.
+- Adjusted the desktop contact flare to `width: 21rem`, `top: -4rem`, and `right: 16rem`, with the aspect-ratio-based height assertion kept responsive.
+- Updated the browser contracts for the 12.8px computed stroke and the revised flare geometry.
+- Verification: `npm run verify` passed with 16 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first try; no functional issues found. TDD chronology remains a non-blocking warning because the follow-up is uncommitted.
+- Bugs found: none.
+- Next task: task 3, tighten footer height, typography, and mobile logo behavior.

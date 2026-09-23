@@ -163,6 +163,15 @@ Session notes are appended here after each completed task.
 - Bugs found: none.
 - Next task: task 3, tighten footer height, typography, and mobile logo behavior.
 
+## 2026-09-22 - harness: Update Codex evaluator adapter for the current CLI
+
+- Replaced the removed `--ask-for-approval never` flag with the current `--config approval_policy="never"` override, while preserving the requested sandbox mode.
+- Added ephemeral sessions and the configured Codex runtime directory as an additional writable root so nested evaluator startup can update its state without broad project access or a user approval prompt.
+- Adapter command assertions and a smoke Codex launch passed. `npm run verify` passed with all 16 Playwright tests.
+- The full evaluator entrypoint started with the corrected command but its model session stalled before producing a verdict and was interrupted; this was no longer a permissions or obsolete-flag failure.
+- Independent adapter review: PASS; no issues found.
+- Next task: task 3, tighten footer height, typography, and mobile logo behavior.
+
 ## 2026-09-22 - improve-homepage-lower-sections: Task 2 follow-up - Restore quote outline stroke and adjust contact flare position
 
 - Restored the desktop testimonial outline to the requested `0.8rem` stroke while retaining the separate z-indexed outline layer and matching inset so the gradient text remains readable and aligned.

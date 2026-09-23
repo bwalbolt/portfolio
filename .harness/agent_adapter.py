@@ -3,11 +3,20 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
 AgentName = str
+
+
+def codex_runtime_dir() -> Path:
+    """Return the Codex state directory used by the installed CLI."""
+    configured_home = os.environ.get("CODEX_HOME")
+    if configured_home:
+        return Path(configured_home).expanduser()
+    return Path.home() / ".codex"
 
 
 @dataclass(frozen=True)
@@ -34,13 +43,17 @@ def build_agent_command(
             "exec",
             "--cd",
             str(root),
-            "--sandbox",
-            options.codex_sandbox,
-            "--ask-for-approval",
-            "never",
+            "--ephemeral",
             "--color",
             "never",
+            "--add-dir",
+            str(codex_runtime_dir()),
+            "--config",
+            'approval_policy="never"',
+            "--sandbox",
+            options.codex_sandbox,
         ]
+
         if options.model:
             cmd.extend(["--model", options.model])
         if options.profile:

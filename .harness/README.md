@@ -115,6 +115,8 @@ Frontend work does not require TDD by default. Add or update tests when acceptan
 
 The headless runner and evaluator spawn Codex by default and pass prompts through stdin. Model selection inherits the Codex CLI configuration unless you pass `--model`, `--implementer-model`, or `--evaluator-model`; Codex profiles can be selected with `--profile`.
 
+The Codex adapter uses the current CLI contract: ephemeral sessions, an explicit `approval_policy = "never"` override for non-interactive runs, the requested sandbox mode, and the Codex runtime directory as an additional writable root so evaluator startup does not require a separate approval just to update its state database. Evaluator sessions remain practical read-only: the prompt disallows edits and the harness rejects unexpected worktree changes.
+
 ```bash
 python3 .harness/runner.py --plan .harness/plans/{slug}.json
 python3 .harness/runner.py --plan .harness/plans/{slug}.json --loop

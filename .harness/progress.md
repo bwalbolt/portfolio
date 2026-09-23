@@ -181,3 +181,14 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS on first try; no functional issues found. TDD chronology remains a non-blocking warning because the follow-up is uncommitted.
 - Bugs found: none.
 - Next task: task 3, tighten footer height, typography, and mobile logo behavior.
+
+## 2026-09-22 - improve-homepage-lower-sections: Task 3 - Tighten footer height, typography, and mobile logo behavior
+
+- Removed the homepage section stack's bottom padding so the contact section flows directly into the footer without an extra gap.
+- Matched Figma footer geometry with a 116px mobile footer that hides the brand block and a 124px desktop footer with a 24px Brent Walbolt mark and 48px vertical padding.
+- Made footer links block-level to preserve the exact mobile line-box height while keeping the existing semantic navigation and focus behavior.
+- Added browser coverage for footer height, contact/footer adjacency, brand visibility and typography, mobile/desktop padding, navigation visibility, and keyboard focus.
+- Verification: `npm run verify` passed with 17 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first try; no issues found. TDD chronology remains a non-blocking warning because implementation and test changes are uncommitted.
+- Bugs found: none.
+- Next task: none; the plan is complete.

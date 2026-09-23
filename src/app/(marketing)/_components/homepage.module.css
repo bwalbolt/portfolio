@@ -97,7 +97,7 @@
 
 .sectionStack {
   display: grid;
-  padding-block: 2.5rem var(--space-section);
+  padding-block: 2.5rem 0;
   background: transparent;
 }
 

@@ -575,6 +575,73 @@ test("contact section uses the Figma flare and preserves responsive form gutters
   }
 });
 
+test("footer matches the Figma sizing and closes the contact section without an extra gap", async ({
+  page,
+}) => {
+  const viewports = [
+    { width: 390, height: 900, name: "mobile" },
+    { width: 1280, height: 900, name: "desktop" },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    const footer = page.locator("footer");
+    const footerInner = footer.locator(":scope > div");
+    const geometry = await footer.evaluate((element) => {
+      const footerBox = element.getBoundingClientRect();
+      const contactElement = document.querySelector("#contact");
+
+      if (!contactElement) {
+        throw new Error("Contact section was not found");
+      }
+
+      const contactBox = contactElement.getBoundingClientRect();
+      return {
+        footerHeight: footerBox.height,
+        footerTop: footerBox.top,
+        contactBottom: contactBox.bottom,
+      };
+    });
+    const footerStyles = await footerInner.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const brandBlock = element.firstElementChild;
+      const brand = brandBlock?.querySelector("a");
+
+      return {
+        gap: style.rowGap,
+        paddingBlockEnd: style.paddingBlockEnd,
+        paddingBlockStart: style.paddingBlockStart,
+        brandDisplay: brandBlock ? getComputedStyle(brandBlock).display : "none",
+        brandFontSize: brand ? getComputedStyle(brand).fontSize : "0px",
+      };
+    });
+
+    expect(geometry.footerTop, viewport.name).toBeCloseTo(geometry.contactBottom, 1);
+    await expect(footer.getByRole("navigation", { name: "Footer" }), viewport.name).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Blog" }), viewport.name).toBeVisible();
+
+    if (viewport.width < 768) {
+      expect(geometry.footerHeight, viewport.name).toBeCloseTo(116, 0);
+      expect(footerStyles.brandDisplay, viewport.name).toBe("none");
+      expect(footerStyles.paddingBlockStart, viewport.name).toBe("24px");
+      expect(footerStyles.paddingBlockEnd, viewport.name).toBe("24px");
+    } else {
+      expect(geometry.footerHeight, viewport.name).toBeCloseTo(124, 0);
+      expect(footerStyles.brandDisplay, viewport.name).toBe("flex");
+      expect(footerStyles.brandFontSize, viewport.name).toBe("24px");
+      expect(footerStyles.paddingBlockStart, viewport.name).toBe("48px");
+      expect(footerStyles.paddingBlockEnd, viewport.name).toBe("48px");
+    }
+
+    const blogLink = footer.getByRole("link", { name: "Blog" });
+    await blogLink.focus();
+    await expect(blogLink, viewport.name).toBeFocused();
+  }
+});
+
 test("About mosaic loads only the appropriate crop at the 30rem breakpoint", async ({ browser }) => {
   for (const width of responsiveWidths) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });

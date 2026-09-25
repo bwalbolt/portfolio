@@ -1,0 +1,23 @@
+{
+  "slug": "improve-linked-panel-tracking",
+  "title": "Immediate radial linked-panel tracking",
+  "type": "improvement",
+  "created": "2026-09-23",
+  "status": "complete",
+  "context": "User feedback supersedes the timed nearest-edge motion and exact pink ratios in feat-linked-panel-hover. Project from the center through the pointer so each diagonal arm reaches its corner immediately.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Replace eased tracking with immediate radial projection",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Both ellipses update synchronously with pointer movement without positional easing or an animation loop.",
+        "Normalized radial projection maps every point on each diagonal arm to its corresponding corner; between arms movement remains on an edge. Exact center retains the last position, defaulting to top-left.",
+        "Pink ::before is 54% wide and 76% tall, with left = x * 46% and top = 5% + y * 14%; amber remains 32px square.",
+        "Existing surface/fade transitions, keyboard and reduced-motion static feedback, native links, touch behavior and resize/scroll handling remain functional.",
+        "Browser regression tests cover immediate updates, diagonal arm samples, center handling and responsive geometry; npm run verify passes and independent evaluator returns PASS."
+      ],
+      "depends_on": []
+    }
+  ]
+}

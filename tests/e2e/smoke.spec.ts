@@ -281,7 +281,7 @@ test("homepage links follow Figma sizing and responsive spacing", async ({ page 
 
     const sections = [page.locator("#insights"), page.locator("#case-studies")];
     for (const section of sections) {
-      const arrows = section.getByRole("link", { name: "Read more", exact: true }).locator("svg");
+      const arrows = section.getByRole("link", { name: /^Read more/ }).locator("svg");
       for (const arrow of await arrows.all()) {
         if (await arrow.isVisible()) {
           await expect(arrow).toHaveCSS("width", "16px");

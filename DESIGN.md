@@ -269,3 +269,29 @@ Don't:
 - Use scroll-jacking, or motion that blocks reading.
 - Introduce unlabeled form fields, invisible focus states, or low-contrast text.
 - Expand global CSS for component-specific styling unless the rule is truly global.
+
+### Linked panel cards
+
+Use `LinkedPanelCard` for a single-destination insight article. Supply `href`, a
+`linkLabel` containing the article title, content children, and optional surface
+and link classes. It owns the stretched native “Read more” link; children must
+not contain additional links or controls. Ordinary `PanelCard` remains static.
+Case-study cards need a separate adaptation for their skewed surface.
+
+The isolated wrapper paints pointer-transparent amber and pink CSS ellipses at
+z-index 0 beneath the surface at z-index 1. The active surface is opaque
+`#071922`, with a 40% white border and a 10px amber shadow. Opacity fades take
+180ms; restoring translucency waits for the outgoing glow to disappear.
+Figma reference: `0J2JF0nYrI8EJrttdHNes4`, node `65:111` (hover card `65:127`).
+The amber ellipse is 32px square; pink is 54% wide and 76% tall,
+with matching 5% top and bottom insets. CSS blur uses half the Figma layer
+blur values (8px amber, 32px pink) to match its rendered softness.
+
+Pointer motion projects a ray from the panel center through the pointer onto
+the normalized perimeter, then maps it onto each ellipse's travel rectangle.
+Updates are immediate, without positional easing. Every point along a diagonal
+arm maps to its corner; at the exact center, retain the last position (initially
+top-left). Both ellipses stay on their edges and arrive together. Keyboard focus and
+reduced motion use a static top-left glow. Touch retains native single-tap
+navigation. Only the linked-card boundary requires client JavaScript; content
+can remain server-rendered, and the link works without hydration.

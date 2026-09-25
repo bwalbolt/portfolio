@@ -1,0 +1,56 @@
+{
+  "slug": "feat-linked-panel-hover",
+  "title": "Interactive linked-panel hover",
+  "type": "feature",
+  "created": "2026-09-23",
+  "status": "in_progress",
+  "context": "Apply the linked-panel hover treatment from Figma 0J2JF0nYrI8EJrttdHNes4 node 65:111 to insight cards (task 1, complete) and slanted case-study cards (task 2, pending). Task 1 acceptance criteria are historical: the completed improve-linked-panel-tracking plan supersedes its nearest-edge/timed motion and exact pink ratios. Task 2 must reuse the current immediate normalized center-ray projection, fixed 32px amber ellipse, and 54% by 76% pink ellipse with 5% vertical insets. Ordinary non-linked panels remain unchanged.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Implement and verify reusable linked insight panels",
+      "status": "complete",
+      "acceptance_criteria": [
+        "LinkedPanelCard requires href and an accessible link label, renders one stretched native Read more link, and keeps homepage content and ordinary PanelCard server-rendered.",
+        "Only insight cards opt in; card padding and content navigate with native link behavior, including without JavaScript.",
+        "Hover matches the Figma solid #071922 surface, 40% white border and amber shadow; ellipses are pointer-transparent at z-index 0 behind the surface with no bleed during entry or exit.",
+        "Amber is 32x32; pink is 208/384 of width and 164/214 of height with 10/214 vertical inset. All four corners mirror the reference.",
+        "Nearest-edge projection retains the current edge on ties and initially prioritizes top/right/bottom/left. Shared perimeter progress animates over 180ms along the shortest route without crossing the interior, with synchronized endpoints.",
+        "Pointer updates avoid React renders, stop on exit/unmount, and recalculate after resize/scroll.",
+        "Keyboard focus shows static top-left decoration and visible panel outline with one descriptive tab stop. Reduced motion disables tracking/transitions; touch navigates on one tap without sticky hover.",
+        "Browser tests cover corner geometry and perimeter transitions, whole-card links, keyboard, reduced motion, touch, no-JavaScript navigation and resizing; reference-size visual inspection finds no clipping, overflow or layout shifts.",
+        "npm run verify passes, documentation is updated, and an independent evaluator returns PASS before completion."
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Extend linked-panel hover to slanted case-study cards",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Extend the reusable linked-panel composition with an explicit slanted variant and reuse the existing pointer projection. Integrate both case-study cards without duplicating tracking logic or converting the homepage/content into client components. Insight cards retain their current behavior.",
+        "Preserve the current case-study layout, typography, tags, artwork, image sizing/cropping and upright content. Below 48rem use the existing rectangular mobile geometry; at 48rem and above follow the existing centered skewX(-10deg) surface and asymmetric rounded corners. No layout shifts or horizontal overflow are introduced.",
+        "Map viewport pointer coordinates into the unskewed panel coordinate system using the inverse of the actual surface transform, including transform origin; do not normalize against the axis-aligned bounding box of the skewed surface. Project the center-to-pointer ray in that local space, then map the result back to the visible slanted perimeter.",
+        "Both ellipses update immediately with no positional easing. Points along each center-to-corner diagonal of the visible panel map to that corner; intermediate directions remain on the corresponding edge. Exact center retains the last position, initially top-left. Recalculate geometry after resize, scroll and crossing the 48rem breakpoint.",
+        "Retain the fixed 32px round amber ellipse and 54%-wide by 76%-tall pink ellipse with 5% vertical insets, measured against unskewed surface dimensions. Transform their positions to follow the slanted edges without shearing the ellipse shapes; synchronize their corner endpoints using the shared projection.",
+        "Keep pointer-transparent decorations at z-index 0 in an isolated local wrapper behind the visible surface. Apply the current opaque #071922 active fill, 40% white border and amber shadow to the actual skewed surface. Keep glows outside artwork clipping, preserve artwork clipping inside the panel, and retain fade/mask sequencing so decoration never bleeds through the surface.",
+        "Render one native stretched Read more link per case-study card with an accessible name containing the title. Its ::before hit area follows the visible rounded slanted surface, including protruding side regions, without making the empty wedges of its bounding rectangle clickable. Text, tags and artwork inside the surface resolve to that same link. Preserve modifier-click and no-JavaScript navigation; avoid extra tab stops and nested interactive elements.",
+        "Keyboard focus visibly outlines the actual panel shape and shows static top-left decoration. Reduced motion keeps static feedback without tracking or transitions. Touch follows the native link on one tap without persistent hover.",
+        "Add browser coverage at 390px, 767px, 768px and 1280px for immediate tracking, transformed diagonal-arm samples and edge positions, center handling, live breakpoint changes and scrolling, visible-surface versus empty-wedge hit targets, native navigation, keyboard, reduced motion, touch and no-JavaScript behavior. Verify artwork/content remain upright, glow is not clipped, and insight-card regressions remain green.",
+        "Update DESIGN.md for the slanted variant and coordinate mapping. Run npm run verify, obtain an independent evaluator PASS before marking task 2 complete, and append durable notes to .harness/progress.md."
+      ],
+      "files": [
+        "src/app/(marketing)/_components/linked-panel-card.tsx",
+        "src/app/(marketing)/_components/linked-panel-card.module.css",
+        "src/app/(marketing)/_components/panel-perimeter.ts",
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/linked-panel.spec.ts",
+        "DESIGN.md"
+      ],
+      "depends_on": [
+        "1"
+      ]
+    }
+  ]
+}

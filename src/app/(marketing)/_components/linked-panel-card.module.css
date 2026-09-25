@@ -1,0 +1,102 @@
+.wrapper {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  --glow-x: 0;
+  --glow-y: 0;
+}
+
+.wrapper::before,
+.wrapper::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+/* Rounded Figma proportions, with matching 5% top and bottom insets. */
+.wrapper::before {
+  width: 54%;
+  height: 76%;
+  left: calc(var(--glow-x) * 46%);
+  top: calc(5% + var(--glow-y) * 14%);
+  background: var(--color-accent-pink);
+  filter: blur(32px);
+}
+
+.wrapper::after {
+  width: 32px;
+  height: 32px;
+  left: calc(var(--glow-x) * (100% - 32px));
+  top: calc(var(--glow-y) * (100% - 32px));
+  background: var(--color-accent-orange);
+  filter: blur(8px);
+}
+
+.surface {
+  position: relative;
+  z-index: 1;
+  border: var(--border-strong);
+  border-radius: var(--radius-panel);
+  background-color: var(--surface-panel);
+  backdrop-filter: blur(2px);
+  box-shadow: var(--shadow-panel);
+  /* Keep the opaque mask until the departing glow has fully faded. */
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), background-color 0s 180ms;
+}
+
+.link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-panel);
+}
+
+.wrapper:has(.link:focus-visible) {
+  --glow-x: 0 !important;
+  --glow-y: 0 !important;
+}
+
+.wrapper:has(.link:focus-visible)::before,
+.wrapper:has(.link:focus-visible)::after {
+  opacity: 1;
+}
+
+.wrapper:has(.link:focus-visible) .surface {
+  background-color: #071922;
+  border-color: var(--color-white-40);
+  box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
+  outline: 2px solid var(--color-accent-blue-soft);
+  outline-offset: 4px;
+  transition-delay: 0s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wrapper:hover::before,
+  .wrapper:hover::after {
+    opacity: 1;
+  }
+
+  .wrapper:hover .surface {
+    background-color: #071922;
+    border-color: var(--color-white-40);
+    box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
+    transition-delay: 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper {
+    --glow-x: 0 !important;
+    --glow-y: 0 !important;
+  }
+
+  .surface,
+  .wrapper::before,
+  .wrapper::after {
+    transition: none;
+  }
+}

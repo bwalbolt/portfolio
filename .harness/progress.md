@@ -192,3 +192,24 @@ Session notes are appended here after each completed task.
 - Evaluator verdict: PASS on first try; no issues found. TDD chronology remains a non-blocking warning because implementation and test changes are uncommitted.
 - Bugs found: none.
 - Next task: none; the plan is complete.
+
+## 2026-09-23 - feat-linked-panel-hover: Task 1 - Interactive linked insight panels
+
+- Added reusable `LinkedPanelCard` with an explicit destination and descriptive native stretched link. Integrated insight cards only, retaining server-rendered content and ordinary panel behavior.
+- Matched Figma node 65:111 with an opaque hover surface, white border, amber shadow, fixed 32px amber glow and proportional pink glow. Isolated zero-index decorations fade behind the surface without showing through it.
+- Added nearest-edge projection and synchronized 180ms perimeter motion with frame-based DOM updates, resize/scroll handling and cleanup. Keyboard and reduced-motion feedback use static top-left glows; touch and no-JavaScript navigation stay native.
+- Added five browser tests covering mirrored corners, rendered perimeter frames, geometry, hit targets, modifier-click, keyboard, reduced motion, responsive resize/scroll, touch and no-JavaScript navigation. Updated the existing link selector for descriptive accessible names and documented component usage in DESIGN.md.
+- Verification: baseline passed 17 tests. Implementation and independent evaluator each passed `npm run verify` with all 22 tests; static prerendering preserved. A sandboxed build stalled and was interrupted; approved full verification outside the sandbox passed. `git diff --check` passed.
+- Visually inspected the 384x214 reference screenshot against Figma: matching corner positions, glow softness, border, opaque mask and shadow. Evidence: test-results/linked-panel-linked-panels-de7e3-imeter-and-mask-their-glows-chromium/linked-panel-reference.png (ignored test output).
+- Independent evaluator: PASS; no concrete implementation defects. Optional supplemental geometry-server inspection was aborted after waiting for approval; required verification and review were complete.
+- Next task: none; plan complete. Changes are uncommitted.
+
+## 2026-09-23 - improve-linked-panel-tracking: Task 1 - Immediate radial tracking
+
+- Replaced the 180ms positional tween and nearest-edge projection with synchronous center-to-pointer ray projection in normalized panel coordinates. Each diagonal arm now maps to its corner at every distance from the center; exact center retains the previous position (initially top-left).
+- Both ellipses share the projected fractions. Removed the animation loop and obsolete perimeter interpolation helpers. Border/fade transitions and the opaque exit mask remain intact.
+- Simplified pink ::before to 54% width, 76% height, 46% horizontal travel, and 5% vertical inset plus 14% travel. Amber remains 32px square.
+- Updated DESIGN.md and browser regressions: same-task assertions reject positional delays, twelve diagonal samples reach all four corners, intermediate directions stay on edges, and center retains its position. Existing navigation/accessibility/responsive coverage remains green.
+- Baseline, revised implementation, and independent evaluator each passed npm run verify with all 22 tests. git diff --check passed. Inspected the updated reference screenshot; rounded proportions retain the intended glow treatment.
+- Independent evaluator verdict: PASS. No functional issues; uncommitted chronology noted as a nonblocking TDD warning.
+- Next task: none; follow-up plan complete. Changes are uncommitted.

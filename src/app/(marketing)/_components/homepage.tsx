@@ -25,6 +25,7 @@ import {
   VisuallyHidden,
   cx,
 } from "./primitives";
+import { LinkedPanelCard } from "./linked-panel-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import styles from "./homepage.module.css";
@@ -38,15 +39,16 @@ const toneClassNames: Record<AccentTone, string> = {
 
 function InsightPanel({ insight }: { insight: InsightCard }) {
   return (
-    <PanelCard as="article" className={styles.insightCard}>
+    <LinkedPanelCard
+      href={insight.href}
+      linkLabel={`Read more about ${insight.title}`}
+      className={styles.insightCard}
+      linkClassName={styles.readMore}
+    >
       <p className={styles.cardLead}>{insight.date}</p>
       <h3 className={styles.cardTitle}>{insight.title}</h3>
       <p className={styles.cardBody}>{insight.description}</p>
-      <Link className={styles.readMore} href={insight.href}>
-        <span>Read more</span>
-        <Icon name="arrow" />
-      </Link>
-    </PanelCard>
+    </LinkedPanelCard>
   );
 }
 

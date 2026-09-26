@@ -1,0 +1,25 @@
+.border {
+  position: absolute;
+  z-index: 0;
+  /* Counter the supplied 0.6 shader scale so the contour surrounds the form. */
+  top: -33%;
+  right: -36%;
+  bottom: -30%;
+  left: -25%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.border::before {
+  content: "";
+  position: absolute;
+  inset: 21% 23% 19% 16%;
+  border-radius: var(--radius-md);
+  box-shadow: -12px 0 32px #00aeff55, 14px -8px 40px #ffb30044,
+    6px 12px 32px #e34fda66;
+  opacity: 0.6;
+}
+
+.border[data-ready]::before {
+  opacity: 0;
+}

@@ -6,6 +6,7 @@
   --color-white-80: rgba(255, 255, 255, 0.8);
   --color-white-63: rgba(255, 255, 255, 0.63);
   --color-white-40: rgba(255, 255, 255, 0.4);
+  --color-white-14: rgba(255, 255, 255, 0.14);
   --color-white-08: rgba(255, 255, 255, 0.08);
   --color-white-02: rgba(255, 255, 255, 0.02);
   --color-black-80: rgba(0, 0, 0, 0.8);
@@ -22,7 +23,7 @@
   --surface-panel-elevated: var(--color-black-66);
   --surface-footer: #000000;
   --surface-input: var(--color-white-08);
-  --surface-contact: rgba(1, 12, 17, 0.96);
+  --surface-contact: #010C11;
   --text-primary: var(--color-white);
   --text-secondary: var(--color-white-63);
   --text-tertiary: var(--color-white-40);

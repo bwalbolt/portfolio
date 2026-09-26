@@ -504,24 +504,25 @@
 .contactSection {
   position: relative;
   padding-block: 5rem;
-  background: var(--color-black-40);
+  overflow: clip;
 }
 
 .contactLayout {
   position: relative;
-  z-index: 1;
   display: grid;
   gap: 4rem;
 }
 
-.contactFlare {
-  display: none;
+.contactFormFrame {
+  position: relative;
 }
 
 .contactForm {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 1.5rem;
-  padding: 0;
+  padding: 2.5rem 2rem;
   border-radius: var(--radius-md);
   background: var(--surface-contact);
 }
@@ -546,7 +547,7 @@
 
 .fieldLabel {
   color: var(--color-accent-purple);
-  font-family: var(--font-mono-family);
+  font-family: var(--font-display-family);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.4;
@@ -567,8 +568,14 @@
   color: var(--text-tertiary);
 }
 
+.textField:hover {
+  background-color: var(--color-white-14);
+}
+
 .textField:focus {
   border-color: var(--color-white-80);
+  outline: none;
+  box-shadow: none;
 }
 
 .textareaField {
@@ -585,26 +592,41 @@
   padding: 1rem 1.5rem;
   border-radius: var(--radius-md);
   background: linear-gradient(
-    90deg,
+    110deg,
     var(--color-accent-blue) 0%,
-    var(--color-accent-purple) 100%
+    var(--color-accent-purple) 40%,
+    var(--color-accent-pink) 50%,
+    var(--color-accent-purple) 60%,
+    var(--color-accent-blue) 100%
   );
+  background-size: 250%;
+  background-position: 0 0;
   color: var(--color-white);
   font-family: var(--font-display-family);
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1;
   transition:
-    filter var(--transition-base),
+    background-position 250ms ease,
     transform var(--transition-base);
 }
 
 .contactButton:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+  background-position: 100% 0;
+}
+
+.contactButton:focus {
+  outline: 2px solid var(--color-white);
+  box-shadow: none;
+}
+
+.contactButton:active {
+  transform: scale(0.95);
 }
 
 .contactAside {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 4rem;
   padding-top: 1.5rem;
@@ -675,6 +697,12 @@
   color: var(--color-white-80);
   font-size: 0.875rem;
   line-height: 1.4;
+}
+
+@media (width >= 30rem) {
+  .contactForm {
+    padding: 2.5rem 3.5rem;
+  }
 }
 
 @media (width >= 48rem) {
@@ -802,10 +830,6 @@
     gap: 4rem;
   }
 
-  .contactForm {
-    padding: 1.5rem 3rem 2rem 0;
-  }
-
   .contactFieldGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -878,18 +902,6 @@
   .skillGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
-  }
-
-  .contactFlare {
-    display: block;
-    position: absolute;
-    z-index: 0;
-    top: -4rem;
-    right: 16rem;
-    width: 21rem;
-    aspect-ratio: 690 / 548;
-    background: url("/images/bg-flare.png") top right / 100% 100% no-repeat;
-    pointer-events: none;
   }
 
   .contactForm,

@@ -213,3 +213,33 @@ Session notes are appended here after each completed task.
 - Baseline, revised implementation, and independent evaluator each passed npm run verify with all 22 tests. git diff --check passed. Inspected the updated reference screenshot; rounded proportions retain the intended glow treatment.
 - Independent evaluator verdict: PASS. No functional issues; uncommitted chronology noted as a nonblocking TDD warning.
 - Next task: none; follow-up plan complete. Changes are uncommitted.
+
+## 2026-09-25 - feat-contact-pulsing-border: Task 1 - Contact shader
+
+- Replaced the homepage contact flare with Paper Pulsing Border, pinned @paper-design/shaders 0.0.81. Used the core ShaderMount API in a small client boundary; homepage and form remain statically rendered.
+- Preserved supplied visual settings, with responsive form-relative canvas dimensions instead of fixed 1280x720 CSS dimensions. Capped rendering to 921,600 pixels; isolated uniforms support future field-focus interactions without forking GLSL.
+- Lazy-load near contact; Paper pauses offscreen/hidden-document animation. CSS glow remains for reduced motion, unavailable WebGL, context loss, and disabled JavaScript. Cleanup disposes mount and listeners.
+- Inspected desktop/mobile screenshots and corrected stacking contexts so screen blending does not introduce a black canvas rectangle or obscure social links. Documented the integration in DESIGN.md.
+- Verification: baseline passed 22 tests; implementation passed 26 tests, lint, typecheck, and static production build. Independent evaluator PASS after an unchanged verification rerun; git diff --check passed.
+- Unrelated finding: evaluator's initial run intermittently failed existing linked-panel.spec.ts:124 hover positioning; unchanged rerun passed all 26 tests. Record for future test-stability investigation if it recurs.
+- Next: user visual iteration, then optional field-focus responses. No focus-driven effects added in this first pass. Changes uncommitted.
+
+## 2026-09-25 - feat-contact-pulsing-border: Task 2 - Contact spacing
+
+- Set contactForm padding to 2.5rem 3.5rem at all breakpoints, removing the previous tablet override. Set shader offsets to top -33%, right -36%, bottom -30%, left -25%.
+- Inspected desktop/mobile screenshots. Implementation and independent evaluator verification passed all 26 tests, lint, typecheck, and build. Sandboxed build stalled; approved full verification succeeded outside sandbox. git diff --check passed.
+- Independent evaluator: PASS. No new tests needed for the CSS-only adjustment. Changes uncommitted.
+
+## 2026-09-25 - feat-contact-pulsing-border: Task 3 - Field-focus pulse
+
+- Changed roundness to 0.08. Input/textarea/select focus raises smoke 0.49 to 0.68 and speed 0.46 to 1.14 with smoothstep easing over 250ms, then restores both over 250ms. Rapid retriggers rise from current intensity and cancel the previous frame loop. Pending focus is replayed after shader loading if a field remains focused.
+- Kept the form server-rendered; scoped native focus listener to its form. Reduced motion uses existing static fallback. Hidden-document handling resets pulse values; cleanup cancels frames and removes listeners. Preserved previous mobile padding adjustment.
+- Added deterministic browser timing coverage for all three existing fields, ascent/descent/base values, smooth rapid retriggers, and non-field focus. Timing test uses a small render budget; separate existing tests retain full-resolution visual/lifecycle coverage.
+- Baseline passed 26 tests. Implementation and independent evaluator each passed npm run verify with 27 tests; git diff --check passed. Initial clock setup was corrected; an intermediate run encountered the previously recorded unrelated linked-panel hover flake. Final runs passed. Inspected desktop screenshot.
+- Independent evaluator: PASS, no blocking issues. Changes uncommitted.
+
+## 2026-09-26 - feat-contact-pulsing-border: Sync tests and design guidance with manual values
+
+- Reviewed the user's follow-up styling changes, preserving the implementation: focus pulse targets are smoke `0.78`, speed `1.1`, and `300ms` per leg; contact labels use Switzer, fields brighten on hover and use a white focus border without the global shadow, and the CTA uses the updated animated gradient/press treatment.
+- Updated the deterministic focus test's peak and completion timing to match the 300ms pulse, and updated DESIGN.md plus the plan acceptance criterion. Historical notes remain unchanged.
+- Full `npm run verify` passed: lint, typecheck, production build, and all 27 browser tests. `git diff --check` passed. Changes remain uncommitted.

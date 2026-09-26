@@ -13,7 +13,7 @@ colors:
   surface: "rgba(255, 255, 255, 0.02)"
   surface-border: "rgba(255, 255, 255, 0.08)"
   surface-elevated: "rgba(0, 0, 0, 0.66)"
-  surface-contact: "rgba(1, 12, 17, 0.96)"
+  surface-contact: "#010C11"
   footer: "#000000"
   input: "rgba(255, 255, 255, 0.08)"
   accent-blue: "#00b0ff"
@@ -146,7 +146,7 @@ Typography uses three local font families loaded in [src/app/layout.tsx](src/app
 
 - **Switzer:** Display, section titles, nav, buttons, labels, and compact UI. It carries the crisp product voice.
 - **Source Serif 4:** Body and long-form reading. It adds editorial warmth and distinguishes the portfolio from a generic product site.
-- **Source Code Pro:** Tags, field labels, technical metadata, and small system-like annotations.
+- **Source Code Pro:** Tags, technical metadata, and small system-like annotations. Contact field labels use Switzer to match the form controls.
 
 Headlines should be confident and compact. Section titles use Switzer Bold with a white-to-muted gradient text treatment and tight tracking. Body copy should remain comfortable and readable, generally Source Serif 4 at `1rem` to `1.125rem` with `1.5` line height.
 
@@ -170,13 +170,13 @@ Cards and panels should use real content density. Favor scan-friendly titles, sh
 
 Prefer these shared viewport buckets for layout changes:
 
-| Bucket | Viewport width |
-| --- | --- |
-| Mobile | Below `30rem` |
-| Large mobile | `30rem` to below `48rem` |
-| Tablet | `48rem` to below `62rem` |
-| Desktop | `62rem` to below `80rem` |
-| Large desktop | `80rem` and above |
+| Bucket        | Viewport width           |
+| ------------- | ------------------------ |
+| Mobile        | Below `30rem`            |
+| Large mobile  | `30rem` to below `48rem` |
+| Tablet        | `48rem` to below `62rem` |
+| Desktop       | `62rem` to below `80rem` |
+| Large desktop | `80rem` and above        |
 
 The large-desktop threshold matches the `76rem` content cap plus two `2rem` page gutters. At the default browser font size, the thresholds correspond to 480, 768, 992, and 1280 CSS pixels. Media-query `rem` units use the browser's initial font size, so these pixel equivalents can change with user font preferences.
 
@@ -246,7 +246,26 @@ Case study cards on desktop use skewed containers to create the game-inspired ed
 
 **Buttons and links:** Primary buttons use blue-to-purple gradients, white text, Switzer Bold, and a subtle hover lift. Text links use uppercase labels with arrow or external icons. Hover color should brighten, not introduce a new visual language.
 
-**Forms:** Contact inputs sit on the near-black contact surface. Labels use purple Source Code Pro. Inputs use translucent fills, small radius, clear focus borders, and visible focus shadows from the global focus token.
+**Forms:** Contact inputs sit on the near-black contact surface. Labels use purple Switzer. Inputs use translucent fills, small radius, hover brightening, and a clear white focus border. Contact fields intentionally remove the global focus shadow to keep the shader edge and field boundary visually separate; the contact button uses a white outline on focus.
+
+The contact CTA uses a blue, purple, and pink gradient that shifts across the
+button on hover and compresses briefly on press. The contact form's padding is
+`2.5rem 2rem` below `30rem`, then `2.5rem 3.5rem` at wider widths.
+
+The contact form is framed by Paper's Pulsing Border shader, replacing the static
+flare image. `contact-border.tsx` owns the visual uniforms and loads the pinned
+`@paper-design/shaders` core only near the form. The canvas adapts to the form
+instead of fixing the layout at the reference's 1280×720 dimensions; its pixel
+budget is capped at that resolution. Screen blending removes the black canvas
+background, so avoid adding an isolated stacking context between the decoration
+and the section background. The form and social content remain above it.
+Paper handles resizing and pauses for viewport/document visibility. Reduced
+motion, disabled JavaScript, or unavailable WebGL use a static CSS border glow.
+The contour roundness is `0.08`. Each form-field focus smoothly raises smoke
+from `0.49` to `0.78` and speed from `0.46` to `1.1` over 300ms, then restores
+both over another 300ms. Rapid focus changes restart from the current intensity;
+reduced motion keeps the static decoration. A local form listener updates the
+mount's uniforms without moving homepage content into a client component.
 
 **Motion and states:** Default transitions are `180ms ease`. Hover lift should be subtle, usually `translateY(-1px)`. Always honor `prefers-reduced-motion` by reducing animation and transition duration.
 

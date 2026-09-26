@@ -1,0 +1,60 @@
+{
+  "slug": "feat-contact-pulsing-border",
+  "title": "Replace contact flare with Paper pulsing border",
+  "type": "feature",
+  "created": "2026-09-25",
+  "status": "complete",
+  "context": "Start with Paper's configurable shader to preserve fidelity and support later field-focus interactions and article shaders.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Integrate a responsive, accessible contact shader",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The contact flare is replaced by Paper Pulsing Border using the supplied visual settings; canvas dimensions adapt to the form.",
+        "The decorative effect does not intercept input or obscure contact content, and responsive gutters remain intact.",
+        "Shader code loads only near the contact section; animation stops offscreen and when the document is hidden.",
+        "Reduced motion, unavailable WebGL, and JavaScript disabled retain a static decoration and usable form.",
+        "Settings are isolated for later interaction work; npm run verify and independent evaluation pass."
+      ],
+      "files": [
+        "src/app/(marketing)/_components/contact-border.tsx",
+        "src/app/(marketing)/_components/homepage.tsx",
+        "tests/e2e/contact-border.spec.ts"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Adjust contact padding and border offsets",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Contact form padding is 2.5rem 2rem below 30rem and 2.5rem 3.5rem at 30rem and above.",
+        "Border offsets are top -33%, right -36%, bottom -30%, left -25%.",
+        "npm run verify passes."
+      ],
+      "depends_on": [
+        "1"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Pulse contact border on field focus",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Shader roundness is 0.08.",
+        "Each input or textarea focus eases smoke from 0.49 to 0.78 and speed from 0.46 to 1.1 over 300ms, returning over another 300ms.",
+        "Rapid focus changes restart smoothly without overlapping animation loops; initial focus during shader loading triggers once ready.",
+        "Reduced motion and unavailable WebGL retain static fallback; animation resources are cleaned up.",
+        "npm run verify and independent evaluation pass."
+      ],
+      "files": [
+        "src/app/(marketing)/_components/contact-border.tsx",
+        "tests/e2e/contact-border.spec.ts"
+      ],
+      "depends_on": [
+        "2"
+      ]
+    }
+  ]
+}

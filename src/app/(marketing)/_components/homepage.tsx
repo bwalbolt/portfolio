@@ -25,6 +25,7 @@ import {
   VisuallyHidden,
   cx,
 } from "./primitives";
+import { ContactBorder } from "./contact-border";
 import { LinkedPanelCard } from "./linked-panel-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
@@ -269,65 +270,66 @@ export function Homepage() {
 
           <section className={styles.contactSection} id="contact">
             <Container className={styles.contactLayout}>
-              <div aria-hidden="true" className={styles.contactFlare} />
+              <div className={styles.contactFormFrame}>
+                <ContactBorder />
+                <form className={styles.contactForm}>
+                  <h2 className={styles.contactTitle}>{CONTACT_COPY.heading}</h2>
 
-              <form className={styles.contactForm}>
-                <h2 className={styles.contactTitle}>{CONTACT_COPY.heading}</h2>
+                  <div className={styles.contactFieldGrid}>
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel} htmlFor="contact-name">
+                        {CONTACT_COPY.nameLabel}
+                      </label>
+                      <input
+                        className={styles.textField}
+                        id="contact-name"
+                        name="name"
+                        placeholder={CONTACT_COPY.namePlaceholder}
+                        type="text"
+                      />
+                    </div>
 
-                <div className={styles.contactFieldGrid}>
-                  <div className={styles.fieldGroup}>
-                    <label className={styles.fieldLabel} htmlFor="contact-name">
-                      {CONTACT_COPY.nameLabel}
-                    </label>
-                    <input
-                      className={styles.textField}
-                      id="contact-name"
-                      name="name"
-                      placeholder={CONTACT_COPY.namePlaceholder}
-                      type="text"
-                    />
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel} htmlFor="contact-email">
+                        {CONTACT_COPY.emailLabel}
+                      </label>
+                      <input
+                        className={styles.textField}
+                        id="contact-email"
+                        name="email"
+                        placeholder={CONTACT_COPY.emailPlaceholder}
+                        type="email"
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.fieldGroup}>
-                    <label className={styles.fieldLabel} htmlFor="contact-email">
-                      {CONTACT_COPY.emailLabel}
+                    <label className={styles.fieldLabel} htmlFor="contact-message">
+                      {CONTACT_COPY.messageLabel}
                     </label>
-                    <input
-                      className={styles.textField}
-                      id="contact-email"
-                      name="email"
-                      placeholder={CONTACT_COPY.emailPlaceholder}
-                      type="email"
+                    <textarea
+                      className={cx(styles.textField, styles.textareaField)}
+                      id="contact-message"
+                      name="message"
+                      placeholder={CONTACT_COPY.messagePlaceholder}
+                      rows={6}
                     />
                   </div>
-                </div>
 
-                <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel} htmlFor="contact-message">
-                    {CONTACT_COPY.messageLabel}
-                  </label>
-                  <textarea
-                    className={cx(styles.textField, styles.textareaField)}
-                    id="contact-message"
-                    name="message"
-                    placeholder={CONTACT_COPY.messagePlaceholder}
-                    rows={6}
-                  />
-                </div>
+                  <button
+                    aria-describedby="contact-static-note"
+                    className={styles.contactButton}
+                    type="button"
+                  >
+                    <span>{CONTACT_COPY.submitLabel}</span>
+                    <Icon name="paper-plane" />
+                  </button>
 
-                <button
-                  aria-describedby="contact-static-note"
-                  className={styles.contactButton}
-                  type="button"
-                >
-                  <span>{CONTACT_COPY.submitLabel}</span>
-                  <Icon name="paper-plane" />
-                </button>
-
-                <VisuallyHidden>
-                  <span id="contact-static-note">{CONTACT_COPY.staticNote}</span>
-                </VisuallyHidden>
-              </form>
+                  <VisuallyHidden>
+                    <span id="contact-static-note">{CONTACT_COPY.staticNote}</span>
+                  </VisuallyHidden>
+                </form>
+              </div>
 
               <aside className={styles.contactAside}>
                 <SocialLinks />

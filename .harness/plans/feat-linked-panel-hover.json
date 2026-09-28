@@ -3,7 +3,7 @@
   "title": "Interactive linked-panel hover",
   "type": "feature",
   "created": "2026-09-23",
-  "status": "in_progress",
+  "status": "complete",
   "context": "Apply the linked-panel hover treatment from Figma 0J2JF0nYrI8EJrttdHNes4 node 65:111 to insight cards (task 1, complete) and slanted case-study cards (task 2, pending). Task 1 acceptance criteria are historical: the completed improve-linked-panel-tracking plan supersedes its nearest-edge/timed motion and exact pink ratios. Task 2 must reuse the current immediate normalized center-ray projection, fixed 32px amber ellipse, and 54% by 76% pink ellipse with 5% vertical insets. Ordinary non-linked panels remain unchanged.",
   "tasks": [
     {
@@ -26,13 +26,13 @@
     {
       "id": "2",
       "title": "Extend linked-panel hover to slanted case-study cards",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "Extend the reusable linked-panel composition with an explicit slanted variant and reuse the existing pointer projection. Integrate both case-study cards without duplicating tracking logic or converting the homepage/content into client components. Insight cards retain their current behavior.",
         "Preserve the current case-study layout, typography, tags, artwork, image sizing/cropping and upright content. Below 48rem use the existing rectangular mobile geometry; at 48rem and above follow the existing centered skewX(-10deg) surface and asymmetric rounded corners. No layout shifts or horizontal overflow are introduced.",
         "Map viewport pointer coordinates into the unskewed panel coordinate system using the inverse of the actual surface transform, including transform origin; do not normalize against the axis-aligned bounding box of the skewed surface. Project the center-to-pointer ray in that local space, then map the result back to the visible slanted perimeter.",
         "Both ellipses update immediately with no positional easing. Points along each center-to-corner diagonal of the visible panel map to that corner; intermediate directions remain on the corresponding edge. Exact center retains the last position, initially top-left. Recalculate geometry after resize, scroll and crossing the 48rem breakpoint.",
-        "Retain the fixed 32px round amber ellipse and 54%-wide by 76%-tall pink ellipse with 5% vertical insets, measured against unskewed surface dimensions. Transform their positions to follow the slanted edges without shearing the ellipse shapes; synchronize their corner endpoints using the shared projection.",
+        "Retain the fixed 32px round amber ellipse and 54%-wide by 76%-tall pink ellipse with 5% vertical insets, measured against unskewed surface dimensions. Apply the actual slanted surface transform to both ellipse positions and shapes around the shared surface origin so their reach is balanced along both slanted edges; synchronize their corner endpoints using the shared projection.",
         "Keep pointer-transparent decorations at z-index 0 in an isolated local wrapper behind the visible surface. Apply the current opaque #071922 active fill, 40% white border and amber shadow to the actual skewed surface. Keep glows outside artwork clipping, preserve artwork clipping inside the panel, and retain fade/mask sequencing so decoration never bleeds through the surface.",
         "Render one native stretched Read more link per case-study card with an accessible name containing the title. Its ::before hit area follows the visible rounded slanted surface, including protruding side regions, without making the empty wedges of its bounding rectangle clickable. Text, tags and artwork inside the surface resolve to that same link. Preserve modifier-click and no-JavaScript navigation; avoid extra tab stops and nested interactive elements.",
         "Keyboard focus visibly outlines the actual panel shape and shows static top-left decoration. Reduced motion keeps static feedback without tracking or transitions. Touch follows the native link on one tap without persistent hover.",

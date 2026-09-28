@@ -4,6 +4,15 @@
   overflow: visible;
   --glow-x: 0;
   --glow-y: 0;
+  --glow-pink-left: 0px;
+  --glow-pink-top: 0px;
+  --glow-pink-origin-x: 0px;
+  --glow-pink-origin-y: 0px;
+  --glow-amber-left: 0px;
+  --glow-amber-top: 0px;
+  --glow-amber-origin-x: 0px;
+  --glow-amber-origin-y: 0px;
+  --slanted-glow-transform: none;
 }
 
 .wrapper::before,
@@ -48,11 +57,29 @@
   transition: border-color var(--transition-base), box-shadow var(--transition-base), background-color 0s 180ms;
 }
 
+.linkContent {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
+
 .link::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: var(--radius-panel);
+}
+
+.slanted::before {
+  left: var(--glow-pink-left);
+  top: var(--glow-pink-top);
+  transform-origin: var(--glow-pink-origin-x) var(--glow-pink-origin-y);
+}
+
+.slanted::after {
+  left: var(--glow-amber-left);
+  top: var(--glow-amber-top);
+  transform-origin: var(--glow-amber-origin-x) var(--glow-amber-origin-y);
 }
 
 .wrapper:has(.link:focus-visible) {
@@ -75,16 +102,53 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .wrapper:hover::before,
-  .wrapper:hover::after {
+  .wrapper:not(.slanted):hover::before,
+  .wrapper:not(.slanted):hover::after {
     opacity: 1;
   }
 
-  .wrapper:hover .surface {
+  .wrapper:not(.slanted):hover .surface {
     background-color: #071922;
     border-color: var(--color-white-40);
     box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
     transition-delay: 0s;
+  }
+
+  .slanted:has(.surface:hover)::before,
+  .slanted:has(.surface:hover)::after {
+    opacity: 1;
+  }
+
+  .slanted:has(.surface:hover) .surface {
+    background-color: #071922;
+    border-color: var(--color-white-40);
+    box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
+    transition-delay: 0s;
+  }
+}
+
+.slantedSurface {
+  transform: none;
+  transform-origin: center;
+}
+
+.slantedSurface .linkContent {
+  transform: none;
+  transform-origin: center;
+}
+
+@media (width >= 48rem) {
+  .slantedSurface {
+    transform: skewX(-10deg);
+  }
+
+  .slantedSurface .linkContent {
+    transform: skewX(10deg);
+  }
+
+  .slanted::before,
+  .slanted::after {
+    transform: var(--slanted-glow-transform);
   }
 }
 

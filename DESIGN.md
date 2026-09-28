@@ -295,7 +295,13 @@ Use `LinkedPanelCard` for a single-destination insight article. Supply `href`, a
 `linkLabel` containing the article title, content children, and optional surface
 and link classes. It owns the stretched native “Read more” link; children must
 not contain additional links or controls. Ordinary `PanelCard` remains static.
-Case-study cards need a separate adaptation for their skewed surface.
+Case-study cards use `LinkedPanelCard` with `variant="slanted"`. Below `48rem`
+the variant is rectangular; at and above that breakpoint its actual surface is
+skewed `-10deg`, while a full-size inner frame counter-skews the content and
+artwork so they remain upright. Desktop artwork extends by the surface's
+half-height shear offset on the right so its upright top edge reaches the
+visible top-right panel corner. The isolated wrapper keeps overflow visible for
+the glows while the surface clips the artwork.
 
 The isolated wrapper paints pointer-transparent amber and pink CSS ellipses at
 z-index 0 beneath the surface at z-index 1. The active surface is opaque
@@ -308,7 +314,10 @@ blur values (8px amber, 32px pink) to match its rendered softness.
 
 Pointer motion projects a ray from the panel center through the pointer onto
 the normalized perimeter, then maps it onto each ellipse's travel rectangle.
-Updates are immediate, without positional easing. Every point along a diagonal
+Updates are immediate, without positional easing. Slanted cards first apply the
+inverse of the actual surface transform and transform origin, project in that
+unskewed space, then applies the actual surface transform around the shared
+surface origin to each decoration, including its shape. Every point along a diagonal
 arm maps to its corner; at the exact center, retain the last position (initially
 top-left). Both ellipses stay on their edges and arrive together. Keyboard focus and
 reduced motion use a static top-left glow. Touch retains native single-tap

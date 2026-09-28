@@ -243,3 +243,26 @@ Session notes are appended here after each completed task.
 - Reviewed the user's follow-up styling changes, preserving the implementation: focus pulse targets are smoke `0.78`, speed `1.1`, and `300ms` per leg; contact labels use Switzer, fields brighten on hover and use a white focus border without the global shadow, and the CTA uses the updated animated gradient/press treatment.
 - Updated the deterministic focus test's peak and completion timing to match the 300ms pulse, and updated DESIGN.md plus the plan acceptance criterion. Historical notes remain unchanged.
 - Full `npm run verify` passed: lint, typecheck, production build, and all 27 browser tests. `git diff --check` passed. Changes remain uncommitted.
+
+## 2026-09-26 - feat-linked-panel-hover: Task 2 - Slanted case-study panels
+
+- Extended `LinkedPanelCard` with an explicit `slanted` variant. Case-study cards now use one native stretched link, a transformed surface at `48rem`, a counter-skewed content/artwork frame, visible-surface-only hit testing, and inverse-transform pointer projection including transform origin.
+- Preserved the rectangular mobile layout, upright artwork/content, active opaque surface treatment, isolated non-clipping glows, keyboard/reduced-motion feedback, touch navigation, and no-JavaScript navigation. Updated DESIGN.md with the variant and coordinate-mapping guidance.
+- Added browser coverage for 390, 767, 768, and 1280px geometry, diagonal and edge projection, center retention, breakpoint/scroll changes, hit wedges, content orientation, modifier navigation, keyboard, reduced motion, touch, no-JavaScript, and insight regressions.
+- Full `npm run verify` passed: lint, typecheck, production build, and all 32 browser tests. `git diff --check` passed.
+- Evaluator status: blocked by the evaluator runtime. Direct subagent sessions and the official evaluator adapter did not return a verdict; read-only runtime failed on Codex state-db permissions, and writable/full-access retries hung. Task remains pending until an independent evaluator returns PASS.
+
+## 2026-09-26 - feat-linked-panel-hover: Task 2 completion and slanted artwork/glow correction
+
+- Moved the desktop case artwork into its own full-surface counter-skew layer, keeping the image upright while extending it 1.5rem beyond the right edge so it cleanly meets the visible skewed top-right corner.
+- Applied the actual surface transform to both glow positions and shapes around one shared surface origin. This balances their reach along the slanted edges instead of allowing the unskewed ellipses to overshoot on the right.
+- Tightened browser contracts for immediate (non-polled) pointer updates at 390px, 767px, 768px, and 1280px, as well as transformed glow origins, corner anchors, surface-only hit targets, and artwork corner coverage.
+- Full `npm run verify` passed: lint, typecheck, production build, and all 32 browser tests. `git diff --check` passed.
+- Independent evaluator: PASS; no issues found. The task and plan are complete. Changes remain uncommitted.
+
+## 2026-09-27 - fix-case-link-content-alignment: Task 1 - Align slanted case-study link with content
+
+- Made the desktop Read more content span a full-surface counter-skew layer with the same origin and padding as `caseFrame`, so its visible left edge aligns with the case title rather than the slanted surface edge.
+- Kept the native anchor and its full visible-surface hit target unchanged; mobile remains on its existing untransformed layout.
+- Added browser assertions for label/title alignment on both case-study cards. Baseline and final `npm run verify` each passed lint, typecheck, production build, and all 32 browser tests; `git diff --check` passed.
+- Independent evaluator: PASS on first try; no blocking issues. Changes remain uncommitted.

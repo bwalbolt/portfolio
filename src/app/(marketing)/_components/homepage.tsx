@@ -55,48 +55,49 @@ function InsightPanel({ insight }: { insight: InsightCard }) {
 
 function CaseStudyPanel({ study }: { study: CaseStudyCard }) {
   return (
-    <PanelCard as="article" className={styles.caseCard}>
-      <div aria-hidden="true" className={styles.caseShape}>
-        <div className={styles.caseShapeInner}>
+    <LinkedPanelCard
+      href={study.href}
+      linkLabel={`Read more about ${study.title}`}
+      className={styles.caseCard}
+      linkClassName={styles.readMore}
+      variant="slanted"
+    >
+      <div className={styles.caseFrame}>
+        <div aria-hidden="true" className={styles.caseArtwork}>
           <Image
             alt=""
-            className={styles.caseArtworkDesktop}
-            sizes="(width >= 48rem) 18rem, 11rem"
-            src={study.artworkDesktop}
+            className={styles.caseArtworkMobile}
+            sizes="11rem"
+            src={study.artworkMobile}
           />
+        </div>
+
+        <div className={styles.caseContent}>
+          <h3 className={styles.cardTitle}>{study.title}</h3>
+          <p className={styles.cardBody}>{study.description}</p>
+
+          <ul className={styles.tagList}>
+            {study.tags.map((tag) => (
+              <li
+                className={cx(styles.tag, toneClassNames[tag.tone])}
+                key={`${study.title}-${tag.label}`}
+              >
+                {tag.label}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      <div aria-hidden="true" className={styles.caseArtwork}>
+      <div aria-hidden="true" className={styles.caseArtworkDesktopFrame}>
         <Image
           alt=""
-          className={styles.caseArtworkMobile}
-          sizes="11rem"
-          src={study.artworkMobile}
+          className={styles.caseArtworkDesktop}
+          sizes="(width >= 48rem) 18rem, 11rem"
+          src={study.artworkDesktop}
         />
       </div>
-
-      <div className={styles.caseContent}>
-        <h3 className={styles.cardTitle}>{study.title}</h3>
-        <p className={styles.cardBody}>{study.description}</p>
-
-        <ul className={styles.tagList}>
-          {study.tags.map((tag) => (
-            <li
-              className={cx(styles.tag, toneClassNames[tag.tone])}
-              key={`${study.title}-${tag.label}`}
-            >
-              {tag.label}
-            </li>
-          ))}
-        </ul>
-
-        <Link className={styles.readMore} href={study.href}>
-          <span>Read more</span>
-          <Icon name="arrow" />
-        </Link>
-      </div>
-    </PanelCard>
+    </LinkedPanelCard>
   );
 }
 

@@ -1,0 +1,25 @@
+{
+  "slug": "fix-case-link-content-alignment",
+  "title": "Align slanted case-study link with content",
+  "type": "bug",
+  "created": "2026-09-27",
+  "status": "complete",
+  "context": "The Read more label is currently positioned in the skewed surface coordinate space, so at desktop it no longer shares the case-frame content's left edge.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Align the slanted case-study link label with its content frame",
+      "status": "complete",
+      "acceptance_criteria": [
+        "At 48rem and above, each Read more label's visible left edge aligns with its case content's visible left edge while both remain upright.",
+        "The existing full visible-surface native link hit area, mobile layout, keyboard focus, and no-JavaScript behavior are unchanged.",
+        "Browser coverage asserts desktop alignment for both case-study cards, and npm run verify plus an independent evaluator pass."
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/linked-panel.spec.ts"
+      ],
+      "depends_on": []
+    }
+  ]
+}

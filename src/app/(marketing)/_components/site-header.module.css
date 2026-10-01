@@ -74,10 +74,6 @@
   gap: var(--space-3);
 }
 
-.contactCta {
-  padding-inline: 1rem;
-  font-size: 0.875rem;
-}
 
 .menuButton {
   display: inline-flex;
@@ -165,10 +161,6 @@
     display: block;
   }
 
-  .contactCta {
-    padding-inline: 1.5rem;
-    font-size: 1rem;
-  }
 
   .menuButton,
   .mobilePanel {

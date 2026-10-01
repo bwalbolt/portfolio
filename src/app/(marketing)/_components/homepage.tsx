@@ -18,6 +18,7 @@ import {
   type InsightCard,
 } from "../_content/site-content";
 import {
+  Button,
   Container,
   Icon,
   PanelCard,
@@ -317,14 +318,14 @@ export function Homepage() {
                     />
                   </div>
 
-                  <button
+                  <Button
                     aria-describedby="contact-static-note"
                     className={styles.contactButton}
+                    icon={<Icon name="paper-plane" />}
                     type="button"
                   >
-                    <span>{CONTACT_COPY.submitLabel}</span>
-                    <Icon name="paper-plane" />
-                  </button>
+                    {CONTACT_COPY.submitLabel}
+                  </Button>
 
                   <VisuallyHidden>
                     <span id="contact-static-note">{CONTACT_COPY.staticNote}</span>

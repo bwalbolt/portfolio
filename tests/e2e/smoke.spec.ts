@@ -645,3 +645,244 @@ test("About mosaic loads only the appropriate crop at the 30rem breakpoint", asy
     await page.close();
   }
 });
+
+test("unified Button primitive shares gradient styling, default/small variants, hover/focus/active states, and reduced motion across native button and link elements", async ({
+  page,
+}) => {
+  // Mobile layout (< 48rem): full-width and 3.5rem (56px) min-height
+  await page.setViewportSize({ height: 740, width: 390 });
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+
+  const contactButton = page.locator("#contact form button");
+  const bannerLink = page
+    .getByRole("banner")
+    .getByRole("link", { name: "Get in Touch" });
+
+  // Semantic rendering and size attributes
+  await expect(contactButton).toBeVisible();
+  await expect(contactButton).toHaveAttribute("type", "button");
+  await expect(contactButton).toHaveAttribute("data-size", "default");
+  await expect(bannerLink).toHaveAttribute("href", "/#contact");
+  await expect(bannerLink).toHaveAttribute("data-size", "small");
+
+  const formField = page.locator("#contact form input").first();
+  const mobileButtonBox = (await contactButton.boundingBox())!;
+  const mobileFieldBox = (await formField.boundingBox())!;
+  expect(mobileButtonBox.width).toBeCloseTo(mobileFieldBox.width, 0);
+  expect(mobileButtonBox.height).toBeGreaterThanOrEqual(56);
+
+  // Desktop layout (>= 48rem): fit-content and min-width 14rem (224px)
+  await page.setViewportSize({ height: 900, width: 1280 });
+  const desktopButtonBox = (await contactButton.boundingBox())!;
+  const desktopFormBox = (await page.locator("#contact form").boundingBox())!;
+  expect(desktopButtonBox.width).toBeGreaterThanOrEqual(224);
+  expect(desktopButtonBox.width).toBeLessThan(desktopFormBox.width * 0.7);
+
+  // Shared typography, gradient styling, and metrics on default Button primitive
+  const buttonStyle = await contactButton.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return {
+      bgImage: s.backgroundImage,
+      bgSize: s.backgroundSize,
+      color: s.color,
+      fontFamily: s.fontFamily,
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      paddingBottom: s.paddingBottom,
+      paddingLeft: s.paddingLeft,
+      paddingRight: s.paddingRight,
+      paddingTop: s.paddingTop,
+      transitionDuration: s.transitionDuration,
+      transitionProperty: s.transitionProperty,
+    };
+  });
+  expect(buttonStyle.fontFamily.toLowerCase()).toContain("switzer");
+  expect(buttonStyle.fontWeight).toBe("700");
+  expect(buttonStyle.color).toBe("rgb(255, 255, 255)");
+  expect(buttonStyle.bgImage).toContain("linear-gradient");
+  expect(buttonStyle.bgImage).toContain("rgb(0, 176, 255)");
+  expect(buttonStyle.bgImage).toContain("rgb(124, 77, 255)");
+  expect(buttonStyle.bgImage).toContain("rgb(228, 79, 217)");
+  expect(buttonStyle.bgSize).toBe("250%");
+  expect(buttonStyle.fontSize).toBe("20px");
+  expect(buttonStyle.paddingTop).toBe("16px");
+  expect(buttonStyle.paddingBottom).toBe("16px");
+  expect(buttonStyle.paddingLeft).toBe("24px");
+  expect(buttonStyle.paddingRight).toBe("24px");
+  const buttonProps = buttonStyle.transitionProperty.split(", ");
+  const buttonDurations = buttonStyle.transitionDuration.split(", ");
+  const buttonBgPosIndex = buttonProps.indexOf("background-position");
+  expect(buttonBgPosIndex).toBeGreaterThanOrEqual(0);
+  expect(buttonDurations[buttonBgPosIndex]).toBe("0.25s");
+
+  // Shared typography, identical gradient styling, and small size metrics on Button primitive (rendered as navigation link)
+  const linkSmallStyle = await bannerLink.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return {
+      bgImage: s.backgroundImage,
+      bgSize: s.backgroundSize,
+      color: s.color,
+      fontFamily: s.fontFamily,
+      fontSize: s.fontSize,
+      fontWeight: s.fontWeight,
+      paddingBottom: s.paddingBottom,
+      paddingLeft: s.paddingLeft,
+      paddingRight: s.paddingRight,
+      paddingTop: s.paddingTop,
+      transitionDuration: s.transitionDuration,
+      transitionProperty: s.transitionProperty,
+    };
+  });
+  expect(linkSmallStyle.fontFamily.toLowerCase()).toContain("switzer");
+  expect(linkSmallStyle.fontWeight).toBe(buttonStyle.fontWeight);
+  expect(linkSmallStyle.color).toBe(buttonStyle.color);
+  expect(linkSmallStyle.bgImage).toBe(buttonStyle.bgImage);
+  expect(linkSmallStyle.bgSize).toBe(buttonStyle.bgSize);
+  expect(linkSmallStyle.fontSize).toBe("16px");
+  expect(linkSmallStyle.paddingTop).toBe("8px");
+  expect(linkSmallStyle.paddingBottom).toBe("8px");
+  expect(linkSmallStyle.paddingLeft).toBe("24px");
+  expect(linkSmallStyle.paddingRight).toBe("24px");
+  const linkProps = linkSmallStyle.transitionProperty.split(", ");
+  const linkDurations = linkSmallStyle.transitionDuration.split(", ");
+  const linkBgPosIndex = linkProps.indexOf("background-position");
+  expect(linkBgPosIndex).toBeGreaterThanOrEqual(0);
+  expect(linkDurations[linkBgPosIndex]).toBe("0.25s");
+
+  // Shared animated hover sweep on Button primitive across native button and link elements
+  await contactButton.hover();
+  await expect
+    .poll(async () =>
+      contactButton.evaluate((el) => getComputedStyle(el).backgroundPosition),
+    )
+    .toMatch(/^100%/);
+
+  await bannerLink.hover();
+  await expect
+    .poll(async () =>
+      bannerLink.evaluate((el) => getComputedStyle(el).backgroundPosition),
+    )
+    .toMatch(/^100%/);
+
+  // Shared visible white focus outline on Button primitive across native button and link elements
+  await contactButton.focus();
+  await expect(contactButton).toBeFocused();
+  const buttonFocus = await contactButton.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return {
+      boxShadow: s.boxShadow,
+      outlineColor: s.outlineColor,
+      outlineStyle: s.outlineStyle,
+      outlineWidth: s.outlineWidth,
+    };
+  });
+  expect(buttonFocus.outlineStyle).toBe("solid");
+  expect(buttonFocus.outlineColor).toBe("rgb(255, 255, 255)");
+  expect(buttonFocus.outlineWidth).toBe("2px");
+  expect(buttonFocus.boxShadow).toBe("none");
+
+  await bannerLink.focus();
+  await expect(bannerLink).toBeFocused();
+  const linkFocus = await bannerLink.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return {
+      boxShadow: s.boxShadow,
+      outlineColor: s.outlineColor,
+      outlineStyle: s.outlineStyle,
+      outlineWidth: s.outlineWidth,
+    };
+  });
+  expect(linkFocus.outlineStyle).toBe("solid");
+  expect(linkFocus.outlineColor).toBe("rgb(255, 255, 255)");
+  expect(linkFocus.outlineWidth).toBe("2px");
+  expect(linkFocus.boxShadow).toBe("none");
+
+  // Shared active scale (transform: scale(0.95))
+  const contactBtnBox = (await contactButton.boundingBox())!;
+  await page.mouse.move(
+    contactBtnBox.x + contactBtnBox.width / 2,
+    contactBtnBox.y + contactBtnBox.height / 2,
+  );
+  await page.mouse.down();
+  await expect
+    .poll(async () =>
+      contactButton.evaluate((el) => getComputedStyle(el).transform),
+    )
+    .toMatch(/matrix\(0\.95/);
+  await page.mouse.up();
+
+  const bannerLinkBox = (await bannerLink.boundingBox())!;
+  await page.mouse.move(
+    bannerLinkBox.x + bannerLinkBox.width / 2,
+    bannerLinkBox.y + bannerLinkBox.height / 2,
+  );
+  await page.mouse.down();
+  await expect
+    .poll(async () =>
+      bannerLink.evaluate((el) => getComputedStyle(el).transform),
+    )
+    .toMatch(/matrix\(0\.95/);
+  await page.mouse.up();
+
+  // Reduced motion behavior: transition is disabled and active transform is none across both primitives
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const buttonReducedTransition = await contactButton.evaluate((el) =>
+    parseFloat(getComputedStyle(el).transitionDuration),
+  );
+  expect(buttonReducedTransition).toBeLessThan(0.001);
+
+  const linkReducedTransition = await bannerLink.evaluate((el) =>
+    parseFloat(getComputedStyle(el).transitionDuration),
+  );
+  expect(linkReducedTransition).toBeLessThan(0.001);
+
+  await page.mouse.move(
+    contactBtnBox.x + contactBtnBox.width / 2,
+    contactBtnBox.y + contactBtnBox.height / 2,
+  );
+  await page.mouse.down();
+  const buttonReducedActive = await contactButton.evaluate(
+    (el) => getComputedStyle(el).transform,
+  );
+  expect(buttonReducedActive).toBe("none");
+  await page.mouse.up();
+
+  await page.mouse.move(
+    bannerLinkBox.x + bannerLinkBox.width / 2,
+    bannerLinkBox.y + bannerLinkBox.height / 2,
+  );
+  await page.mouse.down();
+  const linkReducedActive = await bannerLink.evaluate(
+    (el) => getComputedStyle(el).transform,
+  );
+  expect(linkReducedActive).toBe("none");
+  await page.mouse.up();
+
+  // Verify Button primitive with default size rendered as a link (on placeholder routes like /contact)
+  await page.goto("/contact");
+  await page.evaluate(() => document.fonts.ready);
+  const backHomeLink = page.getByRole("link", { name: "Back Home" });
+  await expect(backHomeLink).toBeVisible();
+  await expect(backHomeLink).toHaveAttribute("data-size", "default");
+  const linkDefaultStyle = await backHomeLink.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return {
+      bgImage: s.backgroundImage,
+      bgSize: s.backgroundSize,
+      fontSize: s.fontSize,
+      paddingBottom: s.paddingBottom,
+      paddingLeft: s.paddingLeft,
+      paddingRight: s.paddingRight,
+      paddingTop: s.paddingTop,
+    };
+  });
+  expect(linkDefaultStyle.bgImage).toBe(buttonStyle.bgImage);
+  expect(linkDefaultStyle.bgSize).toBe("250%");
+  expect(linkDefaultStyle.fontSize).toBe("20px");
+  expect(linkDefaultStyle.paddingTop).toBe("16px");
+  expect(linkDefaultStyle.paddingBottom).toBe("16px");
+  expect(linkDefaultStyle.paddingLeft).toBe("24px");
+  expect(linkDefaultStyle.paddingRight).toBe("24px");
+});
+

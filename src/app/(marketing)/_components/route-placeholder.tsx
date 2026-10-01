@@ -1,5 +1,5 @@
 import { CONTACT_SECTION_HREF, SITE_NAME } from "../_content/site-content";
-import { Icon, LinkButton } from "./primitives";
+import { Button, Icon } from "./primitives";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import styles from "./route-placeholder.module.css";
@@ -36,14 +36,14 @@ export function RoutePlaceholder({
             <p className={styles.description}>{description}</p>
 
             <div className={styles.actions}>
-              <LinkButton href="/">Back Home</LinkButton>
-              <LinkButton
+              <Button href="/">Back Home</Button>
+              <Button
                 href={CONTACT_SECTION_HREF}
                 icon={<Icon name="arrow" />}
                 kind="text"
               >
                 Jump to Contact
-              </LinkButton>
+              </Button>
             </div>
 
             <div className={styles.note}>

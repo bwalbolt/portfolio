@@ -597,45 +597,8 @@
 }
 
 .contactButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
   width: 100%;
   min-height: 3.5rem;
-  padding: 1rem 1.5rem;
-  border-radius: var(--radius-md);
-  background: linear-gradient(
-    110deg,
-    var(--color-accent-blue) 0%,
-    var(--color-accent-purple) 40%,
-    var(--color-accent-pink) 50%,
-    var(--color-accent-purple) 60%,
-    var(--color-accent-blue) 100%
-  );
-  background-size: 250%;
-  background-position: 0 0;
-  color: var(--color-white);
-  font-family: var(--font-display-family);
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1;
-  transition:
-    background-position 250ms ease,
-    transform var(--transition-base);
-}
-
-.contactButton:hover {
-  background-position: 100% 0;
-}
-
-.contactButton:focus {
-  outline: 2px solid var(--color-white);
-  box-shadow: none;
-}
-
-.contactButton:active {
-  transform: scale(0.95);
 }
 
 .contactAside {

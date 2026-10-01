@@ -266,3 +266,13 @@ Session notes are appended here after each completed task.
 - Kept the native anchor and its full visible-surface hit target unchanged; mobile remains on its existing untransformed layout.
 - Added browser assertions for label/title alignment on both case-study cards. Baseline and final `npm run verify` each passed lint, typecheck, production build, and all 32 browser tests; `git diff --check` passed.
 - Independent evaluator: PASS on first try; no blocking issues. Changes remain uncommitted.
+
+## 2026-10-01 - improve-homepage-brand-shell: Task 1 - Extract the unified gradient button primitive
+
+- Unified `Button` and `LinkButton` into a single polymorphic `Button` primitive in `primitives.tsx` that renders an accessible `<Link>` when `href` is supplied and a native `<button>` otherwise, sharing the 5-stop 110deg linear gradient background, 250ms animated hover sweep, visible white focus outline, active scale, display typography, and reduced-motion behavior.
+- Kept `LinkButton` exported as an alias for backwards compatibility; updated `site-header.tsx` and `route-placeholder.tsx` to use `Button`.
+- Centralized default (20px font, 16px/24px padding) and small (16px font, 8px/24px padding) sizing rules into `primitives.module.css`. Removed duplicated gradient styles from `homepage.module.css` and local size overrides from `site-header.module.css`.
+- Updated `smoke.spec.ts` to assert identical background gradient image and size across native button and link renderings, 0.25s background-position transition animation, active scale (matrix 0.95), visible focus outline (`outline: 2px solid rgb(255, 255, 255)`, `box-shadow: none`), reduced-motion overrides, and both default and small sizes across the unified primitive.
+- Full `npm run verify` passed: lint, typecheck, production build, and all 33 browser tests.
+- Independent evaluator: PASS; all acceptance criteria passed, test coverage passed, make check passed, no placeholders, and TDD compliance passed. Task 1 marked complete in `.harness/plans/improve-homepage-brand-shell.json`.
+

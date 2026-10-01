@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import type { NavigationItem } from "../_content/site-content";
 import { SITE_NAME } from "../_content/site-content";
-import { Icon, LinkButton, VisuallyHidden, cx } from "./primitives";
+import { Button, Icon, VisuallyHidden, cx } from "./primitives";
 import styles from "./site-header.module.css";
 
 type SiteHeaderProps = {
@@ -80,9 +80,13 @@ export function SiteHeader({
         </nav>
 
         <div className={styles.actions}>
-          <LinkButton className={styles.contactCta} href={contactHref}>
+          <Button
+            className={styles.contactCta}
+            href={contactHref}
+            size="small"
+          >
             Get in Touch
-          </LinkButton>
+          </Button>
 
           <button
             aria-controls="mobile-navigation"

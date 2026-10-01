@@ -17,14 +17,33 @@ type ContainerProps<T extends ElementType> = WithClassName & {
   children: ReactNode;
 } & Omit<ComponentPropsWithoutRef<T>, "as" | "children" | "className">;
 
-type LinkButtonProps = WithClassName & {
+export type ButtonSize = "default" | "small";
+export type ButtonKind = "gradient" | "text";
+
+type BaseButtonProps = WithClassName & {
   ariaLabel?: string;
   children: ReactNode;
+  icon?: ReactNode;
+  kind?: ButtonKind;
+  size?: ButtonSize;
+};
+
+export type ButtonAsLinkProps = BaseButtonProps & {
   external?: boolean;
   href: string;
-  icon?: ReactNode;
-  kind?: "gradient" | "text";
-};
+} & Omit<
+  ComponentPropsWithoutRef<typeof Link>,
+  "as" | "children" | "className" | "href"
+>;
+
+export type ButtonAsNativeProps = BaseButtonProps & {
+  external?: never;
+  href?: undefined;
+} & ComponentPropsWithoutRef<"button">;
+
+export type ButtonProps = ButtonAsLinkProps | ButtonAsNativeProps;
+export type LinkButtonProps = ButtonProps;
+
 
 type SectionHeadingProps = WithClassName & {
   actionHref: string;
@@ -76,35 +95,100 @@ export function SectionHeading({
   );
 }
 
-export function LinkButton({
-  ariaLabel,
-  children,
-  className,
-  external = false,
-  href,
-  icon,
-  kind = "gradient",
-}: LinkButtonProps) {
-  const sharedProps = external
-    ? { rel: "noreferrer", target: "_blank" as const }
-    : {};
+export function Button(props: ButtonProps) {
+  if ("href" in props && typeof props.href === "string") {
+    const {
+      ariaLabel,
+      children,
+      className,
+      external = false,
+      href,
+      icon,
+      kind = "gradient",
+      size = "default",
+      ...rest
+    } = props;
+
+    const sharedProps = external
+      ? { rel: "noreferrer", target: "_blank" as const }
+      : {};
+
+    if (kind === "text") {
+      return (
+        <Link
+          aria-label={ariaLabel}
+          className={cx(styles.linkButtonText, className)}
+          href={href}
+          {...sharedProps}
+          {...rest}
+        >
+          <span>{children}</span>
+          {icon ? <span className={styles.buttonIcon}>{icon}</span> : null}
+        </Link>
+      );
+    }
+
+    const sizeClass =
+      size === "small" ? styles.buttonSmall : styles.buttonDefault;
+
+    return (
+      <Link
+        aria-label={ariaLabel}
+        className={cx(styles.button, styles.linkButton, sizeClass, className)}
+        data-size={size}
+        href={href}
+        {...sharedProps}
+        {...rest}
+      >
+        <span>{children}</span>
+        {icon ? <span className={styles.buttonIcon}>{icon}</span> : null}
+      </Link>
+    );
+  }
+
+  const {
+    ariaLabel,
+    children,
+    className,
+    icon,
+    kind = "gradient",
+    size = "default",
+    type = "button",
+    ...rest
+  } = props;
+
+  if (kind === "text") {
+    return (
+      <button
+        aria-label={ariaLabel}
+        className={cx(styles.linkButtonText, className)}
+        type={type}
+        {...rest}
+      >
+        <span>{children}</span>
+        {icon ? <span className={styles.buttonIcon}>{icon}</span> : null}
+      </button>
+    );
+  }
+
+  const sizeClass =
+    size === "small" ? styles.buttonSmall : styles.buttonDefault;
 
   return (
-    <Link
+    <button
       aria-label={ariaLabel}
-      className={cx(
-        styles.linkButton,
-        kind === "gradient" ? styles.linkButtonGradient : styles.linkButtonText,
-        className,
-      )}
-      href={href}
-      {...sharedProps}
+      className={cx(styles.button, sizeClass, className)}
+      data-size={size}
+      type={type}
+      {...rest}
     >
       <span>{children}</span>
-      {icon ? <span className={styles.linkButtonIcon}>{icon}</span> : null}
-    </Link>
+      {icon ? <span className={styles.buttonIcon}>{icon}</span> : null}
+    </button>
   );
 }
+
+export const LinkButton = Button;
 
 export function PanelCard<T extends ElementType = "article">({
   as,

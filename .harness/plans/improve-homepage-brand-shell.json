@@ -1,0 +1,96 @@
+{
+  "slug": "improve-homepage-brand-shell",
+  "title": "Refresh homepage brand, navigation, hero, and footer",
+  "type": "improvement",
+  "created": "2026-10-01",
+  "status": "planned",
+  "context": "Update the homepage shell to the latest desktop and mobile Figma frames. The work introduces the supplied inline-ready wordmark, consolidates contact CTA styling, replaces the hero artwork and typography while retaining responsive height behavior, and simplifies the footer with legal placeholder routes. Figma sources: desktop node 228:52 and mobile node 371:112 in file 0J2JF0nYrI8EJrttdHNes4.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Extract the shared gradient button family",
+      "status": "pending",
+      "acceptance_criteria": [
+        "A native Button primitive and the existing LinkButton share the gradient background, animated hover sweep, visible white focus outline, active scale, typography, and reduced-motion behavior",
+        "Both button primitives accept default and small sizes, with default selected when size is omitted",
+        "The small size uses a 16px font with 8px vertical and 24px horizontal padding",
+        "The homepage contact control uses the native Button while retaining its mobile full-width and desktop minimum-width layout",
+        "Browser coverage verifies semantic button/link rendering and the shared hover, focus, and active states",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/primitives.tsx",
+        "src/app/(marketing)/_components/primitives.module.css",
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Update the navigation brand and scroll behavior",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The home link renders the supplied wordmark as inline SVG with its original 163 by 28 viewBox geometry and currentColor paths",
+        "The brand link retains the accessible name Brent Walbolt while the SVG is hidden from assistive technology",
+        "The navigation bar is exactly 56px tall without duplicated breakpoint height declarations",
+        "Desktop navigation remains visible at 48rem and above while the hamburger remains below 48rem",
+        "The overlay header is transparent at the top and changes to black after scrolling more than 8px at mobile and desktop widths",
+        "The navigation CTA uses the shared small LinkButton variant",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/brand-logo.tsx",
+        "src/app/(marketing)/_components/site-header.tsx",
+        "src/app/(marketing)/_components/site-header.module.css",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "title": "Implement the redesigned responsive hero",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The hero uses bg-home-hero-mobile.svg below 48rem and bg-home-hero.svg at 48rem and above",
+        "The hero has no clip-path, raster hero background, or redundant black overlay gradient",
+        "The hero remains 400px tall below 48rem and 95vh at 48rem and above",
+        "The non-highlight headline copy uses Source Serif 4 ExtraBold Italic while gradient phrases use Switzer ExtraBold",
+        "The headline remains centered, the desktop scroll indicator retains its proportional position, and the page has no horizontal overflow",
+        "DESIGN.md documents the new hero artwork, typography, square edge, and all-width navigation scroll surface",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/smoke.spec.ts",
+        "DESIGN.md",
+        "public/images/bg-home-hero.svg",
+        "public/images/bg-home-hero-mobile.svg"
+      ],
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "title": "Rebuild the footer and add legal placeholders",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The footer contains no brand logo or primary navigation links at any viewport size",
+        "Desktop shows the existing tagline and 2026 copyright on the left and legal links on the right with 40px vertical padding",
+        "Mobile shows legal links before the copyright with 24px padding and 32px vertical separation",
+        "Privacy Policy and Terms of Use link to static branded placeholder pages at /privacy-policy and /terms-of-use",
+        "The footer is keyboard accessible and meets the contact section without a visual gap",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/site-footer.tsx",
+        "src/app/(marketing)/_components/site-footer.module.css",
+        "src/app/(marketing)/privacy-policy/page.tsx",
+        "src/app/(marketing)/terms-of-use/page.tsx",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": ["3"]
+    }
+  ]
+}

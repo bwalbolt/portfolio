@@ -30,7 +30,7 @@
     {
       "id": "2",
       "title": "Update the navigation brand and scroll behavior",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The home link renders the supplied wordmark as inline SVG with its original 163 by 28 viewBox geometry and currentColor paths",
         "The brand link retains the accessible name Brent Walbolt while the SVG is hidden from assistive technology",

@@ -98,40 +98,37 @@ test("body owns the noisy background and the hero clips its bottom edge", async 
   }
 });
 
-test("desktop navigation stays fixed over the hero without colliding with content", async ({
+test("navigation uses the supplied accessible wordmark and has a unified responsive shell", async ({
   page,
 }) => {
-  await page.setViewportSize({ height: 900, width: 1280 });
-  await page.goto("/");
+  for (const width of [767, 768, 1280]) {
+    await page.setViewportSize({ height: 900, width });
+    await page.goto("/");
 
-  const banner = page.getByRole("banner");
-  const navigationBar = banner.locator("div").first();
-  const hero = page.locator("main > section").first();
-  const heroTitle = hero.getByRole("heading", { level: 1 });
+    const banner = page.getByRole("banner");
+    const navigationBar = banner.locator("div").first();
+    const brand = banner.getByRole("link", { name: "Brent Walbolt" });
+    const wordmark = brand.locator("svg");
 
-  await expect(banner).toHaveCSS("position", "fixed");
-  await expect(banner).toHaveCSS("background-color", "rgb(0, 0, 0)");
-
-  const desktopLayout = await Promise.all([
-    navigationBar.boundingBox(),
-    hero.boundingBox(),
-    heroTitle.boundingBox(),
-  ]);
-  const [navigationBarBox, heroBox, titleBox] = desktopLayout;
-
-  expect(navigationBarBox).not.toBeNull();
-  expect(heroBox).not.toBeNull();
-  expect(titleBox).not.toBeNull();
-  expect(navigationBarBox?.height).toBeCloseTo(54, 0);
-  expect(heroBox?.y).toBe(0);
-  expect(titleBox?.y).toBeGreaterThan(navigationBarBox?.height ?? 0);
-
-  const desktopHeroBackground = await hero
-    .locator('[class*="heroBackground"]')
-    .evaluate((element) => getComputedStyle(element).backgroundImage);
-  expect(desktopHeroBackground).toContain("linear-gradient");
-  expect(desktopHeroBackground).toContain("rgb(0, 0, 0) 0px");
-  expect(desktopHeroBackground).toContain("rgb(0, 0, 0) 54px");
+    await expect(banner).toHaveCSS("position", "fixed");
+    await expect(navigationBar).toHaveCSS("height", "56px");
+    await expect(wordmark).toHaveAttribute("viewBox", "0 0 163 28");
+    await expect(wordmark).toHaveAttribute("width", "163");
+    await expect(wordmark).toHaveAttribute("height", "28");
+    await expect(wordmark).toHaveAttribute("aria-hidden", "true");
+    await expect(wordmark.locator('path[fill="currentColor"]')).toHaveCount(8);
+    await expect(banner.locator('nav[aria-label="Primary"]')).toHaveCSS(
+      "display",
+      width >= 768 ? "block" : "none",
+    );
+    await expect(
+      banner.locator('button[aria-controls="mobile-navigation"]'),
+    ).toHaveCSS("display", width >= 768 ? "none" : "flex");
+    await expect(banner.getByRole("link", { name: "Get in Touch" })).toHaveAttribute(
+      "data-size",
+      "small",
+    );
+  }
 });
 
 test("hero geometry and headline gradients follow the responsive Figma composition", async ({
@@ -198,26 +195,32 @@ test("hero geometry and headline gradients follow the responsive Figma compositi
   }
 });
 
-test("mobile navigation is transparent at the top and gains a scroll surface", async ({
+test("overlay navigation is transparent at the top and gains a scroll surface", async ({
   page,
 }) => {
-  await page.setViewportSize({ height: 740, width: 390 });
-  await page.goto("/", { waitUntil: "networkidle" });
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ height: 740, width });
+    await page.goto("/", { waitUntil: "networkidle" });
 
-  const banner = page.getByRole("banner");
+    const banner = page.getByRole("banner");
 
-  await expect(banner).toHaveCSS("position", "fixed");
-  await expect(banner).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(banner).toHaveCSS("position", "fixed");
+    await expect(banner).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
 
-  const menuButton = banner.getByRole("button", { name: "Toggle navigation" });
-  await menuButton.click();
-  await expect(menuButton).toHaveAttribute("aria-expanded", "true");
-  await menuButton.click();
-  await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+    if (width < 768) {
+      const menuButton = banner.getByRole("button", {
+        name: "Toggle navigation",
+      });
+      await menuButton.click();
+      await expect(menuButton).toHaveAttribute("aria-expanded", "true");
+      await menuButton.click();
+      await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+    }
 
-  await page.evaluate(() => window.scrollTo({ behavior: "instant", top: 160 }));
-  await expect.poll(async () => page.evaluate(() => window.scrollY)).toBeGreaterThan(8);
-  await expect(banner).toHaveCSS("background-color", "rgb(0, 0, 0)");
+    await page.evaluate(() => window.scrollTo({ behavior: "instant", top: 9 }));
+    await expect.poll(async () => page.evaluate(() => window.scrollY)).toBeGreaterThan(8);
+    await expect(banner).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  }
 });
 
 for (const route of primaryRoutes) {
@@ -885,4 +888,3 @@ test("unified Button primitive shares gradient styling, default/small variants, 
   expect(linkDefaultStyle.paddingLeft).toBe("24px");
   expect(linkDefaultStyle.paddingRight).toBe("24px");
 });
-

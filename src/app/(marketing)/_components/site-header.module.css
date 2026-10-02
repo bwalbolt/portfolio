@@ -21,8 +21,9 @@
 }
 
 .bar {
-  width: min(calc(100% - (var(--page-gutter) * 2)), var(--content-width));
-  min-height: 3.375rem;
+  max-width: var(--content-width);
+  padding: 0 calc(var(--page-gutter) - 10px) 0 var(--page-gutter);
+  height: 3.5rem;
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -33,11 +34,8 @@
 .brand {
   position: relative;
   z-index: 2;
-  font-family: var(--font-serif-family);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.0625rem;
-  line-height: 1.2;
+  display: inline-flex;
+  color: var(--color-white);
 }
 
 .desktopNav {
@@ -71,7 +69,8 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 
@@ -144,23 +143,13 @@
 }
 
 @media (width >= 48rem) {
-  .headerOverlay {
-    background: var(--color-black);
-    border-bottom-color: rgba(255, 255, 255, 0.02);
-  }
-
-  .bar {
-    min-height: 3.375rem;
-  }
-
-  .brand {
-    font-size: 1.5rem;
-  }
-
   .desktopNav {
     display: block;
   }
 
+  .bar {
+    padding: 0 var(--page-gutter);
+  }
 
   .menuButton,
   .mobilePanel {

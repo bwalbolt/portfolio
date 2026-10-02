@@ -276,3 +276,11 @@ Session notes are appended here after each completed task.
 - Full `npm run verify` passed: lint, typecheck, production build, and all 33 browser tests.
 - Independent evaluator: PASS; all acceptance criteria passed, test coverage passed, make check passed, no placeholders, and TDD compliance passed. Task 1 marked complete in `.harness/plans/improve-homepage-brand-shell.json`.
 
+## 2026-10-01 - improve-homepage-brand-shell: Task 2 - Update the navigation brand and scroll behavior
+
+- Replaced the text brand with the supplied 163 by 28 inline SVG wordmark, preserving all eight `currentColor` paths while retaining `Brent Walbolt` as the accessible link name.
+- Consolidated the navigation bar at a single 56px height, kept desktop navigation at 48rem and above, and removed the desktop-only opaque header override so the overlay is transparent at the top and black after more than 8px of scroll at every viewport.
+- Confirmed the navigation CTA uses the shared small Button variant and added browser coverage for wordmark geometry and accessibility, breakpoint visibility, header height, CTA sizing, and top/scroll surfaces at mobile and desktop widths.
+- Baseline and final `npm run verify` passed: lint, typecheck, production build, and all 33 browser tests. `git diff --check` passed.
+- Independent evaluator: PASS after one correction cycle. The first review correctly required literal inline SVG paths instead of an external SVG `<use>` reference; the second review found all acceptance criteria and coverage passing.
+- Next task: task 3, implement the redesigned responsive hero.

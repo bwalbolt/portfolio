@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import type { NavigationItem } from "../_content/site-content";
 import { SITE_NAME } from "../_content/site-content";
+import { BrandLogo } from "./brand-logo";
 import { Button, Icon, VisuallyHidden, cx } from "./primitives";
 import styles from "./site-header.module.css";
 
@@ -54,8 +55,13 @@ export function SiteHeader({
       )}
     >
       <div className={styles.bar}>
-        <Link className={styles.brand} href="/" onClick={closeMenu}>
-          {SITE_NAME}
+        <Link
+          aria-label={SITE_NAME}
+          className={styles.brand}
+          href="/"
+          onClick={closeMenu}
+        >
+          <BrandLogo />
         </Link>
 
         <nav aria-label="Primary" className={styles.desktopNav}>

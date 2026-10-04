@@ -25,7 +25,7 @@ test("renders the homepage and contact form landmarks", async ({ page }) => {
   await expect(page.getByLabel("Message")).toBeVisible();
 });
 
-test("body owns the noisy background and the hero clips its bottom edge", async ({
+test("body owns the noisy background and the hero uses square SVG artwork", async ({
   page,
 }) => {
   const viewports = [
@@ -61,7 +61,7 @@ test("body owns the noisy background and the hero clips its bottom edge", async 
         bodyBeforeBackgroundImage: bodyBeforeStyle.backgroundImage,
         bodyBeforeContent: bodyBeforeStyle.content,
         heroClipPath: heroStyle.clipPath,
-        heroCutawayCount: hero.querySelectorAll('[class*="heroCutaway"]').length,
+        heroBackgroundImage: heroStyle.backgroundImage,
         pageBackgroundColor: pageStyle.backgroundColor,
         pageBackgroundImage: pageStyle.backgroundImage,
         pageBeforeBackgroundImage: pageBeforeStyle.backgroundImage,
@@ -91,10 +91,16 @@ test("body owns the noisy background and the hero clips its bottom edge", async 
       "rgba(0, 0, 0, 0)",
     );
     expect(shellStyles.sectionStackBackgroundImage, viewport.name).toBe("none");
-    expect(shellStyles.heroCutawayCount, viewport.name).toBe(0);
-    expect(shellStyles.heroClipPath, viewport.name).toMatch(
-      /^polygon\(0(px)? 0(px)?, 100% 0(px)?, 100% 84%, 0(px)? 100%\)$/,
+    expect(shellStyles.heroClipPath, viewport.name).toBe("none");
+    expect(shellStyles.heroBackgroundImage, viewport.name).toContain(
+      viewport.width >= 768
+        ? "/images/bg-home-hero.svg"
+        : "/images/bg-home-hero-mobile.svg",
     );
+    expect(shellStyles.heroBackgroundImage, viewport.name).toContain(
+      "/images/hero-nnnoise.svg",
+    );
+    expect(shellStyles.heroBackgroundImage, viewport.name).not.toContain("gradient");
   }
 });
 
@@ -131,7 +137,7 @@ test("navigation uses the supplied accessible wordmark and has a unified respons
   }
 });
 
-test("hero geometry and headline gradients follow the responsive Figma composition", async ({
+test("hero geometry, typography, and artwork follow the responsive Figma composition", async ({
   page,
 }) => {
   await page.setViewportSize({ height: 900, width: 1280 });
@@ -160,17 +166,47 @@ test("hero geometry and headline gradients follow the responsive Figma compositi
   expect((scrollBox?.y ?? 0) / (heroBox?.height ?? 1)).toBeLessThan(0.84);
 
   await expect(titleLines).toHaveCount(2);
-  const lineGradients = await titleLines.evaluateAll((lines) =>
-    lines.map((line) => getComputedStyle(line).backgroundImage),
+  const fontFamilies = await title.evaluate((heading) => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const normaliseFontName = (fontFamily: string) =>
+      fontFamily.split(",")[0]?.replaceAll('"', "").trim();
+    const highlightElement = heading.querySelector('[class*="heroHighlight"]');
+
+    if (!highlightElement) {
+      throw new Error("Hero typography elements were not found");
+    }
+
+    return {
+      copy: normaliseFontName(getComputedStyle(heading).fontFamily),
+      display: normaliseFontName(rootStyle.getPropertyValue("--font-display")),
+      highlight: normaliseFontName(getComputedStyle(highlightElement).fontFamily),
+      serif: normaliseFontName(rootStyle.getPropertyValue("--font-serif")),
+    };
+  });
+  expect(fontFamilies.serif).not.toBe("");
+  expect(fontFamilies.display).not.toBe("");
+  expect(fontFamilies.copy).toBe(fontFamilies.serif);
+  expect(fontFamilies.highlight).toBe(fontFamilies.display);
+  await expect(title.locator('[class*="heroCopy"]')).toHaveCount(0);
+  await expect(title).toHaveCSS("font-style", "italic");
+  await expect(title).toHaveCSS("font-weight", "800");
+  await expect(title).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(highlights.first()).toHaveCSS(
+    "font-family",
+    new RegExp(fontFamilies.display),
   );
-  expect(lineGradients[0]).toContain(
-    "rgb(0, 176, 255) 20%, rgb(102, 208, 255) 35%, rgb(124, 77, 255) 50%",
+  await expect(highlights.first()).toHaveCSS("font-style", "normal");
+  await expect(highlights.first()).toHaveCSS("font-weight", "800");
+  const highlightGradients = await highlights.evaluateAll((elements) =>
+    elements.map((element) => getComputedStyle(element).backgroundImage),
   );
-  expect(lineGradients[1]).toContain(
-    "rgb(124, 77, 255) 15%, rgb(221, 178, 255) 32%, rgb(228, 79, 255) 53%",
+  expect(highlightGradients[0]).toContain(
+    "rgb(0, 176, 255), rgb(102, 208, 255) 43%, rgb(124, 77, 255)",
+  );
+  expect(highlightGradients[1]).toContain(
+    "rgb(124, 77, 255), rgb(221, 178, 255) 40%, rgb(228, 79, 255)",
   );
   for (const highlight of await highlights.all()) {
-    await expect(highlight).toHaveCSS("background-image", "none");
     await expect(highlight).toHaveCSS("color", "rgba(0, 0, 0, 0)");
   }
 
@@ -192,6 +228,14 @@ test("hero geometry and headline gradients follow the responsive Figma compositi
     expect(mobileTitleMaxWidth).toBe("none");
     await expect(mobileTitle).toHaveCSS("width", "342px");
     await expect(mobileHero.getByText("Scroll", { exact: true })).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  }
+
+  for (const width of [768, 1280]) {
+    await page.setViewportSize({ height: 900, width });
+    await page.goto("/");
+
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
   }
 });
 

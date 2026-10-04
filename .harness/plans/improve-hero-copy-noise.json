@@ -1,0 +1,29 @@
+{
+  "slug": "improve-hero-copy-noise",
+  "title": "Simplify hero copy and layer noise",
+  "type": "improvement",
+  "created": "2026-10-02",
+  "status": "complete",
+  "context": "Follow-up feedback requests removal of redundant default-text classes in the redesigned homepage hero while preserving manually refined highlight gradients, plus a tiled nnnoise.svg texture above the responsive SVG artwork.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Simplify hero copy and add the noise texture layer",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The default hero copy inherits its Source Serif 4 ExtraBold Italic styling from the heading and uses no heroCopy utility classes",
+        "The hand-crafted and AI-accelerated phrases retain their Switzer ExtraBold gradient styling and the current refined gradient stops",
+        "The hero layers a repeating nnnoise.svg texture above bg-home-hero-mobile.svg below 48rem and bg-home-hero.svg at 48rem and above without adding a gradient overlay",
+        "Browser coverage verifies the simplified copy, responsive artwork/noise layers, typography, and no horizontal overflow",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.tsx",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/smoke.spec.ts",
+        "DESIGN.md"
+      ],
+      "depends_on": []
+    }
+  ]
+}

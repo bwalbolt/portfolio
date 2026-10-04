@@ -284,3 +284,20 @@ Session notes are appended here after each completed task.
 - Baseline and final `npm run verify` passed: lint, typecheck, production build, and all 33 browser tests. `git diff --check` passed.
 - Independent evaluator: PASS after one correction cycle. The first review correctly required literal inline SVG paths instead of an external SVG `<use>` reference; the second review found all acceptance criteria and coverage passing.
 - Next task: task 3, implement the redesigned responsive hero.
+
+## 2026-10-01 - improve-homepage-brand-shell: Task 3 - Implement the redesigned responsive hero
+
+- Replaced the JPEG-plus-overlay treatment with the supplied responsive SVG artwork: `bg-home-hero-mobile.svg` below `48rem` and `bg-home-hero.svg` at and above it. The hero now has a square lower edge, with no clip-path, raster hero asset, or redundant black overlay gradient.
+- Kept the existing 400px mobile and 95vh desktop geometry, centered headline, and proportional desktop scroll indicator. White headline copy uses Source Serif 4 ExtraBold Italic while gradient emphasis uses Switzer ExtraBold.
+- Updated browser contracts for responsive artwork, square edge, typography family/style/weight split, centered geometry, scroll position, and no horizontal overflow at mobile, tablet, and desktop widths. Updated DESIGN.md with the hero and all-width navigation scroll-surface guidance.
+- Verification: `npm run verify` passed (lint, strict typecheck, production build, and 33 Playwright tests). `git diff --check` passed.
+- Evaluator verdict: PASS after 1 correction cycle; the initial evaluator requested direct font-family and all-width overflow coverage, which were added and reverified.
+- Next task: task 4, rebuild the footer and add legal placeholders.
+
+## 2026-10-02 - improve-hero-copy-noise: Task 1 - Simplify hero copy and add the noise texture layer
+
+- Removed redundant `heroCopy` spans so the default headline copy inherits Source Serif 4 ExtraBold Italic directly from the H1; gradient phrases remain the only styled spans.
+- Preserved the user-refined gradient stops (43% blue-soft and 40% purple-soft) and layered repeating `nnnoise.svg` above the responsive hero SVG artwork without introducing a gradient overlay.
+- Updated the browser contract for the noise layer, simplified markup, inherited typography, and the refined stops; DESIGN.md now documents the hero texture layer.
+- Verification: `npm run verify` passed (lint, strict typecheck, production build, and 33 Playwright tests). `git diff --check` passed.
+- Evaluator verdict: PASS on first try.

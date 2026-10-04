@@ -51,7 +51,7 @@
     {
       "id": "3",
       "title": "Implement the redesigned responsive hero",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The hero uses bg-home-hero-mobile.svg below 48rem and bg-home-hero.svg at 48rem and above",
         "The hero has no clip-path, raster hero background, or redundant black overlay gradient",

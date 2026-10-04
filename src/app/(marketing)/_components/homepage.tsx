@@ -132,18 +132,17 @@ export function Homepage() {
 
       <main id="main-content">
         <section className={styles.hero}>
-          <div aria-hidden="true" className={styles.heroBackground} />
           <Container className={styles.heroInner}>
             <h1 className={styles.heroTitle}>
               <span className={styles.heroLine}>
-                <span>Building </span>
+                {"Building "}
                 <span className={styles.heroHighlightBlue}>hand-crafted</span>
-                <span> experiences,</span>
+                {" experiences,"}
               </span>
               <span className={styles.heroLine}>
-                <span>using </span>
+                {"using "}
                 <span className={styles.heroHighlightPurple}>AI-accelerated</span>
-                <span> workflows</span>
+                {" workflows"}
               </span>
             </h1>
             <p className={styles.heroScroll}>Scroll</p>

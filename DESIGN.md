@@ -162,7 +162,7 @@ The layout is mobile-first, static-friendly, and centered around a constrained c
 - Homepage sections stack with generous vertical rhythm using `--space-section`.
 - Desktop grids move to three columns for insights, two columns for case studies, and three columns for skill cards.
 
-The homepage begins with an immersive hero image and centered headline, then uses a rotated dark cutaway to transition into the content stack. Preserve that feeling of deliberate scene-setting. Do not replace it with a split hero card or a generic text-and-image marketing layout.
+The homepage begins with an immersive supplied SVG hero artwork and centered headline, then meets the content stack on a square edge. Preserve that feeling of deliberate scene-setting. Do not replace it with a split hero card or a generic text-and-image marketing layout.
 
 Cards and panels should use real content density. Favor scan-friendly titles, short descriptions, tags, and clear links over decorative copy blocks.
 
@@ -211,9 +211,9 @@ Use literal `rem` thresholds in CSS queries. CSS custom properties cannot supply
 
 Depth is created through tonal layering, translucent borders, selective blur, and moderate shadow. The default panel shadow is `0 18px 48px rgba(0, 0, 0, 0.18)`. Use it for cards and floating mobile panels, not for every section.
 
-Background atmosphere comes from radial blue and purple light on the body plus specific image assets:
+Background atmosphere comes from the subtle body noise plus specific image assets:
 
-- `hero-background.jpg` and `hero-background-mobile.jpg` for the first viewport.
+- `bg-home-hero.svg` and `bg-home-hero-mobile.svg` for the first viewport. Use the mobile artwork below `48rem` and the desktop artwork from `48rem`; layer the repeating `hero-nnnoise.svg` tile above it, but do not add a raster fallback or a dark overlay gradient because the artwork includes its own black surface and atmosphere.
 - `mosaic-broken.png` and `mosaic-broken-mobile.png` for the About band.
 - Case study thumbnail art for project cards.
 
@@ -232,9 +232,9 @@ Case study cards on desktop use skewed containers to create the game-inspired ed
 
 ## Components
 
-**Header:** Use a black or near-black bar with uppercase Switzer navigation. Desktop nav is horizontal; mobile uses an icon button and an elevated dropdown panel with blur. Active and hover states move from secondary text to white.
+**Header:** Use a transparent overlay at the top with uppercase Switzer navigation. At every viewport width it becomes a black scroll surface after the page has moved more than 8px. Desktop nav is horizontal; mobile uses an icon button and an elevated dropdown panel with blur. Active and hover states move from secondary text to white.
 
-**Hero:** Use a full-bleed background image with a dark overlay. The H1 is centered, two-line, and gradient-highlighted only on key words. The scroll label is small, uppercase, and hidden on mobile.
+**Hero:** Use the full-bleed responsive SVG artwork with a square lower edge—never a clip-path or overlay gradient. The centered two-line H1 uses Source Serif 4 ExtraBold Italic for its white copy and Switzer ExtraBold for its gradient-highlighted phrases. The hero is `400px` below `48rem` and `95vh` at wider widths; the small uppercase scroll label retains its proportional desktop position and is hidden on mobile.
 
 **Section heading:** Pair a large gradient section title with a compact uppercase action link. Hide the desktop action on small viewports when a more explicit mobile link appears below the grid.
 

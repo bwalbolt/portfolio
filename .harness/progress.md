@@ -301,3 +301,34 @@ Session notes are appended here after each completed task.
 - Updated the browser contract for the noise layer, simplified markup, inherited typography, and the refined stops; DESIGN.md now documents the hero texture layer.
 - Verification: `npm run verify` passed (lint, strict typecheck, production build, and 33 Playwright tests). `git diff --check` passed.
 - Evaluator verdict: PASS on first try.
+
+## 2026-10-03 - improve-homepage-brand-shell: Task 4 - Rebuild the footer and add legal placeholders
+
+- Rebuilt the footer as a legal-only shell: desktop places the existing tagline and 2026 copyright on the left with Privacy Policy and Terms of Use on the right, while mobile places the legal links first with 24px padding and 32px separation before the details.
+- Added static branded placeholder pages at `/privacy-policy` and `/terms-of-use`, using the existing shared marketing page shell so the routes retain the header, footer, and accessible navigation.
+- Replaced the former footer browser contract with coverage for the absence of brand/primary navigation links, desktop and mobile spacing/order, legal-link keyboard focus, contact-to-footer continuity, and both legal routes.
+- Corrected the pre-existing mobile hero texture reference from `nnnoise.svg` to `hero-nnnoise.svg` so the baseline browser contract matches the responsive hero artwork.
+- Full `npm run verify` passed: lint, strict typecheck, production build, and all 34 Playwright tests. `git diff --check` passed.
+- Independent evaluator: PASS on first try; all task acceptance criteria and coverage passed with no placeholders or issues.
+- Plan complete.
+
+## 2026-10-04 - improve-slanted-focus-feedback: Task 1 - Verify glow-only keyboard focus feedback
+
+- Scoped the no-outline treatment to slanted case-study panels. Their keyboard focus remains clearly visible through static amber and pink ellipses, an opaque surface, high-contrast border, and amber shadow.
+- Restored the blue-soft token required by ordinary linked panels and retained their existing solid keyboard outline.
+- Updated browser coverage to distinguish both focus treatments and to assert the focused slanted surface, border, shadow, and ellipse opacity. DESIGN.md now documents the deliberate glow-only treatment.
+- Full `npm run verify` passed: lint, strict typecheck, production build, and all 34 Playwright tests. Independent evaluator: PASS after one correction cycle; it caught and verified the ordinary-panel outline regression. Changes remain uncommitted.
+
+## 2026-10-04 - improve-linked-panel-focus-feedback: Task 1 - Remove linked-panel focus outlines
+
+- Applied the glow-only keyboard feedback treatment to all linked panels, removing the redundant standard-panel focus outline as requested.
+- Removed the unused global `--color-accent-blue-soft` variable and its obsolete design-token documentation.
+- Expanded the standard-panel browser contract to verify no outline alongside its static ellipses, focused surface, border, and amber shadow; slanted coverage retains the same guarantees.
+- A first evaluator identified the stale design-token entry; it was removed. Full `npm run verify` then passed (lint, strict typecheck, production build, and all 34 Playwright tests), and the follow-up evaluator returned PASS. Changes remain uncommitted.
+
+## 2026-10-04 - improve-linked-panel-test-stability: Task 1 - Remove the flaky duplicate resize loop
+
+- Removed the rounded-panel native pointer resize/scroll loop that intermittently raced hover delivery after a viewport change, leaving the glow at its reset position.
+- Renamed the remaining test to reflect its stable responsibilities: keyboard focus feedback, reduced-motion behavior, and keyboard link navigation.
+- Retained responsive pointer, breakpoint, and scroll coverage in the slanted-panel suite, which already tests 390px, 767px, 768px, and 1280px viewports.
+- Baseline and final `npm run verify` passed: lint, strict typecheck, production build, and all 34 Playwright tests. Independent evaluator: PASS with no issues. Changes remain uncommitted.

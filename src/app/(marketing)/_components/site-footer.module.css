@@ -3,37 +3,32 @@
 }
 
 .inner {
-  display: grid;
-  gap: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   padding-block: 1.5rem;
 }
 
-.brandBlock {
-  display: none;
+.details {
+  display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
 
-.brand {
-  font-family: var(--font-serif-family);
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.0625rem;
-  line-height: 1.2;
+.legal {
+  order: -1;
 }
 
 .tagline {
-  display: none;
-  color: var(--text-secondary);
+  color: var(--color-white-80);
   font-family: var(--font-display-family);
-  font-size: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
   line-height: 1.2;
 }
 
 .navList {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem 2rem;
+  gap: 2rem;
 }
 
 .navLink {
@@ -58,32 +53,15 @@
 
 @media (width >= 48rem) {
   .inner {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    gap: var(--space-5);
-    padding-block: 3rem;
+    gap: 2rem;
+    padding-block: 2.5rem;
   }
 
-  .brandBlock {
-    display: flex;
-    height: 1.75rem;
-  }
-
-  .brand {
-    font-size: 1.5rem;
-    line-height: 1.1667;
-  }
-
-  .tagline {
-    display: block;
-  }
-
-  .nav {
-    justify-self: center;
-  }
-
-  .copyright {
-    justify-self: end;
-    text-align: right;
+  .legal {
+    flex: none;
+    order: initial;
   }
 }

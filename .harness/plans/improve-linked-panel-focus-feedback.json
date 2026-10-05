@@ -1,0 +1,29 @@
+{
+  "slug": "improve-linked-panel-focus-feedback",
+  "title": "Use glow-only focus feedback on all linked panels",
+  "type": "improvement",
+  "created": "2026-10-04",
+  "status": "complete",
+  "context": "Linked panels already provide sufficient visible keyboard feedback through their static glow, opaque surface, border, and amber shadow. The additional outline is redundant on both standard and slanted variants.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Remove linked-panel focus outlines",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Keyboard-focused standard and slanted linked panels have no additional outline",
+        "Both variants retain visible static glow and high-contrast focused surface feedback",
+        "The unused global blue-soft CSS variable is removed",
+        "End-to-end coverage and design documentation describe the shared glow-only focus treatment",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/globals.css",
+        "src/app/(marketing)/_components/linked-panel-card.module.css",
+        "tests/e2e/linked-panel.spec.ts",
+        "DESIGN.md"
+      ],
+      "depends_on": []
+    }
+  ]
+}

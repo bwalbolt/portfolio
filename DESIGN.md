@@ -17,7 +17,6 @@ colors:
   footer: "#000000"
   input: "rgba(255, 255, 255, 0.08)"
   accent-blue: "#00b0ff"
-  accent-blue-soft: "#66d0ff"
   accent-pink: "#e44fd9"
   accent-orange: "#ffb300"
   accent-purple: "#7c4dff"
@@ -320,6 +319,8 @@ unskewed space, then applies the actual surface transform around the shared
 surface origin to each decoration, including its shape. Every point along a diagonal
 arm maps to its corner; at the exact center, retain the last position (initially
 top-left). Both ellipses stay on their edges and arrive together. Keyboard focus and
-reduced motion use a static top-left glow. Touch retains native single-tap
+reduced motion use a static top-left glow. All linked panels use those visible amber
+and pink ellipses, plus the opaque surface, border, and amber shadow, rather than an
+additional outline. Touch retains native single-tap
 navigation. Only the linked-card boundary requires client JavaScript; content
 can remain server-rendered, and the link works without hydration.

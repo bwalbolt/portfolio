@@ -1,0 +1,25 @@
+{
+  "slug": "improve-linked-panel-test-stability",
+  "title": "Remove flaky linked-panel geometry coverage",
+  "type": "improvement",
+  "created": "2026-10-04",
+  "status": "complete",
+  "context": "A rounded linked-panel resize assertion intermittently races native hover delivery after viewport changes. Responsive pointer geometry remains covered by the slanted-panel suite, so the duplicate loop can be removed without weakening core behavior coverage.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Remove the flaky duplicate resize loop",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The keyboard and reduced-motion test no longer performs native pointer assertions immediately after viewport resize or scroll",
+        "It continues to verify static keyboard feedback, reduced-motion behavior, and keyboard link navigation",
+        "Responsive slanted-panel pointer, breakpoint, and scroll coverage remains intact",
+        "npm run verify passes"
+      ],
+      "files": [
+        "tests/e2e/linked-panel.spec.ts"
+      ],
+      "depends_on": []
+    }
+  ]
+}

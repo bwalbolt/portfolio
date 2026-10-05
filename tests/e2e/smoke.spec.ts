@@ -601,7 +601,7 @@ test("contact section preserves responsive form gutters with the shader decorati
   }
 });
 
-test("footer matches the Figma sizing and closes the contact section without an extra gap", async ({
+test("footer uses legal links and closes the contact section without an extra gap", async ({
   page,
 }) => {
   const viewports = [
@@ -633,38 +633,57 @@ test("footer matches the Figma sizing and closes the contact section without an 
     });
     const footerStyles = await footerInner.evaluate((element) => {
       const style = getComputedStyle(element);
-      const brandBlock = element.firstElementChild;
-      const brand = brandBlock?.querySelector("a");
 
       return {
         gap: style.rowGap,
         paddingBlockEnd: style.paddingBlockEnd,
         paddingBlockStart: style.paddingBlockStart,
-        brandDisplay: brandBlock ? getComputedStyle(brandBlock).display : "none",
-        brandFontSize: brand ? getComputedStyle(brand).fontSize : "0px",
       };
     });
 
     expect(geometry.footerTop, viewport.name).toBeCloseTo(geometry.contactBottom, 1);
-    await expect(footer.getByRole("navigation", { name: "Footer" }), viewport.name).toBeVisible();
-    await expect(footer.getByRole("link", { name: "Blog" }), viewport.name).toBeVisible();
+    await expect(footer.getByRole("navigation", { name: "Legal" }), viewport.name).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Privacy Policy" }), viewport.name).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Terms of Use" }), viewport.name).toBeVisible();
+    await expect(
+      footer.getByText("Crafting performant, user-centered designs", { exact: true }),
+      viewport.name,
+    ).toBeVisible();
+    await expect(
+      footer.getByText("© 2026 Brent Walbolt. All rights reserved.", { exact: true }),
+      viewport.name,
+    ).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Blog" })).toHaveCount(0);
+    await expect(footer.getByRole("link", { name: "Brent Walbolt" })).toHaveCount(0);
 
     if (viewport.width < 768) {
-      expect(geometry.footerHeight, viewport.name).toBeCloseTo(116, 0);
-      expect(footerStyles.brandDisplay, viewport.name).toBe("none");
       expect(footerStyles.paddingBlockStart, viewport.name).toBe("24px");
       expect(footerStyles.paddingBlockEnd, viewport.name).toBe("24px");
+      expect(footerStyles.gap, viewport.name).toBe("32px");
+      const legalBox = (await footer.getByRole("navigation", { name: "Legal" }).boundingBox())!;
+      const copyrightBox = (await footer.getByText("© 2026 Brent Walbolt. All rights reserved.", { exact: true }).boundingBox())!;
+      expect(legalBox.y, viewport.name).toBeLessThan(copyrightBox.y);
     } else {
-      expect(geometry.footerHeight, viewport.name).toBeCloseTo(124, 0);
-      expect(footerStyles.brandDisplay, viewport.name).toBe("flex");
-      expect(footerStyles.brandFontSize, viewport.name).toBe("24px");
-      expect(footerStyles.paddingBlockStart, viewport.name).toBe("48px");
-      expect(footerStyles.paddingBlockEnd, viewport.name).toBe("48px");
+      expect(footerStyles.paddingBlockStart, viewport.name).toBe("40px");
+      expect(footerStyles.paddingBlockEnd, viewport.name).toBe("40px");
     }
 
-    const blogLink = footer.getByRole("link", { name: "Blog" });
-    await blogLink.focus();
-    await expect(blogLink, viewport.name).toBeFocused();
+    const legalLink = footer.getByRole("link", { name: "Privacy Policy" });
+    await legalLink.focus();
+    await expect(legalLink, viewport.name).toBeFocused();
+  }
+});
+
+test("footer legal links reach static branded placeholder pages", async ({ page }) => {
+  for (const legalPage of [
+    { href: "/privacy-policy", title: "Privacy Policy" },
+    { href: "/terms-of-use", title: "Terms of Use" },
+  ]) {
+    await page.goto("/");
+    await page.getByRole("link", { name: legalPage.title }).click();
+    await expect(page).toHaveURL(legalPage.href);
+    await expect(page.getByRole("heading", { name: legalPage.title })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Back Home" })).toBeVisible();
   }
 });
 

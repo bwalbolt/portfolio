@@ -96,8 +96,7 @@
   background-color: #071922;
   border-color: var(--color-white-40);
   box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
-  outline: 2px solid var(--color-accent-blue-soft);
-  outline-offset: 4px;
+  outline: none;
   transition-delay: 0s;
 }
 

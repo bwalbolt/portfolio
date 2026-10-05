@@ -1,0 +1,27 @@
+{
+  "slug": "improve-slanted-focus-feedback",
+  "title": "Retain glow-only focus feedback on slanted panels",
+  "type": "improvement",
+  "created": "2026-10-03",
+  "status": "complete",
+  "context": "The slanted case-study panels already use high-contrast glow and ellipse feedback for keyboard focus, so their additional outline is redundant.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Verify glow-only keyboard focus feedback",
+      "status": "complete",
+      "acceptance_criteria": [
+        "A keyboard-focused slanted case-study link has no additional outline",
+        "Both decorative focus ellipses remain visible and the panel retains its high-contrast surface, border, and amber glow",
+        "End-to-end coverage and design documentation describe the glow-only focus treatment",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/linked-panel-card.module.css",
+        "tests/e2e/linked-panel.spec.ts",
+        "DESIGN.md"
+      ],
+      "depends_on": []
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "title": "Refresh homepage brand, navigation, hero, and footer",
   "type": "improvement",
   "created": "2026-10-01",
-  "status": "in_progress",
+  "status": "complete",
   "context": "Update the homepage shell to the latest desktop and mobile Figma frames. The work introduces the supplied inline-ready wordmark, consolidates contact CTA styling, replaces the hero artwork and typography while retaining responsive height behavior, and simplifies the footer with legal placeholder routes. Figma sources: desktop node 228:52 and mobile node 371:112 in file 0J2JF0nYrI8EJrttdHNes4.",
   "tasks": [
     {
@@ -74,7 +74,7 @@
     {
       "id": "4",
       "title": "Rebuild the footer and add legal placeholders",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The footer contains no brand logo or primary navigation links at any viewport size",
         "Desktop shows the existing tagline and 2026 copyright on the left and legal links on the right with 40px vertical padding",

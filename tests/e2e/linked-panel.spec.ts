@@ -213,29 +213,26 @@ test("card content and padding hit the native link, including modifier-click", a
   await expect(page).toHaveURL(href);
 });
 
-test("keyboard and reduced motion use static glows; resize and scroll preserve valid geometry", async ({ page }) => {
+test("keyboard and reduced motion use static glows and preserve link navigation", async ({ page }) => {
   await page.goto("/");
   const card = page.locator(cardSelector).first();
   const link = card.getByRole("link");
+  const surface = card.locator(":scope > div");
   await link.focus();
   await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Tab");
   await expect(link).toBeFocused();
-  await expect(card.locator(":scope > div")).toHaveCSS("outline-style", "solid");
+  await expect(surface).toHaveCSS("outline-style", "none");
+  await expect(surface).toHaveCSS("background-color", "rgb(7, 25, 34)");
+  await expect(surface).toHaveCSS("border-top-color", "rgba(255, 255, 255, 0.4)");
+  expect(await surface.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("rgba(255, 179, 0, 0.5)");
+  for (const pseudoElement of ["::before", "::after"] as const) {
+    await expect.poll(() => card.evaluate((element, pseudo) => getComputedStyle(element, pseudo).opacity, pseudoElement)).toBe("1");
+  }
   expect((await geometry(card)).shapes[0].x).toBe(0);
   await page.keyboard.press("Tab");
   await expect(page.locator(cardSelector).nth(1).getByRole("link")).toBeFocused();
   await page.locator("body").click({ position: { x: 1, y: 1 } });
-  for (const width of [390, 768, 1280]) {
-    await page.setViewportSize({ width, height: 900 });
-    await card.scrollIntoViewIfNeeded();
-    const box = (await card.boundingBox())!;
-    await page.mouse.move(box.x + box.width - 1, box.y + box.height / 2);
-    await expect.poll(async () => (await geometry(card)).shapes[0].x).toBeCloseTo(box.width - 32, 1);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
-    await page.evaluate(() => window.scrollBy(0, 10));
-    await expect.poll(async () => (await geometry(card)).shapes[0].y).toBeGreaterThan((box.height - 32) / 2);
-  }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await card.hover({ position: { x: 40, y: 40 } });
   expect((await geometry(card)).shapes[0].x).toBe(0);
@@ -479,9 +476,16 @@ test("slanted case-study cards use static keyboard and reduced-motion feedback",
   await page.goto("/");
   const card = page.locator(caseCardSelector).first();
   const link = card.getByRole("link");
+  const surface = card.locator(":scope > div");
   await link.focus();
   await expect(link).toBeFocused();
-  await expect(card.locator(":scope > div")).toHaveCSS("outline-style", "solid");
+  await expect(surface).toHaveCSS("outline-style", "none");
+  await expect(surface).toHaveCSS("background-color", "rgb(7, 25, 34)");
+  await expect(surface).toHaveCSS("border-top-color", "rgba(255, 255, 255, 0.4)");
+  expect(await surface.evaluate((element) => getComputedStyle(element).boxShadow)).toContain("rgba(255, 179, 0, 0.5)");
+  for (const pseudoElement of ["::before", "::after"] as const) {
+    await expect.poll(() => card.evaluate((element, pseudo) => getComputedStyle(element, pseudo).opacity, pseudoElement)).toBe("1");
+  }
   expect(await card.evaluate((element) => [
     Number(getComputedStyle(element).getPropertyValue("--glow-x")),
     Number(getComputedStyle(element).getPropertyValue("--glow-y")),

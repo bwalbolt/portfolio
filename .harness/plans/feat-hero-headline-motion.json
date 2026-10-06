@@ -1,0 +1,25 @@
+{
+  "slug": "feat-hero-headline-motion",
+  "title": "Animate the first homepage hero headline",
+  "type": "feature",
+  "created": "2026-10-05",
+  "status": "complete",
+  "context": "Implement five-second GSAP choreography using revised Figma start 31:214 (including phrase 605:99) and end 31:213. Preserve the user's latest tuning, including blue overshoot/recovery/release at 1.15/1.151/1.5s, recovery 0.3em left/0.4em up, and purple scale targets 0.7/1.2 with -27deg impact lean. Blue uses a smooth connected arc with no vertical overshoot. Purple starts after blue settles, races forward-leaning, wraps backward-leaning, uses one softer brake pulse, stops, then deforms and recovers elastically. Temporary Building overlap is allowed. Latest responsive request uses five/four/three mobile line groups at 381px and 476px, retaining two desktop lines from 48rem, without duplicated words.",
+  "tasks": [{
+    "id": "1",
+    "title": "Implement and verify the first hero headline choreography",
+    "status": "complete",
+    "acceptance_criteria": [
+      "Cursor and blue phrase fade in from the revised poses, then share one geometrically smooth left/down arc through pickup, recovery at (-0.3em, -0.4em), and release at (0, 0). Preserve the user's timing and apex hold, no vertical overshoot, and a curved recovery-to-release segment rather than a straight slide. Temporary Building overlap is permitted.",
+      "Preserve the user's purple tuning: start after blue release, cross fully left-to-right leaning forward, wrap left leaning backward, and make one softer brake pulse. Remain mostly backward-leaning until stopping with no positional overshoot, then reach scaleX 0.7, scaleY 1.2, and -27deg impact lean before elastic recovery.",
+      "Exact local Figma cursor SVG reaches its relative resting point and disappears at five seconds; final hero styling, geometry and complete accessible H1 are preserved.",
+      "Full choreography adapts to mobile and breakpoint layouts without horizontal overflow or shifted surrounding copy.",
+      "Each headline word appears once. Below 381px use Building / hand-crafted / experiences, using / AI-accelerated / workflows; from 381px join Building hand-crafted; from 476px also join AI-accelerated workflows; from 48rem retain the two desktop lines breaking after experiences,. Exact thresholds belong to the wider layout.",
+      "Reduced motion and disabled JavaScript show static complete text; font, GSAP and cursor-image preparation exceeding 1.5 seconds reveals static text and never starts late; failed cursor loading also falls back safely.",
+      "Resize, reduced-motion activation, document hiding and leaving the hero finish playback; scrolling back does not replay, fresh homepage entry does, and unmount cleans up resources.",
+      "Browser tests cover choreography, fallbacks, interruption and responsive geometry; captured frames are visually reviewed; npm run verify passes and independent evaluator returns PASS."
+    ],
+    "files": ["src/app/(marketing)/_components/hero-headline.tsx", "src/app/(marketing)/_components/hero-headline.module.css", "tests/e2e/hero-motion.spec.ts"],
+    "depends_on": []
+  }]
+}

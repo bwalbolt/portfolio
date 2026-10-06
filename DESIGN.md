@@ -268,6 +268,38 @@ mount's uniforms without moving homepage content into a client component.
 
 **Motion and states:** Default transitions are `180ms ease`. Hover lift should be subtle, usually `translateY(-1px)`. Always honor `prefers-reduced-motion` by reducing animation and transition duration.
 
+The first hero headline plays one five-second GSAP sequence per homepage entry.
+Below `48rem`, a single copy of the headline uses controlled mobile line groups:
+below `23.8125rem` (381px), “Building” / “hand-crafted” / “experiences, using” /
+“AI-accelerated” / “workflows”; from 381px, the first two groups share a line;
+from `29.75rem` (476px), “AI-accelerated workflows” also shares a line. These
+bespoke thresholds correspond to phrase fit with the current font and gutters.
+At `48rem` and above, retain the two desktop lines, breaking after “experiences,”.
+CSS-controlled breaks reuse the same words and animated highlight spans.
+
+The blue phrase fades in high and right of its reserved gap. The supplied SVG
+cursor approaches from the gap below-left, grabs it, and follows a continuous
+left/down arc through a recovery point 0.3em left and 0.4em above its final
+position. Matching tangents join the approach and curved arrival, retaining a
+brief hold at the leftmost apex before settling at 1.5 seconds. There is
+no vertical overshoot and no straight slide after recovery.
+Temporary overlap with “Building” during the arc is intentional. Purple starts
+after blue's release, makes a full forward-leaning left-to-right pass, wraps with a
+backward lean, and makes one soft brake pulse at roughly half its local approach
+speed. It stays mostly backward-leaning until its position stops exactly at its
+destination. Momentum then carries its lean forward as it compresses to 70%
+width and stretches to 120% height, followed by an elastic lean/scale recovery
+without a positional bounce.
+The cursor settles below the headline and fades away by five seconds. Mobile
+keeps the full sequence with clamped staging and a smaller cursor. Motion lives in
+`hero-headline.tsx`; the surrounding homepage
+remains server-rendered, with unchanged artwork and typography. Reduced motion
+and disabled JavaScript show the final headline. A CSS-owned 1.5-second setup
+deadline also restores static text if fonts, cursor artwork, or JavaScript arrive late. Resize,
+leaving the hero, hiding the document, or enabling reduced motion finishes the
+sequence without replaying it on scroll-back. Only transforms and opacity
+animate; the words keep their layout space throughout.
+
 ## Do's and Don'ts
 
 Do:

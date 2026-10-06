@@ -27,6 +27,7 @@ import {
   cx,
 } from "./primitives";
 import { ContactBorder } from "./contact-border";
+import { HeroHeadline } from "./hero-headline";
 import { LinkedPanelCard } from "./linked-panel-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
@@ -133,18 +134,7 @@ export function Homepage() {
       <main id="main-content">
         <section className={styles.hero}>
           <Container className={styles.heroInner}>
-            <h1 className={styles.heroTitle}>
-              <span className={styles.heroLine}>
-                {"Building "}
-                <span className={styles.heroHighlightBlue}>hand-crafted</span>
-                {" experiences,"}
-              </span>
-              <span className={styles.heroLine}>
-                {"using "}
-                <span className={styles.heroHighlightPurple}>AI-accelerated</span>
-                {" workflows"}
-              </span>
-            </h1>
+            <HeroHeadline />
             <p className={styles.heroScroll}>Scroll</p>
           </Container>
         </section>

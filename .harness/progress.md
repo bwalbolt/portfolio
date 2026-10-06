@@ -332,3 +332,42 @@ Session notes are appended here after each completed task.
 - Renamed the remaining test to reflect its stable responsibilities: keyboard focus feedback, reduced-motion behavior, and keyboard link navigation.
 - Retained responsive pointer, breakpoint, and scroll coverage in the slanted-panel suite, which already tests 390px, 767px, 768px, and 1280px viewports.
 - Baseline and final `npm run verify` passed: lint, strict typecheck, production build, and all 34 Playwright tests. Independent evaluator: PASS with no issues. Changes remain uncommitted.
+
+## 2026-10-06 - feat-hero-headline-motion: Task 1 - Implement and refine the first headline sequence
+
+- Added GSAP core, a small server-prerendered hero client component, and the exact transparent Figma cursor SVG. Existing final typography, gradients, artwork, layout space, and accessible H1 are preserved.
+- Incorporated October 6 feedback from revised Figma start `31:214` and phrase `605:99`: cursor approaches from the headline gap below-left; blue fades in high-right, follows a continuous cubic arc left/down, overshoots slightly, and settles around two seconds. Temporary overlap with Building is now explicitly permitted.
+- Extended the sequence to five seconds. Purple starts at blue's overshoot, makes a backward-leaning full pass, wraps, and pumps its brakes twice while leaning forward. It stops at x=0, compresses to 88% width/110% height, and elastically recovers shape and lean without positional bounce. Cursor fades out at five seconds.
+- Prepared fonts, GSAP, and cursor image decoding behind a CSS-owned 1.5-second deadline. Reduced motion, disabled JavaScript, delayed initialization, and failed cursor loading preserve a complete static headline. Resize, document hiding, leaving the hero, and reduced-motion activation finish playback; cleanup prevents stale playback after navigation.
+- Baseline verification passed all 34 existing tests. Latest `npm run verify` passed lint, strict typecheck, production build, and all 47 browser tests. Coverage includes controlled-clock motion samples and screenshots at 320/390/1280px, static breakpoint geometry, two measured brake slowdowns, fixed stop position, loading fallbacks, and real-time interruptions/navigation.
+- The first independent evaluation found missing cursor-image readiness (fixed with decode plus delayed/failed asset tests) and a 320px overlap in the earlier choreography. The revised staging is clamped for mobile; the user's new arc/overshoot direction explicitly allows temporary Building overlap. An isolated real-time check confirmed occasional missing static copy in parallel controlled-clock screenshots was a capture artifact.
+- User requested deferring completion of the review while providing motion feedback. The harness task remains in progress; obtain a fresh independent evaluator PASS after visual refinements before marking it complete. No commit requested.
+
+## 2026-10-06 - feat-hero-headline-motion: Additional motion refinement
+
+- Reduced blue's actual horizontal excursion to about 60% of its previous measured peak. The new curve reaches its leftmost point at its endpoint, holds there for 80ms, then settles; vertical motion never passes its final baseline.
+- Restored purple's forward first-pass lean and retained the backward second-pass entrance. Replaced the two near-stops with one soft brake pulse at roughly half the local approach speed. Purple stays backward-leaning through its stop, then momentum takes the lean forward during the stronger 85%-width/125%-height squash before elastic recovery. Total duration remains five seconds.
+- Updated motion contracts, design documentation, and harness acceptance criteria. Reviewed the updated compression capture. `npm run verify` passed lint, strict typecheck, production build, and all 47 browser tests; tests cover the apex hold, absence of vertical/positional overshoot, changed pass directions, softer single pulse, and stronger impact deformation.
+- Formal independent review remains deferred while the user iterates on the motion; task status remains in progress.
+
+## 2026-10-06 - feat-hero-headline-motion: Connect the blue recovery arc
+
+- Preserved the user's edited choreography values, including blue timing at 1.6/1.68/1.85 seconds, purple timing, -27-degree impact lean, and 70%/120% squash targets.
+- Raised the blue recovery point by 0.6em. Pickup, recovery, and release now form a connected pair of cubic sections with matching vertical tangents at recovery; the curved arrival replaces the horizontal slide. A shared progress value drives blue and cursor together, retaining the existing brief apex pause and avoiding vertical overshoot.
+- Added `blueRecoveryLiftEm` beside the other tuning constants. Updated motion tests to check the raised waypoint, curved arrival, monotonic descent, final rest, and cursor attachment, and aligned existing phase checks with the user's new timings.
+- Baseline had three stale motion assertions after the user's timing edits; the other 44 tests passed. Final `npm run verify` passed lint, typecheck, production build, and all 47 browser tests. Reviewed desktop recovery/arrival captures. Formal independent review remains deferred; harness task remains in progress.
+
+## 2026-10-06 - feat-hero-headline-motion: Control mobile headline wrapping
+
+- Kept one DOM copy of every word and the existing highlight spans. Below 48rem the two desktop line wrappers flow inline; CSS-controlled breaks produce five lines below 381px, four from 381px, and three from 476px. Experiences and using share the middle mobile line. At 48rem and above the existing desktop break after experiences remains.
+- Used non-wrapping phrase spans for Building + hand-crafted and AI-accelerated + workflows so the requested thresholds are reliable despite a slight text-column fit mismatch at 381px. Breaks inside those groups remain active in the narrower buckets. Bespoke thresholds use 23.8125rem and 29.75rem with nearby explanatory comments.
+- Preserved all latest user choreography values (blue overshoot/recovery/release 1.2/1.205/1.5 seconds, recovery 0.3em left and 0.4em up). Updated stale motion expectations to match those values without changing the animation itself.
+- Added browser measurements for exact line groups and single-copy text at 320/380/381/475/476/767/768/1280px. Reviewed 320px and 390px settled screenshots. `npm run verify` passed lint, typecheck, production build, and all 48 browser tests; no horizontal document overflow. Formal independent review remains deferred and the harness task stays in progress.
+
+## 2026-10-06 - feat-hero-headline-motion: Final evaluation and completion
+
+- User approved the final visual result and requested completion. Preserved the last blue overshoot/recovery/release adjustment to 1.15/1.151/1.5 seconds; all other user tuning remains intact.
+- Full executor and fresh independent evaluator runs of `npm run verify` passed: lint, strict typecheck, static production build, and all 48 browser tests. `git diff --check` also passed.
+- Independent evaluator `final_hero_evaluation` returned OVERALL: PASS for every acceptance criterion, test coverage, and placeholder checks. Reviewed desktop/mobile pickup, recovery, braking, compression, and settled captures, including responsive word grouping, accessible single-copy H1, offscreen wraparound, interruption cleanup, and static fallbacks. No blocking issues; commit-history TDD ordering is a nonblocking warning because this interactive task is intentionally uncommitted.
+- Earlier cursor-image readiness finding is resolved by decoding before playback and delayed/failed-asset coverage. Temporary Building overlap is explicitly approved by the revised choreography. Homepage remains statically prerendered.
+- Marked plan and task complete after the independent PASS. Changes remain uncommitted; no deployment or commit requested.

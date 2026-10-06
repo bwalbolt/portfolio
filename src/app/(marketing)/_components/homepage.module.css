@@ -6,6 +6,7 @@
 
 .hero {
   position: relative;
+  overflow: clip;
   display: grid;
   align-items: center;
   height: 25rem;
@@ -29,7 +30,7 @@
 }
 
 .heroTitle {
-  display: grid;
+  display: block;
   width: 100%;
   font-family: var(--font-serif-family);
   font-size: var(--type-hero);
@@ -41,7 +42,25 @@
 }
 
 .heroLine {
-  display: block;
+  display: inline;
+}
+
+.heroPhrase {
+  white-space: nowrap;
+}
+
+/* Join Building + hand-crafted at the requested 381px phrase-fit threshold. */
+@media (width >= 23.8125rem) {
+  .heroBreakNarrow {
+    display: none;
+  }
+}
+
+/* Join AI-accelerated + workflows at the requested 476px phrase-fit threshold. */
+@media (width >= 29.75rem) {
+  .heroBreakSmall {
+    display: none;
+  }
 }
 
 .heroHighlightBlue,
@@ -685,8 +704,17 @@
   }
 
   .heroTitle {
+    display: grid;
     max-width: 77rem;
     letter-spacing: -0.057em;
+  }
+
+  .heroLine {
+    display: block;
+  }
+
+  .heroBreakMobile {
+    display: none;
   }
 
   .heroScroll {

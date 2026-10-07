@@ -371,3 +371,10 @@ Session notes are appended here after each completed task.
 - Independent evaluator `final_hero_evaluation` returned OVERALL: PASS for every acceptance criterion, test coverage, and placeholder checks. Reviewed desktop/mobile pickup, recovery, braking, compression, and settled captures, including responsive word grouping, accessible single-copy H1, offscreen wraparound, interruption cleanup, and static fallbacks. No blocking issues; commit-history TDD ordering is a nonblocking warning because this interactive task is intentionally uncommitted.
 - Earlier cursor-image readiness finding is resolved by decoding before playback and delayed/failed-asset coverage. Temporary Building overlap is explicitly approved by the revised choreography. Homepage remains statically prerendered.
 - Marked plan and task complete after the independent PASS. Changes remain uncommitted; no deployment or commit requested.
+
+## 2026-10-06 - feat-custom-favicon: Task 1 - Rename favicon assets to Next.js file conventions
+
+- Renamed the supplied SVG and Apple touch icon to Next.js's `icon.svg` and `apple-icon.png` conventions while keeping the multi-size `favicon.ico` fallback.
+- Added browser coverage for both favicon links, the Apple touch icon, successful icon responses, and the `/favicon.ico` fallback.
+- `npm run verify` passed lint, strict typecheck, production build, and all 49 Playwright tests. `git diff --check` passed.
+- Independent evaluator returned OVERALL: PASS with no issues. Changes remain uncommitted; no commit or deployment requested.

@@ -25,6 +25,43 @@ test("renders the homepage and contact form landmarks", async ({ page }) => {
   await expect(page.getByLabel("Message")).toBeVisible();
 });
 
+test("exposes the supplied favicon and Apple icon through Next metadata", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/");
+
+  const faviconLinks = page.locator('link[rel="icon"]');
+  await expect(faviconLinks).toHaveCount(2);
+  await expect(
+    page.locator('link[rel="icon"][href*="/favicon.ico"]'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('link[rel="icon"][href*="/icon.svg"]'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('link[rel="apple-touch-icon"][href*="/apple-icon.png"]'),
+  ).toHaveCount(1);
+
+  const iconUrls = await page
+    .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
+    .evaluateAll((links) =>
+      links.map(
+        (link) => new URL(link.getAttribute("href") ?? "", location.href),
+      ),
+    );
+
+  for (const iconUrl of iconUrls) {
+    const response = await request.get(iconUrl.toString());
+    expect(response.ok(), iconUrl.pathname).toBeTruthy();
+  }
+
+  const fallbackResponse = await request.get(
+    new URL("/favicon.ico", page.url()).toString(),
+  );
+  expect(fallbackResponse.ok(), "/favicon.ico").toBeTruthy();
+});
+
 test("body owns the noisy background and the hero uses square SVG artwork", async ({
   page,
 }) => {

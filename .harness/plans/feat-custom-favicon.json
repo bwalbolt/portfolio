@@ -1,0 +1,28 @@
+{
+  "slug": "feat-custom-favicon",
+  "title": "Wire the supplied favicon assets into Next.js",
+  "type": "feature",
+  "created": "2026-10-06",
+  "status": "complete",
+  "context": "Use Next.js App Router file conventions to expose the supplied custom favicon assets without adding manual head tags or PWA behavior.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Rename favicon assets to Next.js file conventions",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The supplied SVG is available as src/app/icon.svg and the supplied 180px PNG is available as src/app/apple-icon.png.",
+        "The supplied multi-size src/app/favicon.ico remains available as the browser fallback.",
+        "Next.js generates favicon links for icon.svg and favicon.ico plus an Apple touch icon link for apple-icon.png without manual layout head tags or a manifest.",
+        "The generated icon URLs and the /favicon.ico fallback return successful responses in the browser test."
+      ],
+      "files": [
+        "src/app/favicon.ico",
+        "src/app/icon.svg",
+        "src/app/apple-icon.png",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": []
+    }
+  ]
+}

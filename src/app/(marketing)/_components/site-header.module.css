@@ -18,7 +18,7 @@
 .bar {
   max-width: var(--content-width);
   padding: 0 calc(var(--page-gutter) - 10px) 0 var(--page-gutter);
-  height: 3.5rem;
+  height: var(--nav-height);
   margin-inline: auto;
   display: flex;
   align-items: center;

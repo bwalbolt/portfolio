@@ -52,12 +52,13 @@ export const SITE_NAME = "Brent Walbolt";
 export const SITE_TAGLINE = "Crafting performant, user-centered designs";
 export const COPYRIGHT_LABEL = "© 2026 Brent Walbolt. All rights reserved.";
 export const CONTACT_SECTION_HREF = "/#contact";
+export const ABOUT_SECTION_HREF = "/#about";
 
 export const NAV_ITEMS: readonly NavigationItem[] = [
   { href: "/case-studies", label: "Case Studies" },
   { href: "/blog", label: "Blog" },
   { href: "/tutorial", label: "Tutorials" },
-  { href: "/about", label: "About" },
+  { href: ABOUT_SECTION_HREF, label: "About" },
 ] as const;
 
 export const SOCIAL_LINKS: readonly SocialLink[] = [

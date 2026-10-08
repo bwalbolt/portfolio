@@ -1,4 +1,8 @@
-import { CONTACT_SECTION_HREF, SITE_NAME } from "../_content/site-content";
+import {
+  CONTACT_SECTION_HREF,
+  NAV_ITEMS,
+  SITE_NAME,
+} from "../_content/site-content";
 import { Button, Icon } from "./primitives";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
@@ -19,12 +23,7 @@ export function RoutePlaceholder({
     <div className={styles.page}>
       <SiteHeader
         contactHref={CONTACT_SECTION_HREF}
-        items={[
-          { href: "/case-studies", label: "Case Studies" },
-          { href: "/blog", label: "Blog" },
-          { href: "/tutorial", label: "Tutorials" },
-          { href: "/about", label: "About" },
-        ]}
+        items={NAV_ITEMS}
       />
 
       <main className={styles.main} id="main-content">

@@ -264,8 +264,8 @@ test("navigation during motion cleans up and a fresh entry plays again", async (
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/");
   await expect(page.locator(headingSelector)).toHaveAttribute("data-hero-motion", "playing");
-  await page.getByRole("banner").getByRole("link", { name: "About", exact: true }).click();
-  await expect(page).toHaveURL(/\/about$/);
+  await page.getByRole("banner").getByRole("link", { name: "Case Studies", exact: true }).click();
+  await expect(page).toHaveURL(/\/case-studies$/);
   await expect(page.locator(headingSelector)).toHaveCount(0);
   await page.getByRole("link", { name: "Brent Walbolt", exact: true }).click();
   await expect(page.locator(headingSelector)).toHaveAttribute("data-hero-motion", "playing");

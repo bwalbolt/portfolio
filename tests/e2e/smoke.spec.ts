@@ -7,7 +7,6 @@ const primaryRoutes = [
   { href: "/case-studies", label: "Case Studies", title: "Case Studies" },
   { href: "/blog", label: "Blog", title: "Blog" },
   { href: "/tutorial", label: "Tutorials", title: "Tutorials" },
-  { href: "/about", label: "About", title: "About" },
 ] as const;
 
 test("renders the homepage and contact form landmarks", async ({ page }) => {
@@ -319,6 +318,40 @@ for (const route of primaryRoutes) {
     ).toBeVisible();
   });
 }
+
+test("primary navigation links to #about on the homepage", async ({ page }) => {
+  await page.goto("/");
+
+  const aboutLink = page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "About" });
+
+  await expect(aboutLink).toHaveAttribute("href", "/#about");
+  await aboutLink.click();
+
+  await expect(page).toHaveURL(/#about$/);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "About Me" }),
+  ).toBeVisible();
+});
+
+test("mobile navigation links to #about on the homepage", async ({ page }) => {
+  await page.setViewportSize({ height: 740, width: 390 });
+  await page.goto("/");
+
+  const menuButton = page.getByRole("button", { name: "Toggle navigation" });
+  await menuButton.click();
+
+  const mobileNav = page.getByRole("navigation", { name: "Mobile" });
+  const aboutLink = mobileNav.getByRole("link", { name: "About" });
+  await expect(aboutLink).toHaveAttribute("href", "/#about");
+  await aboutLink.click();
+
+  await expect(page).toHaveURL(/#about$/);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "About Me" }),
+  ).toBeVisible();
+});
 
 test("keyboard users can reach primary navigation and the contact CTA", async ({
   page,

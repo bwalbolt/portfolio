@@ -103,7 +103,7 @@ Flow summary:
 - `/blog`
 - `/blog/[slug]`
 - `/tutorial` – Filtered blog posts tagged as tutorials
-- `/about`
+- `/#about` – Homepage About Me section
 - `/contact`
 
 **Notes**

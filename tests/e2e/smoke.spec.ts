@@ -548,6 +548,87 @@ test("About Me skill cards follow the responsive Figma layout", async ({ page })
   }
 });
 
+test("homepage panel variants survive client navigation from Tutorials", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  const expectHomepagePanelVariants = async () => {
+    const skillCards = page.locator("#about article");
+    const availabilityCard = page
+      .getByText("Currently Available", { exact: false })
+      .locator("../..");
+    const caseCards = page.locator("#case-studies li > article > div");
+    const expectedSkillColors = [
+      "rgb(255, 179, 0)",
+      "rgb(228, 79, 217)",
+      "rgb(0, 176, 255)",
+    ];
+
+    await expect(skillCards).toHaveCount(3);
+    for (const [index, expectedColor] of expectedSkillColors.entries()) {
+      const skillCard = skillCards.nth(index);
+      await expect(skillCard).toHaveCSS("border-radius", "0px");
+      await expect(skillCard).toHaveCSS("border-left-width", "4px");
+      await expect(skillCard).toHaveCSS("border-left-color", expectedColor);
+      await expect(skillCard).toHaveCSS(
+        "background-color",
+        "rgba(0, 0, 0, 0.66)",
+      );
+    }
+    await expect(availabilityCard).toHaveCSS("padding", "25px");
+    await expect(availabilityCard).toHaveCSS("border-top-left-radius", "20px");
+    await expect(availabilityCard).toHaveCSS("border-top-right-radius", "6px");
+    await expect(availabilityCard).toHaveCSS(
+      "background-color",
+      "rgba(255, 255, 255, 0.02)",
+    );
+    await expect(caseCards).toHaveCount(2);
+    for (const caseCard of await caseCards.all()) {
+      await expect(caseCard).toHaveCSS("border-top-left-radius", "20px");
+      await expect(caseCard).toHaveCSS("border-top-right-radius", "6px");
+    }
+  };
+
+  await page.goto("/");
+  await expectHomepagePanelVariants();
+
+  await page.getByRole("link", { name: "Tutorials" }).click();
+  await expect(page).toHaveURL(/\/tutorial$/);
+  await page.getByRole("link", { name: "Brent Walbolt" }).click();
+  await expect(page).toHaveURL(/\/$/);
+
+  const skillClassNames =
+    (await page.locator("#about article").first().getAttribute("class"))?.split(" ") ?? [];
+  const availabilityClassNames =
+    (
+      await page
+        .getByText("Currently Available", { exact: false })
+        .locator("../..")
+        .getAttribute("class")
+    )?.split(" ") ?? [];
+  const sharedPanelClass = skillClassNames.find((className) =>
+    availabilityClassNames.includes(className),
+  );
+  expect(sharedPanelClass).toBeTruthy();
+  const sharedPanelSelector = await page.evaluate(
+    (className) => `.${CSS.escape(className)}`,
+    sharedPanelClass!,
+  );
+
+  // Model the shared base chunks arriving after the page chunk during navigation.
+  await page.addStyleTag({
+    content: `:where(${sharedPanelSelector}, #case-studies li > article > div) {
+      border: var(--border-strong);
+      border-radius: var(--radius-panel);
+      background: var(--surface-panel);
+      backdrop-filter: blur(2px);
+      box-shadow: var(--shadow-panel);
+    }`,
+  });
+  await expectHomepagePanelVariants();
+});
+
 test("testimonial quote uses the responsive Figma treatment without overlap", async ({ page }) => {
   const viewports = [
     { width: 390, height: 900, name: "mobile" },

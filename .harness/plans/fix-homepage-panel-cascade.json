@@ -1,0 +1,27 @@
+{
+  "slug": "fix-homepage-panel-cascade",
+  "title": "Fix homepage panel styles after client navigation",
+  "type": "bug",
+  "created": "2026-10-08",
+  "status": "complete",
+  "context": "Skill and availability cards can fall back to the shared PanelCard appearance after navigating from /tutorial to the homepage through the logo. The shared primitive and homepage modifier selectors have equal specificity, making their intended override dependent on CSS chunk order during Next.js client navigation.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Make homepage panel overrides navigation-order independent",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Skill cards retain their square, 4px tone-colored left-border treatment after navigating from /tutorial to / through the logo",
+        "The availability card retains its homepage-specific background, border radius, and padding after the same client-side navigation",
+        "Direct homepage loads retain the existing skill-card and availability-card presentation",
+        "A Playwright regression test exercises the reported client-side navigation path and verifies computed styles for both card types",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": []
+    }
+  ]
+}

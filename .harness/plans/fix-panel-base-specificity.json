@@ -1,0 +1,28 @@
+{
+  "slug": "fix-panel-base-specificity",
+  "title": "Use low-specificity panel bases for consumer overrides",
+  "type": "bug",
+  "created": "2026-10-08",
+  "status": "complete",
+  "context": "The previous panel fix used duplicated consumer class selectors to outrank a shared PanelCard base. Replace that workaround with an intentionally low-specificity base rule, restore ordinary consumer selectors, and protect the linked case-study surface radius from the same cross-module ordering issue.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Make reusable panel bases low-specificity and cover case cards",
+      "status": "complete",
+      "acceptance_criteria": [
+        "PanelCard uses a low-specificity base selector so normal consumer class selectors override its shared border, radius, background, backdrop, and shadow declarations regardless of stylesheet order",
+        "Homepage skillCard and availabilityCard use ordinary single-class selectors and retain their intended direct-load and client-navigation styles",
+        "LinkedPanelCard case-study surfaces retain the compact desktop radius after a shared base rule arrives last",
+        "The Playwright regression verifies all three skill-card tone borders, the availability card, and both case-study surfaces before and after the simulated late base rule",
+        "npm run verify passes"
+      ],
+      "files": [
+        "src/app/(marketing)/_components/primitives.module.css",
+        "src/app/(marketing)/_components/homepage.module.css",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": []
+    }
+  ]
+}

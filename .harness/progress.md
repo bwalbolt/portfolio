@@ -12,6 +12,25 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-08 - fix-homepage-panel-cascade: Task 1 - Make homepage panel overrides navigation-order independent
+
+- Raised the specificity of the homepage `skillCard` and `availabilityCard` variants above the shared `PanelCard` base so client-navigation CSS chunk order cannot replace their intended presentation.
+- Added a Playwright regression that follows `/` to `/tutorial` and returns through the logo, verifies both direct-load and returned-page computed styles, and simulates the shared base chunk arriving last. It covers all three skill-card tone borders plus the availability card's padding, radii, and background.
+- Confirmed the elements always carried both CSS-module classes; the failure was equal-specificity cascade order, not React changing class names or a hydration mismatch.
+- Verification: baseline passed 50 tests; the regression failed before the fix with the shared `24px 8px` radius; final executor and evaluator `npm run verify` runs passed all 51 tests. `git diff --check` passed.
+- Evaluator verdict: PASS after 2 retries. The first review requested all skill-card tone colors; the second encountered two unrelated hero-motion timing flakes, and the fresh final evaluation passed without issues.
+- Bugs found: unrelated hero-motion navigation timing assertions can occasionally observe `complete` before an expected intermediate `playing` state under concurrent full-suite load.
+- Next task: none; plan complete.
+
+## 2026-10-08 - fix-panel-base-specificity: Task 1 - Make reusable panel bases low-specificity and cover case cards
+
+- Replaced duplicated selectors such as `.skillCard.skillCard` with intentionally low-specificity reusable bases: `:where(.panelCard)` and `:where(.surface)`. Homepage consumers now use ordinary single-class selectors and win regardless of stylesheet chunk order.
+- Fixed the additional `LinkedPanelCard`/homepage `caseCard` conflict, where both `.surface` and desktop `.caseCard` set the radius on the same element. Added regression coverage for direct load, `/tutorial` round-trip navigation, all three skill tones, availability styling, both case-card radii, and late-arriving shared base rules.
+- Verification: the pre-fix regression observed the case-card radius as 24px instead of the intended 20px; final `npm run verify` passed all 51 tests and `git diff --check` passed.
+- Evaluator verdict: PASS on first review; no functional issues. TDD chronology was inconclusive because the interactive changes remain uncommitted.
+- Bugs found: none.
+- Next task: none; plan complete.
+
 ## 2026-07-09 - harness-readiness: Task 1 - Practical v1 setup
 
 - Added isolated harness verification scripts that run Playwright against an explicit port.

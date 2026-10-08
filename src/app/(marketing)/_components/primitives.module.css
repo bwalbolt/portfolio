@@ -153,7 +153,9 @@
   }
 }
 
-.panelCard {
+/* Keep the reusable surface intentionally low-specificity so consumer module
+   classes can override its visual variants without relying on chunk order. */
+:where(.panelCard) {
   border: var(--border-strong);
   border-radius: var(--radius-panel);
   background: var(--surface-panel);

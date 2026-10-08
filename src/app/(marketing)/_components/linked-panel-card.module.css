@@ -45,7 +45,9 @@
   filter: blur(8px);
 }
 
-.surface {
+/* Consumer surfaces such as homepage case cards should be able to override
+   these shared defaults without depending on route CSS chunk order. */
+:where(.surface) {
   position: relative;
   z-index: 1;
   border: var(--border-strong);

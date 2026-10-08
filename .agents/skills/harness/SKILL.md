@@ -42,10 +42,19 @@ Use the available user-question tool, or ask concise direct questions if no such
 
 Create `.harness/plans/{slug}.json`. See [references/plan-format.md](references/plan-format.md) for the schema.
 
-- Auto-generate slug from description: lowercase, hyphenated, max 40 chars
+- Auto-generate a lowercase, hyphenated slug (max 40 chars) with exactly one approved prefix: `feat-` (new capability), `fix-` (bug patch), `chore-` (maintenance with no source or test-file changes), or `refactor-` (improvement, performance work, redesign, or tweak). Map plan types as follows: `feature` -> `feat-`, `bug` -> `fix-`, `chore` -> `chore-`, and `improvement` -> `refactor-`.
+- Do not use a `test-` prefix: test additions or changes belong to the applicable `fix-` or `refactor-` plan. Historical plans with other prefixes remain unchanged.
 - Include `acceptance_criteria` on every task - the evaluator reads them
 - Each task should be completable in one focused session
 - Print a summary of all tasks with ACs for user review
+
+### Feedback Amendments
+
+Keep feedback attributable to an existing plan in that plan; create a new plan only when it is unrelated to every existing plan and task.
+
+- Before evaluation starts for the current unfinished task, add the feedback as specific, testable acceptance criteria on that task.
+- After evaluation starts, or when feedback explicitly targets a completed task, insert a pending task immediately after the target. Title it `Address feedback on task {id}: {title}`, capture the requested behavior in its acceptance criteria, and set its `depends_on` to the target task ID.
+- Preserve the target task's status; never reopen a completed target. Increment the IDs of all following tasks and rewrite every affected `depends_on` reference. Set the plan status to `in_progress` when the inserted task introduces pending work.
 
 ### 4. Execute
 

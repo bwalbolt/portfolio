@@ -34,7 +34,7 @@ Note: More capable models (e.g., Opus 4.6) may handle long contexts well enough 
 
 The agent's context window is ephemeral. Everything that must survive between sessions needs to be written to disk:
 
-- **Task/feature list** (JSON, not Markdown) -- The single source of truth for what's done and what's remaining. JSON resists model-induced corruption better than freeform Markdown. Rules: never remove or reorder items, only flip status from incomplete to complete.
+- **Task/feature list** (JSON, not Markdown) -- The single source of truth for what's done and what's remaining. JSON resists model-induced corruption better than freeform Markdown. Do not remove or reorder items during normal execution; the sole exception is targeted feedback after evaluation begins, which is inserted immediately after its target task while later IDs and dependency references are updated. Otherwise, only flip status from incomplete to complete.
 - **Progress notes** (free-form text) -- What was accomplished, bugs found/fixed, what to work on next, architectural decisions. Written at the end of each session.
 - **Plan/spec file** -- The original requirements. Kept in the project directory so the agent can reference it.
 - **Init/setup script** -- Automates environment setup so the agent doesn't waste context on installation.

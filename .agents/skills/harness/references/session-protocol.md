@@ -68,6 +68,12 @@ Default local commit order:
 2. `harness: address evaluation for {slug} task {id}` only when evaluator feedback required fixes and those fixes verify.
 3. `harness: complete {slug} task {id}` after evaluator PASS and harness state is updated.
 
+## Feedback During or After a Session
+
+- Before evaluation begins for the current unfinished task, add task-specific feedback to its acceptance criteria and implement it within that task.
+- Once evaluation has begun, or for feedback explicitly about a completed task, preserve the target task's current status and never reopen it if it is already complete. Insert a pending `Address feedback on task {id}: {title}` task immediately after it, make it depend on the target, increment later IDs, and rewrite affected dependencies.
+- Mark an amended completed plan `in_progress`; the inserted feedback task is the next task in normal plan order. Create a new plan only when the feedback cannot be tied to an existing plan or task.
+
 ### Session Notes Format
 
 ```markdown

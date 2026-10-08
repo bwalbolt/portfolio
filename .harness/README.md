@@ -103,13 +103,17 @@ Codex rules match argument prefixes, so keep the allowed npm script names specif
 1. Read all feedback before acting.
 2. Triage each item as `bug`, `feature`, `improvement`, or `chore`.
 3. Ask only for clarification that cannot be discovered from the repo.
-4. Create `.harness/plans/{slug}.json` with focused tasks and acceptance criteria.
+4. Create `.harness/plans/{slug}.json` with focused tasks and acceptance criteria. New slugs must begin with exactly one of `feat-` (new capability), `fix-` (bug patch), `chore-` (maintenance with no source or test-file changes), or `refactor-` (improvement, performance work, redesign, or tweak); historical plans retain their existing slugs.
 5. Implement one task at a time.
 6. Run `npm run verify`.
 7. Use an independent evaluator/review pass before marking a task complete.
 8. Append notes to `.harness/progress.md`.
 
 Frontend work does not require TDD by default. Add or update tests when acceptance criteria involve navigation, user flows, accessibility behavior, complex state, data transformation, or regression-prone logic.
+
+### Targeted Feedback
+
+For feedback before evaluation begins on the current unfinished task, add specific, testable acceptance criteria to that task. Once evaluation has begun, or when feedback names a completed task, preserve the target's current status and never reopen it if it is already complete; insert a pending `Address feedback on task {id}: {title}` task immediately after it. The new task depends on its target; increment subsequent task IDs and update every affected dependency. Set the plan back to `in_progress` if necessary. Create a new plan only for feedback that cannot be linked to an existing plan or task.
 
 ## Headless Runner
 
@@ -157,7 +161,7 @@ Per-ticket plans use this structure:
 
 ```json
 {
-  "slug": "improve-homepage-nav",
+  "slug": "refactor-homepage-nav",
   "title": "Improve homepage navigation",
   "type": "improvement",
   "created": "2026-06-17",

@@ -5,7 +5,6 @@ import {
   ABOUT_PARAGRAPH,
   AVAILABILITY,
   CASE_STUDIES,
-  CONTACT_COPY,
   CONTACT_SECTION_HREF,
   INSIGHTS,
   NAV_ITEMS,
@@ -18,15 +17,14 @@ import {
   type InsightCard,
 } from "../_content/site-content";
 import {
-  Button,
   Container,
   Icon,
   PanelCard,
   SectionHeading,
-  VisuallyHidden,
   cx,
 } from "./primitives";
 import { ContactBorder } from "./contact-border";
+import { ContactForm } from "./contact-form";
 import { HeroHeadline } from "./hero-headline";
 import { LinkedPanelCard } from "./linked-panel-card";
 import { SiteFooter } from "./site-footer";
@@ -263,63 +261,7 @@ export function Homepage() {
             <Container className={styles.contactLayout}>
               <div className={styles.contactFormFrame}>
                 <ContactBorder />
-                <form className={styles.contactForm}>
-                  <h2 className={styles.contactTitle}>{CONTACT_COPY.heading}</h2>
-
-                  <div className={styles.contactFieldGrid}>
-                    <div className={styles.fieldGroup}>
-                      <label className={styles.fieldLabel} htmlFor="contact-name">
-                        {CONTACT_COPY.nameLabel}
-                      </label>
-                      <input
-                        className={styles.textField}
-                        id="contact-name"
-                        name="name"
-                        placeholder={CONTACT_COPY.namePlaceholder}
-                        type="text"
-                      />
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                      <label className={styles.fieldLabel} htmlFor="contact-email">
-                        {CONTACT_COPY.emailLabel}
-                      </label>
-                      <input
-                        className={styles.textField}
-                        id="contact-email"
-                        name="email"
-                        placeholder={CONTACT_COPY.emailPlaceholder}
-                        type="email"
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.fieldGroup}>
-                    <label className={styles.fieldLabel} htmlFor="contact-message">
-                      {CONTACT_COPY.messageLabel}
-                    </label>
-                    <textarea
-                      className={cx(styles.textField, styles.textareaField)}
-                      id="contact-message"
-                      name="message"
-                      placeholder={CONTACT_COPY.messagePlaceholder}
-                      rows={6}
-                    />
-                  </div>
-
-                  <Button
-                    aria-describedby="contact-static-note"
-                    className={styles.contactButton}
-                    icon={<Icon name="paper-plane" />}
-                    type="button"
-                  >
-                    {CONTACT_COPY.submitLabel}
-                  </Button>
-
-                  <VisuallyHidden>
-                    <span id="contact-static-note">{CONTACT_COPY.staticNote}</span>
-                  </VisuallyHidden>
-                </form>
+                <ContactForm />
               </div>
 
               <aside className={styles.contactAside}>

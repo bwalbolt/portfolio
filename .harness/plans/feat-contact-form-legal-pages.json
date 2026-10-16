@@ -1,0 +1,70 @@
+{
+  "slug": "feat-contact-form-legal-pages",
+  "title": "Add contact delivery and legal pages",
+  "type": "feature",
+  "created": "2026-10-08",
+  "status": "complete",
+  "context": "The portfolio needs a cookie-free, serverless contact form before its Vercel launch, plus accurate public legal pages and removal of the unused contact route.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Implement secure homepage contact delivery",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The homepage form validates name, email, and message accessibly, reports pending, success, and failure states, and links to the privacy policy.",
+        "POST /api/contact validates bounded input, silently suppresses honeypot submissions, sends a plain-text Resend email with the visitor address only as Reply-To, and exposes no provider details.",
+        "The contact route is removed, Resend environment variables are documented, and route/browser tests cover validation, success/failure, and honeypot behavior."
+      ],
+      "files": ["src/app/(marketing)/_components", "src/app/api/contact/route.ts", "tests/e2e", "README.md"],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Address feedback on task 1: Stabilize contact-form errors and status treatments",
+      "status": "complete",
+      "acceptance_criteria": [
+        "All invalid contact fields show their own accessible error without changing the form's normal layout.",
+        "Field errors and invalid fields use the shared error token; the message group retains no reserved error padding.",
+        "Delivery errors and success messages use distinct accessible surface treatments with Error and Success prefixes, without duplicating field-validation messages."
+      ],
+      "files": ["src/app/(marketing)/_components/contact-form.tsx", "src/app/(marketing)/_components/homepage.module.css", "src/app/globals.css", "tests/e2e/contact-form.spec.ts"],
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "title": "Address feedback on task 2: Correct reserved field-error space",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Name and email groups reserve a 1.5em error line whether or not an error is present.",
+        "The message group has no default reserved error space and gains a 1.5em error line only when invalid.",
+        "Browser coverage asserts the default and invalid padding behavior."
+      ],
+      "files": ["src/app/(marketing)/_components/homepage.module.css", "tests/e2e/contact-form.spec.ts"],
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "title": "Address feedback on task 3: Move the contact field grid desktop breakpoint",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The contact field grid remains single-column below 62rem.",
+        "The contact field grid switches to two equal columns at 62rem and above.",
+        "Browser coverage asserts both sides of the 62rem boundary."
+      ],
+      "files": ["src/app/(marketing)/_components/homepage.module.css", "tests/e2e/contact-form.spec.ts"],
+      "depends_on": ["3"]
+    },
+    {
+      "id": "5",
+      "title": "Publish accurate privacy and terms pages",
+      "status": "complete",
+      "acceptance_criteria": [
+        "The privacy policy and terms content render as semantic static pages with accurate Vercel, Resend, no-analytics, and request-security disclosures.",
+        "The footer label is Terms of Service while its existing /terms-of-use URL remains valid.",
+        "Browser coverage verifies legal content and /contact returns 404."
+      ],
+      "files": ["docs/privacy-policy.md", "docs/terms-of-service.md", "src/app/(marketing)", "tests/e2e/smoke.spec.ts"],
+      "depends_on": ["1"]
+    }
+  ]
+}

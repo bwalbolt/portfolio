@@ -12,6 +12,29 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-14 - feat-contact-form-legal-pages: Task 3 - Correct reserved field-error space
+
+- Standard field groups now always reserve a 1.5em field-error line, while the message group reserves none normally and gains the same space only when invalid.
+- Added exact browser assertions for default and invalid computed padding.
+- Verification: `npm run verify` passed lint, strict TypeScript, production build, and all 54 Playwright tests.
+- Evaluator verdict: PASS on first review; TDD chronology is a non-blocking warning because the interactive changes are uncommitted.
+
+## 2026-10-09 - feat-contact-form-legal-pages: Task 2 - Stabilize contact-form errors and status treatments
+
+- Render validation errors for every invalid field, keep them associated with their controls, and reserve the delivery-status panel for pending, success, and delivery-failure messages.
+- Positioned field errors within error-only reserved space so the ordinary contact-form layout stays stable; preserved zero error padding for the message group.
+- Added semantic error and success surface/on-surface tokens, requested field-error colors, and explicit Error/Success status prefixes.
+- Verification: `npm run verify` passed lint, strict TypeScript, production build, and all 54 Playwright tests.
+- Evaluator verdict: PASS on first review; TDD chronology is a non-blocking warning because the interactive changes are uncommitted.
+
+## 2026-10-08 - feat-contact-form-legal-pages: Tasks 1–2 - Contact delivery and legal pages
+
+- Added a client-side homepage contact form backed by a same-origin Next.js route handler and Resend. It has bounded validation, field-linked accessible errors, honeypot suppression, generic failure messaging, and a documented Vercel/Resend setup.
+- Removed `/contact`; published static Privacy Policy and Terms of Service pages, updated the source documents to match the actual Vercel/Resend/no-analytics configuration, and aligned the footer wording.
+- Added browser/API regression coverage for validation, pending/success/failure states, origin checks, honeypots, unavailable delivery, legal disclosures, and the removed route.
+- Verification: production build plus `PORT=3126 npm run harness:test:e2e` passed all 54 Playwright tests; final independent evaluator also ran `npm run verify` successfully.
+- Evaluator verdict: PASS after two feedback cycles. TDD chronology remains a non-blocking warning because the interactive session has no implementation commits.
+
 ## 2026-10-08 - fix-homepage-panel-cascade: Task 1 - Make homepage panel overrides navigation-order independent
 
 - Raised the specificity of the homepage `skillCard` and `availabilityCard` variants above the shared `PanelCard` base so client-navigation CSS chunk order cannot replace their intended presentation.
@@ -397,3 +420,10 @@ Session notes are appended here after each completed task.
 - Added browser coverage for both favicon links, the Apple touch icon, successful icon responses, and the `/favicon.ico` fallback.
 - `npm run verify` passed lint, strict typecheck, production build, and all 49 Playwright tests. `git diff --check` passed.
 - Independent evaluator returned OVERALL: PASS with no issues. Changes remain uncommitted; no commit or deployment requested.
+
+## 2026-10-14 - feat-contact-form-legal-pages: Task 4 - Move the contact field grid desktop breakpoint
+
+- Moved the contact field grid's two-column rule from the 48rem media block to the established 62rem desktop bucket. The wider contact layout remains unchanged at 48rem.
+- Added browser coverage immediately below and at the 62rem boundary (991px and 992px), asserting one and two grid columns respectively.
+- Baseline and final `npm run verify` passed lint, TypeScript, production build, and all 55 Playwright tests. `git diff --check` passed.
+- Independent evaluator returned OVERALL: PASS with no blocking issues; TDD ordering is a non-blocking warning because this interactive work remains uncommitted.

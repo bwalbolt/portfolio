@@ -172,7 +172,6 @@ export const CONTACT_COPY = {
   messagePlaceholder: "Tell me about your project...",
   nameLabel: "Name",
   namePlaceholder: "Full Name...",
-  staticNote: "Static preview only. Form submission is not wired yet.",
   submitLabel: "Get in Touch",
 } as const;
 

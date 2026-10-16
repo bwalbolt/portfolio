@@ -16,6 +16,11 @@
   --color-accent-pink: #e44fd9;
   --color-accent-orange: #ffb300;
   --color-accent-purple: #7c4dff;
+  --color-error: #d12600;
+  --color-error-surface: #fddbd3;
+  --color-error-on-surface: #a81f00;
+  --color-success-surface: #baf2dc;
+  --color-success-on-surface: #006142;
   --surface-page: linear-gradient(180deg, #071a24 0%, #041019 100%);
   --surface-panel: var(--color-white-02);
   --surface-panel-border: var(--color-white-08);

@@ -22,7 +22,7 @@ export function SiteFooter() {
             </li>
             <li>
               <Link className={styles.navLink} href="/terms-of-use">
-                Terms of Use
+                Terms of Service
               </Link>
             </li>
           </ul>

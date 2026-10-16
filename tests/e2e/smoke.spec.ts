@@ -795,7 +795,7 @@ test("footer uses legal links and closes the contact section without an extra ga
     expect(geometry.footerTop, viewport.name).toBeCloseTo(geometry.contactBottom, 1);
     await expect(footer.getByRole("navigation", { name: "Legal" }), viewport.name).toBeVisible();
     await expect(footer.getByRole("link", { name: "Privacy Policy" }), viewport.name).toBeVisible();
-    await expect(footer.getByRole("link", { name: "Terms of Use" }), viewport.name).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Terms of Service" }), viewport.name).toBeVisible();
     await expect(
       footer.getByText("Crafting performant, user-centered designs", { exact: true }),
       viewport.name,
@@ -825,17 +825,32 @@ test("footer uses legal links and closes the contact section without an extra ga
   }
 });
 
-test("footer legal links reach static branded placeholder pages", async ({ page }) => {
+test("footer legal links reach published legal pages and contact route is absent", async ({ page, request }) => {
   for (const legalPage of [
-    { href: "/privacy-policy", title: "Privacy Policy" },
-    { href: "/terms-of-use", title: "Terms of Use" },
+    { href: "/privacy-policy", heading: "Privacy Policy", link: "Privacy Policy" },
+    { href: "/terms-of-use", heading: "Terms of Service", link: "Terms of Service" },
   ]) {
     await page.goto("/");
-    await page.getByRole("link", { name: legalPage.title }).click();
+    await page
+      .getByRole("contentinfo")
+      .getByRole("link", { name: legalPage.link })
+      .click();
     await expect(page).toHaveURL(legalPage.href);
-    await expect(page.getByRole("heading", { name: legalPage.title })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Back Home" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: legalPage.heading })).toBeVisible();
   }
+
+  await page.goto("/privacy-policy");
+  await expect(page.getByText("Vercel provides website hosting, delivery, and security controls.")).toBeVisible();
+  await expect(page.getByText("Resend processes contact-form email delivery on our behalf.")).toBeVisible();
+  await expect(page.getByText("We do not currently use analytics.")).toBeVisible();
+  await expect(page.getByText(/request, device, and IP-address information/)).toBeVisible();
+
+  await page.goto("/terms-of-use");
+  await expect(page.getByRole("heading", { name: "10. Governing Law" })).toBeVisible();
+  await expect(page.getByText(/laws of the State of Florida/)).toBeVisible();
+
+  const contactRoute = await request.get("/contact");
+  expect(contactRoute.status()).toBe(404);
 });
 
 test("About mosaic loads only the appropriate crop at the 30rem breakpoint", async ({ browser }) => {
@@ -878,7 +893,7 @@ test("unified Button primitive shares gradient styling, default/small variants, 
 
   // Semantic rendering and size attributes
   await expect(contactButton).toBeVisible();
-  await expect(contactButton).toHaveAttribute("type", "button");
+  await expect(contactButton).toHaveAttribute("type", "submit");
   await expect(contactButton).toHaveAttribute("data-size", "default");
   await expect(bannerLink).toHaveAttribute("href", "/#contact");
   await expect(bannerLink).toHaveAttribute("data-size", "small");
@@ -1076,8 +1091,8 @@ test("unified Button primitive shares gradient styling, default/small variants, 
   expect(linkReducedActive).toBe("none");
   await page.mouse.up();
 
-  // Verify Button primitive with default size rendered as a link (on placeholder routes like /contact)
-  await page.goto("/contact");
+  // Verify Button primitive with default size rendered as a link on a placeholder route.
+  await page.goto("/blog");
   await page.evaluate(() => document.fonts.ready);
   const backHomeLink = page.getByRole("link", { name: "Back Home" });
   await expect(backHomeLink).toBeVisible();

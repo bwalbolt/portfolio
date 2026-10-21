@@ -1,0 +1,108 @@
+{
+  "slug": "feat-blog-content-and-pages",
+  "title": "Add the blog content system and pages",
+  "type": "feature",
+  "created": "2026-10-21",
+  "status": "planned",
+  "context": "Replace the scaffolded blog routes with a static, repository-authored MDX collection and Figma-aligned listing and article experiences. The blog listing follows Figma file 0J2JF0nYrI8EJrttdHNes4 node 652:141, and the article follows node 652:448. The initial collection uses the three existing homepage insights, lists every post without pagination, and models tutorials as tagged blog posts. `/blog` and `/tutorial` may share low-level post-card/grid primitives, but they must remain separate route compositions so the tutorial experience can diverge later. Long-form content introduces a reusable `responsive-text` wrapper sized from a responsive root and constrained with character-based width; migrating the existing legal pages to it is explicitly deferred. Because no tutorial assignment was supplied, this plan uses `margin-top-for-the-win` as the initial tutorial so the filtered route has a real, testable result.",
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Create the typed MDX post collection",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Next.js 16 is configured for local MDX using the documented App Router integration, including the required MDX components entry point, while preserving static server rendering and adding no client-side content loader.",
+        "A typed canonical post registry exposes slug, title, description, publication date, display sequence, and tags/category data, rejects invalid duplicate slugs or unsupported metadata at build/type-check time, and returns posts newest-first.",
+        "Repository-authored MDX files exist for `margin-top-for-the-win`, `working-on-old-hardware`, and `hello-world`, using the titles, summaries, dates, and 003/002/001 sequence already shown on the homepage and in Figma rather than lorem ipsum listing data.",
+        "Tutorial membership is expressed in post metadata instead of a separate content collection, with `margin-top-for-the-win` initially tagged as a tutorial and reusable selectors exposing all posts or tutorial-only posts.",
+        "The homepage insight cards read their title, description, date label, slug, and href from the canonical post metadata while keeping homepage-only visibility behavior in the homepage presentation layer.",
+        "Adding another post has one documented content workflow and does not require editing the blog listing or tutorial page components."
+      ],
+      "files": [
+        "package.json",
+        "package-lock.json",
+        "next.config.ts",
+        "src/mdx-components.tsx",
+        "src/content/blog",
+        "src/app/(marketing)/_content/site-content.ts",
+        "src/app/(marketing)/_content/posts.ts"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Build the blog and tutorial listing routes",
+      "status": "pending",
+      "acceptance_criteria": [
+        "`/blog` renders a `Latest Insights` heading and every canonical post exactly once in newest-first order, with no pagination controls or repeated Figma filler cards.",
+        "`/tutorial` renders a `Tutorials` heading and only posts whose canonical metadata includes the tutorial classification; non-tutorial posts are absent.",
+        "The two routes are separate page compositions and can diverge independently, while sharing focused post-card and post-grid primitives rather than a single title-switched page template.",
+        "Cards reuse the existing linked-panel interaction and match Figma node 652:141 for surface, asymmetric radius, metadata, title, description, read-more affordance, spacing, and desktop three-column composition.",
+        "The post grid is mobile-first with one column below 48rem, two columns from 48rem to below 62rem, and three columns at 62rem and above, using the repository's exact native range-query conventions.",
+        "Every card is a semantic, keyboard-accessible single-destination article link with a descriptive accessible name, visible focus treatment, and a working `/blog/[slug]` destination.",
+        "Both listings retain the shared site header, main landmark/skip-link target, noise background, and footer, and introduce no unnecessary client JavaScript."
+      ],
+      "files": [
+        "src/app/(marketing)/blog/page.tsx",
+        "src/app/(marketing)/tutorial/page.tsx",
+        "src/app/(marketing)/_components/post-card.tsx",
+        "src/app/(marketing)/_components/post-listing.tsx",
+        "src/app/(marketing)/_components/post-listing.module.css",
+        "tests/e2e/blog.spec.ts",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": [
+        "1"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Render static responsive blog posts",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Each canonical slug renders its matching MDX body at `/blog/[slug]`, all known slugs are prerendered with `generateStaticParams`, unknown slugs return 404, and no post requires runtime data fetching.",
+        "Each post supplies route metadata derived from the canonical title and description and renders one semantic article with a single page-level heading followed by correctly nested MDX headings and prose.",
+        "The article composition matches Figma node 652:448 at the 1280px reference viewport, including the shared header/footer, top and bottom spacing, display headline, Source Serif body copy, and restrained background treatment.",
+        "The entire article typography region is wrapped by the reusable literal `responsive-text` class; its root evaluates to 3.75vw at mobile reference widths and 1.352vw at the 1280px desktop reference, with bounded intermediate scaling that does not create a breakpoint jump or unreadable text.",
+        "Typography inside `responsive-text` uses em-relative sizes and spacing derived from that root rather than independent viewport, px, or rem font sizes.",
+        "The prose measure is expressed with a ch-based width, remains within page gutters, and is visually calibrated to approximately 776px of content width at a 1280px viewport.",
+        "The responsive text primitive is architecture-neutral and reusable by future long-form routes, but the privacy policy and terms pages are not migrated in this feature.",
+        "Post prose, headings, lists, links, inline code, code blocks, blockquotes, and images have accessible, overflow-safe default treatments, including visible link focus and horizontal containment for long technical content."
+      ],
+      "files": [
+        "src/app/(marketing)/blog/[slug]/page.tsx",
+        "src/app/(marketing)/_components/blog-post.tsx",
+        "src/app/(marketing)/_components/blog-post.module.css",
+        "src/app/(marketing)/_components/responsive-text.tsx",
+        "src/app/globals.css",
+        "src/mdx-components.tsx",
+        "tests/e2e/blog.spec.ts"
+      ],
+      "depends_on": [
+        "1"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Document and verify the complete blog flow",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Browser coverage verifies all three blog cards and routes, newest-first ordering, the tutorial-only filter, an unknown-slug 404, card keyboard navigation, semantic headings, and the absence of pagination.",
+        "Responsive browser coverage exercises 390, 479, 480, 767, 768, 991, 992, 1279, and 1280px widths without horizontal page overflow and asserts the listing column transitions, responsive-text root sizing, and approximately 776px desktop prose measure.",
+        "Visual comparison against Figma nodes 652:141 and 652:448 confirms the requested desktop compositions and records any deliberate mobile adaptations based on the repository design system.",
+        "ARCHITECTURE.md and DESIGN.md document the MDX authoring/registry flow, tutorial classification, separate listing-route ownership, responsive-text/ch measure convention, and the deferred legal-page migration.",
+        "`npm run verify` passes with lint, strict TypeScript, production build/static generation, and Playwright coverage."
+      ],
+      "files": [
+        "ARCHITECTURE.md",
+        "DESIGN.md",
+        "tests/e2e/blog.spec.ts",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": [
+        "2",
+        "3"
+      ]
+    }
+  ]
+}

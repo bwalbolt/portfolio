@@ -9,7 +9,7 @@
     {
       "id": "1",
       "title": "Create the typed MDX post collection",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "Next.js 16 is configured for local MDX using the documented App Router integration, including the required MDX components entry point, while preserving static server rendering and adding no client-side content loader.",
         "A typed canonical post registry exposes slug, title, description, publication date, display sequence, and tags/category data, rejects invalid duplicate slugs or unsupported metadata at build/type-check time, and returns posts newest-first.",

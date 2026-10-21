@@ -1,0 +1,9 @@
+# Margin-top For the Win
+
+Most frontend developers agree that adjacent blocks need breathing room. The useful question is which block owns it.
+
+When a vertical stack is made of independent components, `margin-top` gives each arriving item responsibility for its separation. The first item can opt out, and the relationship stays local when the stack changes.
+
+## A small rule with practical benefits
+
+Use a stack primitive when you can. When you cannot, make the incoming element responsible for its gap and avoid compensating negative margins elsewhere in the layout.

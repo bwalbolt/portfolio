@@ -6,7 +6,6 @@ import {
   AVAILABILITY,
   CASE_STUDIES,
   CONTACT_SECTION_HREF,
-  INSIGHTS,
   NAV_ITEMS,
   PORTRAIT,
   SKILLS,
@@ -14,8 +13,8 @@ import {
   TESTIMONIAL,
   type AccentTone,
   type CaseStudyCard,
-  type InsightCard,
 } from "../_content/site-content";
+import { getPosts, type Post } from "../_content/posts";
 import {
   Container,
   Icon,
@@ -38,7 +37,7 @@ const toneClassNames: Record<AccentTone, string> = {
   purple: styles.tonePurple,
 };
 
-function InsightPanel({ insight }: { insight: InsightCard }) {
+function InsightPanel({ insight }: { insight: Post }) {
   return (
     <LinkedPanelCard
       href={insight.href}
@@ -46,7 +45,7 @@ function InsightPanel({ insight }: { insight: InsightCard }) {
       className={styles.insightCard}
       linkClassName={styles.readMore}
     >
-      <p className={styles.cardLead}>{insight.date}</p>
+      <p className={styles.cardLead}>{insight.dateLabel}</p>
       <h3 className={styles.cardTitle}>{insight.title}</h3>
       <p className={styles.cardBody}>{insight.description}</p>
     </LinkedPanelCard>
@@ -125,6 +124,13 @@ function SocialLinks() {
 }
 
 export function Homepage() {
+  const homepageInsights = getPosts().map((post, index) => ({
+    post,
+    // The compact homepage keeps its established two-card mobile presentation.
+    // The blog itself always lists the entire canonical collection.
+    visibleOnMobile: index < 2,
+  }));
+
   return (
     <div className={styles.page}>
       <SiteHeader contactHref={CONTACT_SECTION_HREF} items={NAV_ITEMS} overlay />
@@ -147,11 +153,11 @@ export function Homepage() {
               />
 
               <ul className={styles.insightGrid}>
-                {INSIGHTS.map((insight) => (
+                {homepageInsights.map(({ post: insight, visibleOnMobile }) => (
                   <li
                     className={cx(
                       styles.insightGridItem,
-                      !insight.visibleOnMobile && styles.desktopOnly,
+                      !visibleOnMobile && styles.desktopOnly,
                     )}
                     key={insight.slug}
                   >

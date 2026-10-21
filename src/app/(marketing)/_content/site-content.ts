@@ -18,15 +18,6 @@ export type SocialLink = {
   external: boolean;
 };
 
-export type InsightCard = {
-  date: string;
-  description: string;
-  href: string;
-  slug: string;
-  title: string;
-  visibleOnMobile: boolean;
-};
-
 export type AccentTone = "blue" | "orange" | "pink" | "purple";
 
 export type CaseStudyCard = {
@@ -65,34 +56,6 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
   { href: "https://www.linkedin.com/in/brent-walbolt/", label: "LinkedIn", external: true },
   { href: "https://x.com/brentwal23", label: "Twitter", external: true },
   { href: "https://github.com/bwalbolt", label: "GitHub", external: true },
-] as const;
-
-export const INSIGHTS: readonly InsightCard[] = [
-  {
-    date: "APR 06, 2026 // 003",
-    description: "Most frontend devs agree on one-side margin, but which side?",
-    href: "/blog/margin-top-for-the-win",
-    slug: "margin-top-for-the-win",
-    title: "Margin-top For the Win",
-    visibleOnMobile: true,
-  },
-  {
-    date: "APR 05, 2026 // 002",
-    description: "How practical can a 2015 MacBook Air be for full-stack work?",
-    href: "/blog/working-on-old-hardware",
-    slug: "working-on-old-hardware",
-    title: "Working on Old Hardware",
-    visibleOnMobile: true,
-  },
-  {
-    date: "APR 04, 2026 // 001",
-    description:
-      "It's been a while since I had a site live. It's time to start fresh.",
-    href: "/blog/hello-world",
-    slug: "hello-world",
-    title: "Hello World",
-    visibleOnMobile: false,
-  },
 ] as const;
 
 export const CASE_STUDIES: readonly CaseStudyCard[] = [

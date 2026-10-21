@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { INSIGHTS } from "../../_content/site-content";
+import { getPostBySlug, getPosts } from "../../_content/posts";
 import { RoutePlaceholder } from "../../_components/route-placeholder";
 
 type BlogDetailPageProps = {
@@ -10,24 +10,24 @@ type BlogDetailPageProps = {
 };
 
 export function generateStaticParams() {
-  return INSIGHTS.map((insight) => ({
-    slug: insight.slug,
+  return getPosts().map((post) => ({
+    slug: post.slug,
   }));
 }
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { slug } = await params;
-  const insight = INSIGHTS.find((entry) => entry.slug === slug);
+  const post = getPostBySlug(slug);
 
-  if (!insight) {
+  if (!post) {
     notFound();
   }
 
   return (
     <RoutePlaceholder
-      description={insight.description}
-      eyebrow={insight.date}
-      title={insight.title}
+      description={post.description}
+      eyebrow={post.dateLabel}
+      title={post.title}
     />
   );
 }

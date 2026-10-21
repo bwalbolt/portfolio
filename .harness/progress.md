@@ -12,6 +12,16 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-21 - feat-blog-content-and-pages: Task 1 - Create the typed MDX post collection
+
+- Configured documented Next.js 16 local MDX support, added the required `src/mdx-components.tsx` entry point, and authored the three canonical post bodies under `src/content/blog`.
+- Added a typed, build-validated registry with newest-first ordering, ISO dates/display sequences, canonical labels and routes, tutorial metadata, and reusable post selectors. Homepage insight cards now consume that registry, while the compact homepage owns its two-card mobile visibility rule.
+- Added content-authoring instructions and focused Playwright coverage for registry ordering/validation/tutorial selection, authored MDX, and canonical homepage card metadata.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 57 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS after 2 review-driven fixes. The final evaluator found all acceptance criteria and coverage satisfied; TDD chronology is a non-blocking warning because this interactive work is uncommitted.
+- Bugs found: the first review exposed missing focused coverage; the second exposed an incomplete content workflow note and a selector test that bypassed the public selector. Both were corrected.
+- Next task: task 2, build the separate blog and tutorial listing routes.
+
 ## 2026-10-14 - feat-contact-form-legal-pages: Task 3 - Correct reserved field-error space
 
 - Standard field groups now always reserve a 1.5em field-error line, while the message group reserves none normally and gains the same space only when invalid.

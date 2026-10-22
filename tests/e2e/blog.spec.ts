@@ -3,18 +3,21 @@ import { expect, test } from "@playwright/test";
 const allPosts = [
   {
     date: "APR 06, 2026 // 003",
+    body: "When a vertical stack is made of independent components",
     description: "Most frontend devs agree on one-side margin, but which side?",
     slug: "margin-top-for-the-win",
     title: "Margin-top For the Win",
   },
   {
     date: "APR 05, 2026 // 002",
+    body: "The best improvements were unglamorous",
     description: "How practical can a 2015 MacBook Air be for full-stack work?",
     slug: "working-on-old-hardware",
     title: "Working on Old Hardware",
   },
   {
     date: "APR 04, 2026 // 001",
+    body: "The goal is not to publish for the sake of it.",
     description: "It's been a while since I had a site live. It's time to start fresh.",
     slug: "hello-world",
     title: "Hello World",
@@ -149,4 +152,80 @@ test("canonical post cards use the homepage type scale and equal row heights", a
     cards.map((item) => item.getBoundingClientRect().height),
   );
   expect(new Set(homepageHeights.map(Math.round)).size).toBe(1);
+});
+
+test("canonical blog posts are static, semantic, and use the responsive reading scale", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  for (const post of allPosts) {
+    await page.goto(`/blog/${post.slug}`);
+
+    await expect(page).toHaveTitle(`${post.title} | Brent Walbolt`);
+    await expect(page.locator("main article")).toHaveCount(1);
+    await expect(page.locator("main article h1")).toHaveCount(1);
+    await expect(page.getByRole("heading", { level: 1, name: post.title })).toBeVisible();
+    await expect(page.locator("main article")).toContainText(post.description);
+    await expect(page.locator("main article")).toContainText(post.body);
+    await expect(page.locator("main article .responsive-text")).toHaveCount(1);
+  }
+
+  await page.goto("/blog/margin-top-for-the-win");
+  const article = page.locator("main article");
+  const responsiveText = article.locator(".responsive-text");
+  await expect(responsiveText).toHaveCSS("font-family", /sourceSerif/);
+  expect(
+    await responsiveText.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+  ).toBeCloseTo(17.3056, 1);
+  expect(
+    await responsiveText.evaluate((element) => Number.parseFloat(getComputedStyle(element).width)),
+  ).toBeCloseTo(776.5, 0);
+  expect(
+    await article.locator("h2").evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+  ).toBeCloseTo(29.7656, 1);
+  await expect(article.locator("h2")).toHaveCSS("font-family", /switzer/);
+  await expect(page.locator("main article > .responsive-text > header")).toHaveCount(1);
+  await expect(page.getByRole("navigation", { name: "Legal" })).toBeVisible();
+
+  const unknownResponse = await page.goto("/blog/not-a-post");
+  expect(unknownResponse?.status()).toBe(404);
+});
+
+test("responsive article text is bounded on mobile and protects rich MDX content", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto("/blog/margin-top-for-the-win");
+
+  const responsiveText = page.locator("main article .responsive-text");
+  expect(
+    await responsiveText.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+  ).toBeCloseTo(14.625, 1);
+  expect(await page.locator("html").evaluate((element) => element.scrollWidth)).toBeLessThanOrEqual(390);
+
+  await responsiveText.evaluate((element) => {
+    element.insertAdjacentHTML(
+      "beforeend",
+      `<ul><li>List treatment</li></ul>
+       <blockquote>Quote treatment</blockquote>
+       <p><a href="#rich-mdx">Link treatment</a> and <code>inline_code</code></p>
+       <pre><code>${"long_technical_token_".repeat(20)}</code></pre>
+       <img alt="Responsive treatment example" src="/images/file.svg">`,
+    );
+  });
+
+  const richContent = responsiveText.locator(":scope > :nth-last-child(-n + 5)");
+  await expect(richContent).toHaveCount(5);
+  await expect(responsiveText.locator("ul").last()).toHaveCSS("list-style-type", "disc");
+  await expect(responsiveText.locator("blockquote").last()).toHaveCSS("border-left-width", "2px");
+  await expect(responsiveText.locator("pre").last()).toHaveCSS("overflow-x", "auto");
+  await expect(responsiveText.locator("img").last()).toHaveCSS("max-width", "100%");
+
+  const link = responsiveText.locator("a").last();
+  await link.focus();
+  await expect(link).toBeFocused();
+  await expect(link).toHaveCSS("text-decoration-line", "underline");
+  await expect(
+    link,
+  ).toHaveCSS("box-shadow", /rgba\(2, 20, 29, 0\.92\).*rgba\(0, 176, 255, 0\.7\)/);
+  expect(await page.locator("html").evaluate((element) => element.scrollWidth)).toBeLessThanOrEqual(390);
 });

@@ -1,7 +1,8 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { getPostBySlug, getPosts } from "../../_content/posts";
-import { RoutePlaceholder } from "../../_components/route-placeholder";
+import { BlogPost } from "../../_components/blog-post";
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -15,6 +16,23 @@ export function generateStaticParams() {
   }));
 }
 
+// The collection is authored locally, so routes outside this build-time list are 404s.
+export const dynamicParams = false;
+
+export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+
+  if (!post) {
+    return {};
+  }
+
+  return {
+    description: post.description,
+    title: post.title,
+  };
+}
+
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
@@ -23,11 +41,5 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     notFound();
   }
 
-  return (
-    <RoutePlaceholder
-      description={post.description}
-      eyebrow={post.dateLabel}
-      title={post.title}
-    />
-  );
+  return <BlogPost post={post} />;
 }

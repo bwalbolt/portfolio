@@ -97,7 +97,7 @@
     {
       "id": "5",
       "title": "Render static responsive blog posts",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "Each canonical slug renders its matching MDX body at `/blog/[slug]`, all known slugs are prerendered with `generateStaticParams`, unknown slugs return 404, and no post requires runtime data fetching.",
         "Each post supplies route metadata derived from the canonical title and description and renders one semantic article with a single page-level heading followed by correctly nested MDX headings and prose.",
@@ -123,24 +123,108 @@
     },
     {
       "id": "6",
+      "title": "Address feedback on task 5: Move post metadata into validated frontmatter",
+      "status": "pending",
+      "acceptance_criteria": [
+        "Every `src/content/blog/*.mdx` post owns validated YAML frontmatter with required `title`, `description`, quoted `publishedAt` in `YYYY-MM-DD` format, and `tags` fields; an optional `socialImage` object is accepted only when it supplies both a public-root `src` and non-empty `alt` text.",
+        "The post loader discovers MDX files at build time, derives each slug from its lowercase kebab-case filename, rejects malformed filenames or metadata with actionable errors, and requires no hand-maintained metadata array or content import map.",
+        "Tags are unique normalized kebab-case strings, `tutorial` continues to determine tutorial membership, and adding a new valid tag does not require editing a central allowlist.",
+        "Display sequence is derived rather than authored: posts are numbered chronologically with the oldest as `001`; equal publication dates use filename ascending as the deterministic tie-breaker, while listings remain newest-date-first with filename ascending for equal dates.",
+        "All three existing posts are migrated without changing their canonical titles, descriptions, dates, tutorial membership, generated routes, display labels, or article prose; body-level duplicate `h1` headings are removed so the article shell remains the sole page-level heading.",
+        "Article bodies use Next.js 16's documented static dynamic-MDX-import pattern, all discovered slugs remain covered by `generateStaticParams`, unknown slugs remain 404s, and no runtime content fetching or client-side content loader is introduced.",
+        "`src/content/blog/README.md` documents the one-file authoring workflow and includes a copy/paste frontmatter template, filename and date rules, description guidance, tutorial tagging, optional custom social-image fields, automatic ordering/numbering behavior, and expected validation failures.",
+        "Focused tests cover successful discovery and rendering plus invalid frontmatter, filename, date, tag, duplicate-tag, partial-social-image, automatic-sequence, and same-day tie-break behavior."
+      ],
+      "files": [
+        "package.json",
+        "package-lock.json",
+        "src/content/blog",
+        "src/app/(marketing)/_content/posts.ts",
+        "src/app/(marketing)/blog/[slug]/page.tsx",
+        "src/app/(marketing)/_components/blog-post.tsx",
+        "tests/e2e/blog-content.spec.ts",
+        "tests/e2e/blog.spec.ts"
+      ],
+      "depends_on": [
+        "5"
+      ]
+    },
+    {
+      "id": "7",
+      "title": "Add origin-aware article navigation",
+      "status": "pending",
+      "acceptance_criteria": [
+        "A small client-side provider at the marketing route-group boundary tracks a `blog` or `tutorial` article origin during client navigation without moving article content, metadata loading, or route generation to the client.",
+        "Blog and homepage post cards set Blog as the origin, tutorial cards set Tutorials as the origin, and all default card destinations remain clean `/blog/[slug]` URLs without query parameters.",
+        "A visible keyboard-accessible link appears above every article header and resolves to `< Back to Blog` at `/blog` by default or `< Back to Tutorials` at `/tutorial` when the article was opened from the tutorial listing.",
+        "The resolved article origin also controls desktop and mobile primary-navigation highlighting so exactly one of Blog or Tutorials is active on a post route.",
+        "An explicit `?from=tutorial` query hint selects the tutorial back link and navigation state for direct or shareable URLs; invalid query values are ignored, and the canonical article URL never includes the origin query.",
+        "Direct article traffic, new sessions, and reloads without a valid query hint default to Blog, while session-only origin state may intentionally reset on refresh.",
+        "Browser coverage verifies Blog, Tutorials, and homepage entry paths; direct and refreshed traffic; query-assisted direct links; back-link destinations; desktop and mobile active states; keyboard activation; and unchanged static article rendering."
+      ],
+      "files": [
+        "src/app/(marketing)/layout.tsx",
+        "src/app/(marketing)/_components/post-card.tsx",
+        "src/app/(marketing)/_components/post-listing.tsx",
+        "src/app/(marketing)/_components/blog-post.tsx",
+        "src/app/(marketing)/_components/blog-post.module.css",
+        "src/app/(marketing)/_components/site-header.tsx",
+        "tests/e2e/blog.spec.ts"
+      ],
+      "depends_on": [
+        "6"
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Add blog SEO and social sharing metadata",
+      "status": "pending",
+      "acceptance_criteria": [
+        "The root metadata uses `https://brent.walbolt.com` as `metadataBase` and identifies Brent Walbolt as the site author, creator, and publisher.",
+        "Every post derives its title, description, canonical `/blog/[slug]` URL, keywords, Open Graph article fields, publication date, author, tags, and Twitter `summary_large_image` fields from validated post data.",
+        "A shared 1200 by 630 branded social image using the existing dark navy visual language, logo, and portfolio tagline is the default for all posts; a valid frontmatter `socialImage` overrides the shared image and alt text for both Open Graph and Twitter.",
+        "Every post emits valid `BlogPosting` JSON-LD containing its canonical URL, headline, description, publication date, author, tags, and resolved social image.",
+        "The `/blog` and `/tutorial` listings expose descriptive titles, descriptions, and canonical URLs, and origin hints such as `?from=tutorial` never produce duplicate canonical URLs.",
+        "Static `robots.ts` and `sitemap.ts` outputs allow indexing, reference the canonical sitemap URL, and include the homepage, primary static routes, blog/tutorial listings, and every discovered post with its publication date.",
+        "Automated coverage inspects rendered canonical, Open Graph, Twitter, and JSON-LD output; shared and custom image selection; canonical query exclusion; robots and sitemap responses; and preservation of unknown-post 404 behavior."
+      ],
+      "files": [
+        "src/app/layout.tsx",
+        "src/app/robots.ts",
+        "src/app/sitemap.ts",
+        "src/app/(marketing)/blog/page.tsx",
+        "src/app/(marketing)/tutorial/page.tsx",
+        "src/app/(marketing)/blog/[slug]/page.tsx",
+        "public/images/social-card.png",
+        "tests/e2e/blog.spec.ts"
+      ],
+      "depends_on": [
+        "6"
+      ]
+    },
+    {
+      "id": "9",
       "title": "Document and verify the complete blog flow",
       "status": "pending",
       "acceptance_criteria": [
-        "Browser coverage verifies all three blog cards and routes, newest-first ordering, the tutorial-only filter, an unknown-slug 404, card keyboard navigation, semantic headings, and the absence of pagination.",
-        "Responsive browser coverage exercises 390, 479, 480, 767, 768, 991, 992, 1279, and 1280px widths without horizontal page overflow and asserts the listing column transitions, responsive-text root sizing, and approximately 776px desktop prose measure.",
-        "Visual comparison against Figma nodes 652:141 and 652:448 confirms the requested desktop compositions and records any deliberate mobile adaptations based on the repository design system.",
-        "ARCHITECTURE.md and DESIGN.md document the MDX authoring/registry flow, tutorial classification, separate listing-route ownership, responsive-text/ch measure convention, and the deferred legal-page migration.",
-        "`npm run verify` passes with lint, strict TypeScript, production build/static generation, and Playwright coverage."
+        "Browser coverage verifies all three frontmatter-derived blog cards and routes, newest-first and same-day ordering, automatic display sequences, the tutorial-only filter, an unknown-slug 404, card and back-link keyboard navigation, semantic headings, and the absence of pagination.",
+        "Browser coverage verifies clean and query-assisted article-origin navigation, Blog-versus-Tutorials back links and active navigation states, canonical URLs, Open Graph/Twitter metadata, JSON-LD, sitemap coverage, and shared/custom social-image behavior.",
+        "Responsive browser coverage exercises 390, 479, 480, 767, 768, 991, 992, 1279, and 1280px widths without horizontal page overflow and asserts the listing column transitions, responsive-text root sizing, approximately 776px desktop prose measure, and usable origin-aware controls.",
+        "Visual comparison against Figma nodes 652:141 and 652:448 confirms the requested desktop compositions and records any deliberate mobile or back-link adaptations based on the repository design system.",
+        "ARCHITECTURE.md and DESIGN.md document the filesystem/frontmatter content pipeline, filename-derived slugs, date-derived sequences, tutorial classification, separate listing-route ownership, session/query article origin, canonical/social metadata behavior, responsive-text/ch measure convention, and deferred legal-page migration.",
+        "`npm run verify` passes with lint, strict TypeScript, production build/static generation, and Playwright coverage, with no runtime post fetching, unnecessary client content loading, accessibility regressions, or loss of static generation."
       ],
       "files": [
         "ARCHITECTURE.md",
         "DESIGN.md",
+        "tests/e2e/blog-content.spec.ts",
         "tests/e2e/blog.spec.ts",
         "tests/e2e/smoke.spec.ts"
       ],
       "depends_on": [
-        "2",
-        "5"
+        "6",
+        "7",
+        "8"
       ]
     }
   ]

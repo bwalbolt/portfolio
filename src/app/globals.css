@@ -267,6 +267,107 @@ ol {
   background: rgba(255, 255, 255, 0.06);
 }
 
+/*
+ * Long-form content scales continuously between the 390px and 1280px design
+ * references: 3.75vw (14.625px) and 1.352vw (17.306px), respectively. The
+ * clamps protect both smaller viewports and very wide displays from extremes.
+ */
+.responsive-text {
+  font-family: var(--font-serif-family);
+  font-size: clamp(0.875rem, calc(0.841rem + 0.301vw), 1.352rem);
+  line-height: 1.58;
+}
+
+.responsive-text :where(h2, h3, h4, h5, h6) {
+  margin: 2.35em 0 0.75em;
+  color: var(--text-primary);
+  font-family: var(--font-display-family);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.responsive-text h2 {
+  font-size: 1.72em;
+}
+
+.responsive-text h3 {
+  font-size: 1.36em;
+}
+
+.responsive-text h4,
+.responsive-text h5,
+.responsive-text h6 {
+  font-size: 1.08em;
+}
+
+.responsive-text :where(p, ul, ol, blockquote, pre, figure) {
+  margin: 0 0 1.35em;
+}
+
+.responsive-text :where(ul, ol) {
+  padding-left: 1.35em;
+}
+
+.responsive-text ul {
+  list-style: disc;
+}
+
+.responsive-text ol {
+  list-style: decimal;
+}
+
+.responsive-text li + li {
+  margin-top: 0.45em;
+}
+
+.responsive-text a {
+  color: var(--color-accent-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+}
+
+.responsive-text :where(code, pre) {
+  font-family: var(--font-mono-family);
+  font-size: 0.82em;
+}
+
+.responsive-text :not(pre) > code {
+  padding: 0.1em 0.32em;
+  border-radius: 0.2em;
+  background: var(--color-white-08);
+  overflow-wrap: anywhere;
+}
+
+.responsive-text pre {
+  max-width: 100%;
+  padding: 1em;
+  overflow-x: auto;
+  border: 1px solid var(--color-white-14);
+  border-radius: 0.45em;
+  background: var(--color-black-66);
+  color: var(--color-white-80);
+  line-height: 1.55;
+}
+
+.responsive-text pre code {
+  font-size: 1em;
+}
+
+.responsive-text blockquote {
+  padding-left: 1em;
+  border-left: 0.18em solid var(--color-accent-pink);
+  color: var(--color-white-80);
+  font-style: italic;
+}
+
+.responsive-text img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.45em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html:focus-within {
     scroll-behavior: auto;

@@ -5,7 +5,7 @@ const responsiveWidths = [390, 479, 480, 767, 768, 991, 992, 1279, 1280];
 
 const primaryRoutes = [
   { href: "/case-studies", label: "Case Studies", title: "Case Studies" },
-  { href: "/blog", label: "Blog", title: "Blog" },
+  { href: "/blog", label: "Blog", title: "Latest Insights" },
   { href: "/tutorial", label: "Tutorials", title: "Tutorials" },
 ] as const;
 

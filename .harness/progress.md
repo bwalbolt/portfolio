@@ -12,6 +12,15 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-22 - feat-blog-content-and-pages: Task 5 - Render static responsive blog posts
+
+- Replaced the blog detail scaffold with static canonical MDX articles, build-time slug generation, 404 handling for unknown slugs, and metadata derived from each post record.
+- Added the route-neutral `responsive-text` wrapper and overflow-safe long-form defaults. Its calibrated continuous root scale is 14.625px at 390px and approximately 17.306px at 1280px; the Source Serif reading measure is 87.5ch (approximately 776.5px at the desktop reference).
+- Added browser coverage for every canonical article body, metadata, heading hierarchy, 404 behavior, responsive type and measure, mobile containment, visible prose-link focus, and rich MDX treatments. Updated the stale smoke assertion so `/blog` expects `Latest Insights`.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 63 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS after review-driven coverage improvements. TDD chronology remains a non-blocking warning because this interactive work is uncommitted.
+- Next task: task 6, document and verify the complete blog flow.
+
 ## 2026-10-22 - feat-blog-content-and-pages: Task 4 - Remove insight panel minimum heights
 
 - Removed the explicit `min-height` declarations from the blog/tutorial post-card surface and desktop homepage insight-card surface. Same-row visual parity continues to come from the grid’s stretch behavior and each linked-panel surface filling its grid item.

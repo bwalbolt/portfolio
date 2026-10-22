@@ -1,0 +1,62 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: 7.5rem var(--page-gutter) var(--space-section);
+}
+
+.article {
+  margin-inline: auto;
+}
+
+.article :global(.responsive-text) {
+  /* Source Serif's “0” width needs this calibrated ch measure to reach the 776px desktop reference. */
+  width: min(100%, 87.5ch);
+  margin-inline: auto;
+}
+
+.header {
+  display: grid;
+  gap: 0.9em;
+  margin-bottom: 3.25em;
+}
+
+.metadata {
+  color: var(--color-accent-pink);
+  font-family: var(--font-display-family);
+  font-size: 0.62em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-upper);
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  margin: 0;
+  font-family: var(--font-display-family);
+  font-size: 3.58em;
+  font-weight: 700;
+  letter-spacing: -0.065em;
+  line-height: 0.98;
+}
+
+.description {
+  max-width: 37ch;
+  color: var(--text-secondary);
+  font-size: 1.18em;
+  line-height: 1.45;
+}
+
+.prose {
+  color: var(--text-secondary);
+}
+
+@media (width >= 48rem) {
+  .main {
+    padding-top: 10rem;
+  }
+}

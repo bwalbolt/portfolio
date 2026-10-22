@@ -12,6 +12,32 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-22 - feat-blog-content-and-pages: Task 4 - Remove insight panel minimum heights
+
+- Removed the explicit `min-height` declarations from the blog/tutorial post-card surface and desktop homepage insight-card surface. Same-row visual parity continues to come from the grid’s stretch behavior and each linked-panel surface filling its grid item.
+- Added computed-style assertions confirming neither panel surface reserves a minimum height, while retaining cross-page typography and equal-height coverage.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 61 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first review. TDD chronology remains a non-blocking warning because the interactive changes are uncommitted.
+- Next task: task 5, render static responsive blog posts.
+
+## 2026-10-22 - feat-blog-content-and-pages: Task 3 - Unify insight card typography and row heights
+
+- Aligned the blog and tutorial preview metadata, title, description, and read-more type scale with the established homepage insight-card values.
+- Made both homepage and listing linked-panel surfaces fill their grid items, keeping cards equal height within multi-column rows without changing the single-column or native-link behavior.
+- Added focused browser assertions for cross-page typography parity, desktop equal-height rows, and the existing layout/accessibility behavior.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 61 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS after 1 review-driven correction. The initial review found a listing-only read-more line-height override and missing CTA parity coverage; both were removed/added respectively. TDD chronology remains a non-blocking warning because the interactive changes are uncommitted.
+- Next task: task 4, render static responsive blog posts.
+
+## 2026-10-21 - feat-blog-content-and-pages: Task 2 - Build the blog and tutorial listing routes
+
+- Replaced the scaffolded `/blog` and `/tutorial` routes with independently composed static listing pages. They share only focused `PostListing` and `PostCard` primitives; each route owns its data selector, page-level heading, and shell composition.
+- Reused `LinkedPanelCard` so every article remains a single native, keyboard-accessible destination with the established hover/focus interaction. The responsive grid is one column below `48rem`, two from `48rem`, and three from `62rem`; the desktop listing follows the supplied Figma rhythm and card measurements.
+- Added browser coverage for canonical newest-first content, tutorial filtering, responsive column transitions, single-link semantics, visible keyboard focus, working post navigation, no pagination, and the desktop Figma geometry. Removed the obsolete placeholder-route Button assertion from smoke coverage.
+- Verification: `npm run verify` passed lint, strict TypeScript, production static generation, and the Playwright suite (61 tests). `git diff --check` passed.
+- Evaluator verdict: PASS after 1 review-driven coverage correction. The initial evaluator requested destination, focus-state, and Figma geometry assertions; a fresh evaluator confirmed all acceptance criteria. TDD chronology is a non-blocking warning because the interactive changes are uncommitted.
+- Next task: task 3, render static responsive blog posts.
+
 ## 2026-10-21 - feat-blog-content-and-pages: Task 1 - Create the typed MDX post collection
 
 - Configured documented Next.js 16 local MDX support, added the required `src/mdx-components.tsx` entry point, and authored the three canonical post bodies under `src/content/blog`.

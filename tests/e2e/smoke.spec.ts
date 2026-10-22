@@ -1091,29 +1091,4 @@ test("unified Button primitive shares gradient styling, default/small variants, 
   expect(linkReducedActive).toBe("none");
   await page.mouse.up();
 
-  // Verify Button primitive with default size rendered as a link on a placeholder route.
-  await page.goto("/blog");
-  await page.evaluate(() => document.fonts.ready);
-  const backHomeLink = page.getByRole("link", { name: "Back Home" });
-  await expect(backHomeLink).toBeVisible();
-  await expect(backHomeLink).toHaveAttribute("data-size", "default");
-  const linkDefaultStyle = await backHomeLink.evaluate((el) => {
-    const s = getComputedStyle(el);
-    return {
-      bgImage: s.backgroundImage,
-      bgSize: s.backgroundSize,
-      fontSize: s.fontSize,
-      paddingBottom: s.paddingBottom,
-      paddingLeft: s.paddingLeft,
-      paddingRight: s.paddingRight,
-      paddingTop: s.paddingTop,
-    };
-  });
-  expect(linkDefaultStyle.bgImage).toBe(buttonStyle.bgImage);
-  expect(linkDefaultStyle.bgSize).toBe("250%");
-  expect(linkDefaultStyle.fontSize).toBe("20px");
-  expect(linkDefaultStyle.paddingTop).toBe("16px");
-  expect(linkDefaultStyle.paddingBottom).toBe("16px");
-  expect(linkDefaultStyle.paddingLeft).toBe("24px");
-  expect(linkDefaultStyle.paddingRight).toBe("24px");
 });

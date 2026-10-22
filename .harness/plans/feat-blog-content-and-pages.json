@@ -3,7 +3,7 @@
   "title": "Add the blog content system and pages",
   "type": "feature",
   "created": "2026-10-21",
-  "status": "planned",
+  "status": "in_progress",
   "context": "Replace the scaffolded blog routes with a static, repository-authored MDX collection and Figma-aligned listing and article experiences. The blog listing follows Figma file 0J2JF0nYrI8EJrttdHNes4 node 652:141, and the article follows node 652:448. The initial collection uses the three existing homepage insights, lists every post without pagination, and models tutorials as tagged blog posts. `/blog` and `/tutorial` may share low-level post-card/grid primitives, but they must remain separate route compositions so the tutorial experience can diverge later. Long-form content introduces a reusable `responsive-text` wrapper sized from a responsive root and constrained with character-based width; migrating the existing legal pages to it is explicitly deferred. Because no tutorial assignment was supplied, this plan uses `margin-top-for-the-win` as the initial tutorial so the filtered route has a real, testable result.",
   "tasks": [
     {
@@ -32,7 +32,7 @@
     {
       "id": "2",
       "title": "Build the blog and tutorial listing routes",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "`/blog` renders a `Latest Insights` heading and every canonical post exactly once in newest-first order, with no pagination controls or repeated Figma filler cards.",
         "`/tutorial` renders a `Tutorials` heading and only posts whose canonical metadata includes the tutorial classification; non-tutorial posts are absent.",
@@ -57,6 +57,45 @@
     },
     {
       "id": "3",
+      "title": "Address feedback on task 2: Unify insight card typography and row heights",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Blog and tutorial card metadata, title, description, and read-more typography use the same CSS values as the homepage insight cards, so the canonical post previews retain one consistent type scale across routes.",
+        "At every multi-column breakpoint, cards in the same blog, tutorial, and homepage insight-grid row have equal visible surface heights; each linked-panel surface fills its grid row without changing single-column behavior or link semantics.",
+        "Focused browser coverage verifies the shared typography values and equal-height behavior for the homepage and blog listing at a multi-column viewport, while preserving the existing responsive grid and accessibility coverage.",
+        "`npm run verify` passes with lint, strict TypeScript, production static generation, and Playwright coverage."
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_components/post-listing.module.css",
+        "tests/e2e/blog.spec.ts",
+        "tests/e2e/smoke.spec.ts"
+      ],
+      "depends_on": [
+        "2"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Address feedback on task 3: Remove insight panel minimum heights",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Blog, tutorial, and homepage insight panels have no explicit `min-height`; their height is determined solely by content and the equal-height grid-row stretch behavior.",
+        "At multi-column breakpoints, cards in the same row still have equal visible surface heights, while single-column cards do not reserve unnecessary vertical space.",
+        "Focused browser coverage verifies the absence of an explicit panel minimum height and preserves the existing typography, equal-height, responsive-grid, and accessible-link assertions.",
+        "`npm run verify` passes with lint, strict TypeScript, production static generation, and Playwright coverage."
+      ],
+      "files": [
+        "src/app/(marketing)/_components/homepage.module.css",
+        "src/app/(marketing)/_components/post-listing.module.css",
+        "tests/e2e/blog.spec.ts"
+      ],
+      "depends_on": [
+        "3"
+      ]
+    },
+    {
+      "id": "5",
       "title": "Render static responsive blog posts",
       "status": "pending",
       "acceptance_criteria": [
@@ -83,7 +122,7 @@
       ]
     },
     {
-      "id": "4",
+      "id": "6",
       "title": "Document and verify the complete blog flow",
       "status": "pending",
       "acceptance_criteria": [
@@ -101,7 +140,7 @@
       ],
       "depends_on": [
         "2",
-        "3"
+        "5"
       ]
     }
   ]

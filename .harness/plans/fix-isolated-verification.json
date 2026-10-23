@@ -29,6 +29,38 @@
         ".harness/README.md"
       ],
       "depends_on": []
+    },
+    {
+      "id": "2",
+      "title": "Address feedback on task 1: Make browser runs self-managing and concurrent",
+      "status": "complete",
+      "acceptance_criteria": [
+        "`npm run harness:test:e2e -- <Playwright arguments>` forwards focused file and title filters while automatically selecting an available loopback port and starting an isolated Next development server",
+        "Targeted browser runs and `npm run verify` each use a unique ignored Next output directory and can overlap without lock contention or deleting one another's artifacts",
+        "Harness-owned servers and output are cleaned after success, failure, or interruption without killing unrelated Next processes",
+        "Per-run TypeScript configuration and coordinated generated-file restoration prevent harness runs from leaving tracked configuration changes or stale `next-env.d.ts` references",
+        "The documented targeted command matches the existing narrow Codex execpolicy rule without an environment-variable command prefix",
+        "Automated coverage exercises runtime allocation, validation, argument forwarding, ownership, stale-run handling, and cleanup",
+        "`npm run verify` passes and an independent evaluator returns PASS"
+      ],
+      "files": [
+        "scripts/harness-runtime.mjs",
+        "scripts/harness-runtime.test.mjs",
+        "scripts/test-e2e.mjs",
+        "scripts/verify.mjs",
+        "next.config.ts",
+        "playwright.config.ts",
+        "eslint.config.mjs",
+        "package.json",
+        ".gitignore",
+        "tsconfig.json",
+        "AGENTS.md",
+        "ARCHITECTURE.md",
+        ".harness/README.md"
+      ],
+      "depends_on": [
+        "1"
+      ]
     }
   ]
 }

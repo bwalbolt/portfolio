@@ -12,6 +12,15 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-23 - fix-isolated-verification: Task 2 - Make browser runs self-managing and concurrent
+
+- Added a shared harness runtime coordinator that allocates unique ports, Next output directories, temporary TypeScript configurations, and Playwright artifact directories for targeted and full verification runs. Active-run ownership defers restoration and cleanup until overlapping sessions are finished, while stale owners are reclaimed safely.
+- Changed `npm run harness:test:e2e -- <Playwright arguments>` into the stable focused-test interface. It forwards filters unchanged, starts an isolated Next development server, handles signals, and cleans up without requiring manual ports or process killing. Full `npm run verify` retains a production build/server and now runs the coordinator unit suite.
+- Updated Next, Playwright, ESLint, agent, architecture, and harness documentation for the new runtime. The existing narrow Codex rule was confirmed to approve full and filtered commands; the old `PORT=...` prefix remains intentionally unmatched and is no longer documented.
+- Verification: unit tests, lint, strict TypeScript, production build, and all 64 Playwright tests passed. Two targeted runs passed concurrently; a targeted dev run passed while full production verification ran on a separate port/output; SIGINT removed the owned server/runtime; `git diff --check` passed.
+- Evaluator verdict: PASS on first review. TDD chronology is a non-blocking warning because this interactive work is uncommitted; process-level failure and signal cleanup were directly exercised in addition to the automated runtime tests.
+- Next task: none for this plan.
+
 ## 2026-10-22 - feat-blog-content-and-pages: Task 6 - Move post metadata into validated frontmatter
 
 - Moved all canonical post metadata into YAML frontmatter and replaced the manual registry/import map with build-time filesystem discovery, filename-derived slugs, validated extensible tags, deterministic date/filename ordering, and automatic display sequences.

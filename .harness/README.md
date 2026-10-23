@@ -35,6 +35,7 @@ It runs linting, TypeScript, a production build, and Playwright smoke tests:
 ```bash
 npm run lint
 npm run typecheck
+npm run test:harness-runtime
 npm run build
 npm run test:e2e
 ```
@@ -43,10 +44,11 @@ Playwright uses `npm run start` against the production build. Run `npm run build
 
 The default verification command is self-isolating:
 
-- it builds into the dedicated `.next-verify` directory instead of `.next`, so a running `next dev` or `next start` process is not invalidated;
+- every invocation builds into a unique `.next-harness/<run>/output` directory instead of `.next`, so running development, targeted-test, and verification processes do not share a Next lock;
 - it asks the operating system for an available loopback port instead of assuming port 3000;
 - it forces Playwright to start the production server for that build rather than reusing an unrelated process; and
-- it removes the isolated build directory and restores Next.js-generated config files after either success or failure.
+- it uses a per-run TypeScript configuration and coordinates cleanup so overlapping runs cannot remove one another's output; and
+- it restores `next-env.d.ts` and removes owned runtime files after the last overlapping run exits, including normal failure and interruption paths.
 
 In Codex's managed sandbox, Turbopack can fail during `next build` because its worker path attempts a local port bind. Use the sandbox-friendly non-browser check for fast feedback:
 
@@ -57,13 +59,16 @@ npm run harness:check:sandbox
 
 These commands use `next build --webpack`, which is a supported Next.js 16 build mode, and avoid starting a browser server. They do not replace full browser verification.
 
-For targeted harness browser work, use an explicit free port:
+For targeted harness browser work, pass any Playwright file, title, or project filters after `--`:
 
 ```bash
-PORT=3101 npm run harness:test:e2e
+npm run harness:test:e2e -- tests/e2e/blog.spec.ts
+npm run harness:test:e2e -- tests/e2e/blog.spec.ts -g "article navigation"
 ```
 
-`npm run harness:verify` is an alias of `npm run verify` and therefore chooses its own available port. Direct Playwright runs target `BASE_URL` or `http://127.0.0.1:$PORT` and refuse to reuse an existing server by default. Set `PLAYWRIGHT_REUSE_EXISTING_SERVER=1` only for an intentional test against a server you started yourself.
+The targeted command chooses its own port and output directory, starts a temporary Next development server, forwards the Playwright arguments unchanged, and cleans up without touching unrelated servers. Do not prefix it with `PORT`; keeping `npm run harness:test:e2e` at the start of the command also lets the narrow Codex rule below cover filtered runs without another approval. `npm run harness:verify` remains an alias of `npm run verify` and uses a production build.
+
+Direct `npm run test:e2e` runs retain the advanced/manual behavior: they target `BASE_URL` or `http://127.0.0.1:$PORT` and refuse to reuse an existing server by default. Set `PLAYWRIGHT_REUSE_EXISTING_SERVER=1` only for an intentional test against a server you started yourself.
 
 Playwright keeps browser QA evidence in ignored output directories: traces are retained on first retry and screenshots are captured on failure. For UI bugs, reproduce the issue with Playwright, inspect the DOM or screenshot evidence, implement the fix, then re-run the same browser path.
 
@@ -93,7 +98,7 @@ Check the rule before relying on it:
 ```bash
 codex execpolicy check --pretty \
   --rules ~/.codex/rules/default.rules \
-  -- npm run verify
+  -- npm run harness:test:e2e -- tests/e2e/blog.spec.ts -g "article navigation"
 ```
 
 Codex rules match argument prefixes, so keep the allowed npm script names specific and do not allow broad prefixes such as `npm`, `node`, or `node -e`. See the [official Codex rules documentation](https://learn.chatgpt.com/docs/agent-configuration/rules).

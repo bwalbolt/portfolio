@@ -35,9 +35,9 @@ Consult docs by task instead of loading everything by default:
 - Start with targeted exploration: read the files and docs relevant to the requested change.
 - For UI work tied to a Figma design, use `.agents/skills/figma-implement-design` and the Figma MCP context. If no Figma context exists, ask for it before aiming for 1:1 design fidelity.
 - Keep each implementation focused on the requested task. Capture unrelated findings in `.harness/progress.md` or a future plan instead of expanding scope.
-- Run `npm run verify` before marking implementation complete. It allocates an available loopback port, builds into the isolated `.next-verify` directory, and never reuses an existing Playwright server. For quick inner-loop checks, use `npm run lint`, `npm run typecheck`, `npm run build`, or `npm run test:e2e` as appropriate.
+- Run `npm run verify` before marking implementation complete. Each invocation allocates an available loopback port and a unique ignored Next output directory, and it never reuses an existing Playwright server. For quick non-browser checks, use `npm run lint` or `npm run typecheck` as appropriate.
 - When Codex sandboxing blocks Turbopack or server port binding, use `npm run verify:sandbox` for non-browser feedback, then run the full verification path with narrow approval.
-- For targeted harness UI verification, use `PORT=<unique-port> npm run harness:test:e2e`; it refuses to reuse a process already on that port.
+- For targeted harness UI verification, use `npm run harness:test:e2e -- <Playwright arguments>`. It owns an isolated development server, port, output directory, and cleanup, so do not prefix the command with `PORT` or start/kill a server manually.
 
 ## Harness
 

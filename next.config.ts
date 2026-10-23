@@ -1,10 +1,37 @@
-import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
+import type { NextConfig } from "next";
 
-const isVerificationBuild = process.env.PORTFOLIO_VERIFY_BUILD === "1";
+const harnessRunId = process.env.PORTFOLIO_HARNESS_RUN_ID;
+const harnessDistDir = process.env.PORTFOLIO_HARNESS_DIST_DIR;
+const harnessTsconfig = process.env.PORTFOLIO_HARNESS_TSCONFIG;
+const harnessMode = process.env.PORTFOLIO_HARNESS_SERVER_MODE;
+const hasHarnessConfiguration = Boolean(
+  harnessRunId || harnessDistDir || harnessTsconfig || harnessMode,
+);
+
+if (hasHarnessConfiguration) {
+  const expectedDistDir = `.next-harness/${harnessRunId}/output`;
+  const expectedTsconfig = `.next-harness/${harnessRunId}/tsconfig.json`;
+
+  if (
+    !harnessRunId ||
+    !/^(dev|production)-\d+-[0-9a-f-]{36}$/.test(harnessRunId) ||
+    harnessDistDir !== expectedDistDir ||
+    harnessTsconfig !== expectedTsconfig ||
+    !["dev", "production"].includes(harnessMode ?? "") ||
+    !harnessRunId.startsWith(`${harnessMode}-`)
+  ) {
+    throw new Error("Invalid internal harness runtime configuration");
+  }
+}
 
 const nextConfig: NextConfig = {
-  ...(isVerificationBuild ? { distDir: ".next-verify" } : {}),
+  ...(hasHarnessConfiguration
+    ? {
+        distDir: harnessDistDir!,
+        typescript: { tsconfigPath: harnessTsconfig! },
+      }
+    : {}),
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   reactCompiler: true,
 };

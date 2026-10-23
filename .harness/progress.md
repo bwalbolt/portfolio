@@ -500,3 +500,11 @@ Session notes are appended here after each completed task.
 - Added browser coverage immediately below and at the 62rem boundary (991px and 992px), asserting one and two grid columns respectively.
 - Baseline and final `npm run verify` passed lint, TypeScript, production build, and all 55 Playwright tests. `git diff --check` passed.
 - Independent evaluator returned OVERALL: PASS with no blocking issues; TDD ordering is a non-blocking warning because this interactive work remains uncommitted.
+
+## 2026-10-23 - fix-isolated-verification: Task 3 - Restore sandbox checks and simplify approvals
+
+- Added optional port allocation to the shared runtime; sandbox verification skips it while full and targeted browser runs retain their existing isolated ports and cleanup.
+- Added a regression test that failed before the fix and now verifies no port allocation, isolated configuration, generated-file restoration, and artifact cleanup.
+- Updated agent and harness guidance to run full verification as a standalone preapproved outside-sandbox command and run Git checks separately inside the sandbox. Sandbox-only checks remain distinct from full browser verification.
+- Verification: npm run verify:sandbox passed entirely inside the sandbox (lint, TypeScript, five runtime tests, webpack production build). Independent standalone npm run verify passed all checks and 65 browser tests. Separate git diff --check passed.
+- Independent evaluator: PASS on first review, no issues. Changes remain uncommitted.

@@ -182,6 +182,7 @@ export async function acquireHarnessRuntime({
   projectRoot,
   pid = process.pid,
   uuid,
+  needsPort = true,
   portAllocator = reserveAvailablePort,
 }) {
   const runId = createRunId(mode, pid, uuid);
@@ -193,7 +194,7 @@ export async function acquireHarnessRuntime({
     .split(sep)
     .join("/");
   validateRuntimePath(projectRoot, distDir, runId);
-  const port = await portAllocator();
+  const port = needsPort ? await portAllocator() : undefined;
 
   await withCoordinatorLock(runtimeRoot, async () => {
     let state = pruneRuns((await readState(statePath)) ?? {

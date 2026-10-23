@@ -123,3 +123,30 @@ test("a new run reclaims artifacts owned by a stale process", async () => {
   });
   await releaseHarnessRuntime(replacement);
 });
+
+test("non-browser runs isolate and clean artifacts without allocating a port", async () => {
+  const projectRoot = await createProject();
+  const runtime = await acquireHarnessRuntime({
+    mode: "production",
+    projectRoot,
+    needsPort: false,
+    portAllocator: async () => {
+      throw new Error("Non-browser verification must not bind a port");
+    },
+  });
+  try {
+    assert.equal(runtime.port, undefined);
+    const environment = createHarnessEnvironment(runtime, { PORT: "3000" });
+    assert.equal(environment.PORT, undefined);
+    assert.equal(environment.PORTFOLIO_HARNESS_DIST_DIR, runtime.distDir);
+    assert.equal(
+      await readFile(join(projectRoot, runtime.tsconfigPath), "utf8"),
+      '{\n  "extends": "../../tsconfig.json"\n}\n',
+    );
+    await writeFile(join(projectRoot, "next-env.d.ts"), "generated next env\n");
+  } finally {
+    await releaseHarnessRuntime(runtime);
+  }
+  assert.equal(await readFile(join(projectRoot, "next-env.d.ts"), "utf8"), "original next env\n");
+  await assert.rejects(readFile(join(projectRoot, runtime.tsconfigPath)), { code: "ENOENT" });
+});

@@ -12,7 +12,11 @@ const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const require = createRequire(import.meta.url);
 const playwrightCli = require.resolve("@playwright/test/cli");
 const sandboxOnly = process.argv.includes("--sandbox");
-const runtime = await acquireHarnessRuntime({ mode: "production", projectRoot });
+const runtime = await acquireHarnessRuntime({
+  mode: "production",
+  projectRoot,
+  needsPort: !sandboxOnly,
+});
 const environment = createHarnessEnvironment(runtime);
 
 console.log(`Verification build directory: ${runtime.distDir}`);

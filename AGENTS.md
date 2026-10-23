@@ -36,7 +36,8 @@ Consult docs by task instead of loading everything by default:
 - For UI work tied to a Figma design, use `.agents/skills/figma-implement-design` and the Figma MCP context. If no Figma context exists, ask for it before aiming for 1:1 design fidelity.
 - Keep each implementation focused on the requested task. Capture unrelated findings in `.harness/progress.md` or a future plan instead of expanding scope.
 - Run `npm run verify` before marking implementation complete. Each invocation allocates an available loopback port and a unique ignored Next output directory, and it never reuses an existing Playwright server. For quick non-browser checks, use `npm run lint` or `npm run typecheck` as appropriate.
-- When Codex sandboxing blocks Turbopack or server port binding, use `npm run verify:sandbox` for non-browser feedback, then run the full verification path with narrow approval.
+- Use `npm run verify:sandbox` for checks inside the sandbox: lint, TypeScript, runtime tests, and a webpack production build, without allocating a port or running browsers. This does not replace full browser verification.
+- Run `npm run verify` as a standalone command. When an existing allow rule authorizes it, use that outside-sandbox execution directly instead of first attempting a sandboxed run. Run `git diff --check`, `git diff --stat`, and `git status --short` separately inside the sandbox; do not append them to the outside-sandbox verification command. A preapproved command avoids repeat prompts but still runs outside the sandbox.
 - For targeted harness UI verification, use `npm run harness:test:e2e -- <Playwright arguments>`. It owns an isolated development server, port, output directory, and cleanup, so do not prefix the command with `PORT` or start/kill a server manually.
 
 ## Harness

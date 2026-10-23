@@ -57,7 +57,7 @@ npm run verify:sandbox
 npm run harness:check:sandbox
 ```
 
-These commands use `next build --webpack`, which is a supported Next.js 16 build mode, and avoid starting a browser server. They do not replace full browser verification.
+These commands run lint, TypeScript, runtime tests, and `next build --webpack`, which is a supported Next.js 16 build mode. They keep isolated build output and cleanup but do not allocate a port or start a browser server. They do not replace full browser verification.
 
 For targeted harness browser work, pass any Playwright file, title, or project filters after `--`:
 
@@ -72,7 +72,11 @@ Direct `npm run test:e2e` runs retain the advanced/manual behavior: they target 
 
 Playwright keeps browser QA evidence in ignored output directories: traces are retained on first retry and screenshots are captured on failure. For UI bugs, reproduce the issue with Playwright, inspect the DOM or screenshot evidence, implement the fix, then re-run the same browser path.
 
-Full browser verification needs permission to bind a loopback port and launch Chromium. Keep Codex in `workspace-write` / on-request mode and add a narrow command rule instead of enabling full access. For example, place this in `~/.codex/rules/default.rules`, then restart Codex:
+Full browser verification needs permission to bind a loopback port and launch Chromium. Run `npm run verify` as a standalone command using an existing allow rule directly, without first attempting it inside the sandbox. Run Git checks (`git diff --check`, `git diff --stat`, and `git status --short`) separately inside the sandbox. Appending them with `&&` to an outside-sandbox command requires approval coverage for those commands too and can trigger another prompt.
+
+An allow rule avoids repeat prompts; it does not make browser verification run inside the sandbox. If verification must stay entirely inside the sandbox, use `npm run verify:sandbox` and run the full suite in a terminal or CI before marking browser verification complete.
+
+Keep Codex in `workspace-write` / on-request mode and use a narrow command rule instead of enabling full access. If no suitable rule exists, the following can be placed in `~/.codex/rules/default.rules`, followed by a Codex restart:
 
 ```python
 prefix_rule(

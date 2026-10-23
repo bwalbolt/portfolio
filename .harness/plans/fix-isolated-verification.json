@@ -61,6 +61,28 @@
       "depends_on": [
         "1"
       ]
+    },
+    {
+      "id": "3",
+      "title": "Address feedback on task 2: Restore sandbox checks and simplify approvals",
+      "status": "complete",
+      "acceptance_criteria": [
+        "Sandbox verification allocates no port and passes lint, TypeScript, runtime tests, and the webpack production build without escalation.",
+        "Full and targeted browser verification retain isolated port allocation and runtime cleanup.",
+        "Regression coverage proves port allocation is skipped for non-browser runs, with isolated artifacts and generated-file restoration preserved.",
+        "Agent and harness documentation require standalone verification commands, separate sandboxed Git checks, and distinguish preapproved outside-sandbox execution from sandbox-only checks.",
+        "Full npm run verify passes and an independent evaluator returns PASS."
+      ],
+      "files": [
+        "scripts/harness-runtime.mjs",
+        "scripts/harness-runtime.test.mjs",
+        "scripts/verify.mjs",
+        "AGENTS.md",
+        ".harness/README.md"
+      ],
+      "depends_on": [
+        "2"
+      ]
     }
   ]
 }

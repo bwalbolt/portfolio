@@ -1,97 +1,62 @@
 import { readFile } from "node:fs/promises";
+
 import { expect, test } from "@playwright/test";
 
 import {
   createPostRegistry,
+  parsePostFrontmatter,
   selectTutorialPosts,
-  type PostMetadata,
 } from "../../src/content/blog/post-registry";
 
-const fixturePost: PostMetadata = {
-  description: "A test post.",
-  displaySequence: 1,
-  publishedAt: "2026-04-01",
-  slug: "test-post",
-  tags: [],
-  title: "Test Post",
-};
+const validFrontmatter = `---
+title: Test post
+description: A test post.
+publishedAt: "2026-04-01"
+tags: []
+---
 
-test("post registry sorts metadata and rejects invalid collection entries", () => {
-  const posts = createPostRegistry([
-    fixturePost,
-    {
-      ...fixturePost,
-      displaySequence: 2,
-      publishedAt: "2026-04-02",
-      slug: "tutorial-post",
-      tags: ["tutorial"],
-      title: "Tutorial Post",
-    },
-  ]);
+Body.`;
 
-  expect(posts.map((post) => post.slug)).toEqual(["tutorial-post", "test-post"]);
-  expect(posts[0]).toMatchObject({
-    dateLabel: "APR 02, 2026 // 002",
-    href: "/blog/tutorial-post",
-    tags: ["tutorial"],
-  });
-  expect(selectTutorialPosts(posts)).toEqual([posts[0]]);
-  expect(() => createPostRegistry([fixturePost, fixturePost])).toThrow(
-    "Duplicate blog post slug: test-post",
-  );
-  expect(() =>
-    createPostRegistry([
-      { ...fixturePost, tags: ["unsupported" as never] },
-    ]),
-  ).toThrow("Unsupported blog post tag on test-post");
+test("frontmatter validation reports actionable metadata failures", () => {
+  expect(() => parsePostFrontmatter("Test Post.mdx", validFrontmatter)).toThrow("filename must be lowercase kebab-case");
+  expect(() => parsePostFrontmatter("test-post.mdx", "# Missing frontmatter")).toThrow("YAML frontmatter");
+  expect(() => parsePostFrontmatter("test-post.mdx", validFrontmatter.replace("2026-04-01", "2026-02-30"))).toThrow("real calendar date");
+  expect(() => parsePostFrontmatter("test-post.mdx", validFrontmatter.replace("tags: []", "tags: [Not Normalized]"))).toThrow("normalized kebab-case");
+  expect(() => parsePostFrontmatter("test-post.mdx", validFrontmatter.replace("tags: []", "tags: [tutorial, tutorial]"))).toThrow("must not contain duplicates");
+  expect(() => parsePostFrontmatter("test-post.mdx", validFrontmatter.replace("tags: []", "tags: []\nsocialImage:\n  src: /images/card.png"))).toThrow("socialImage.alt");
 });
 
-test("authored MDX files and homepage insight cards use the canonical blog metadata", async ({
-  page,
-}) => {
+test("registry derives sequences chronologically and lists same-day posts by filename", () => {
+  const registry = createPostRegistry([
+    parsePostFrontmatter("zulu.mdx", validFrontmatter.replace("2026-04-01", "2026-04-02")),
+    parsePostFrontmatter("alpha.mdx", validFrontmatter.replace("2026-04-01", "2026-04-02").replace("tags: []", "tags: [tutorial, engineering]")),
+    parsePostFrontmatter("oldest.mdx", validFrontmatter),
+  ]);
+
+  expect(registry.map(({ slug, displaySequence }) => [slug, displaySequence])).toEqual([
+    ["alpha", 2], ["zulu", 3], ["oldest", 1],
+  ]);
+  expect(registry.map((post) => post.dateLabel)).toEqual([
+    "APR 02, 2026 // 002", "APR 02, 2026 // 003", "APR 01, 2026 // 001",
+  ]);
+  expect(selectTutorialPosts(registry).map((post) => post.slug)).toEqual(["alpha"]);
+});
+
+test("authored files own canonical frontmatter and render without duplicate page headings", async ({ page }) => {
   const authoredPosts = [
-    {
-      date: "APR 06, 2026 // 003",
-      description: "Most frontend devs agree on one-side margin, but which side?",
-      file: "margin-top-for-the-win",
-      slug: "margin-top-for-the-win",
-      title: "Margin-top For the Win",
-    },
-    {
-      date: "APR 05, 2026 // 002",
-      description: "How practical can a 2015 MacBook Air be for full-stack work?",
-      file: "working-on-old-hardware",
-      slug: "working-on-old-hardware",
-      title: "Working on Old Hardware",
-    },
-    {
-      date: "APR 04, 2026 // 001",
-      description: "It's been a while since I had a site live. It's time to start fresh.",
-      file: "hello-world",
-      slug: "hello-world",
-      title: "Hello World",
-    },
+    ["margin-top-for-the-win", "Margin-top For the Win", "APR 06, 2026 // 003"],
+    ["working-on-old-hardware", "Working on Old Hardware", "APR 05, 2026 // 002"],
+    ["hello-world", "Hello World", "APR 04, 2026 // 001"],
   ] as const;
 
-  for (const post of authoredPosts) {
-    const source = await readFile(`src/content/blog/${post.file}.mdx`, "utf8");
-    expect(source).toContain(`# ${post.title}`);
-  }
+  for (const [slug, title, dateLabel] of authoredPosts) {
+    const source = await readFile(`src/content/blog/${slug}.mdx`, "utf8");
+    expect(parsePostFrontmatter(`${slug}.mdx`, source)).toMatchObject({ title });
+    expect(source).not.toMatch(/^# /m);
 
-  await page.setViewportSize({ height: 900, width: 1280 });
-  await page.goto("/");
-
-  const cards = page.locator("#insights li");
-  await expect(cards).toHaveCount(3);
-
-  for (const [index, post] of authoredPosts.entries()) {
-    const card = cards.nth(index);
-    await expect(card).toContainText(post.date);
-    await expect(card).toContainText(post.title);
-    await expect(card).toContainText(post.description);
-    await expect(card.getByRole("link", { name: `Read more about ${post.title}` })).toHaveAttribute(
-      "href",
-      `/blog/${post.slug}`,
-    );
+    await page.goto(`/blog/${slug}`);
+    await expect(page.getByRole("heading", { level: 1, name: title })).toHaveCount(1);
+    await expect(page.locator("main article")).toContainText(dateLabel);
+    await expect(page.locator("main article")).not.toContainText("publishedAt:");
   }
 });

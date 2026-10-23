@@ -41,5 +41,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     notFound();
   }
 
-  return <BlogPost post={post} />;
+  // This is the documented local dynamic-MDX import pattern. `dynamicParams = false`
+  // restricts it to the build-time filesystem inventory above.
+  const { default: Content } = await import(`../../../../content/blog/${post.slug}.mdx`);
+
+  return <BlogPost Content={Content} post={post} />;
 }

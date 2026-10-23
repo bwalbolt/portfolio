@@ -3,18 +3,18 @@ import {
   NAV_ITEMS,
 } from "../_content/site-content";
 import type { Post } from "../_content/posts";
+import type { ComponentType } from "react";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import { ResponsiveText } from "./responsive-text";
 import styles from "./blog-post.module.css";
 
 type BlogPostProps = {
+  Content: ComponentType;
   post: Post;
 };
 
-export function BlogPost({ post }: BlogPostProps) {
-  const Content = post.content;
-
+export function BlogPost({ Content, post }: BlogPostProps) {
   return (
     <div className={styles.page}>
       <SiteHeader contactHref={CONTACT_SECTION_HREF} items={NAV_ITEMS} overlay />

@@ -12,6 +12,15 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-22 - feat-blog-content-and-pages: Task 6 - Move post metadata into validated frontmatter
+
+- Moved all canonical post metadata into YAML frontmatter and replaced the manual registry/import map with build-time filesystem discovery, filename-derived slugs, validated extensible tags, deterministic date/filename ordering, and automatic display sequences.
+- Preserved static local MDX route generation with the documented dynamic import pattern, configured MDX frontmatter parsing so metadata never renders as prose, and removed duplicate body-level H1s.
+- Added the one-file authoring guide and focused coverage for valid discovery/rendering plus filename, frontmatter, date, tag, duplicate-tag, social-image, chronological-sequence, and same-day-order validation.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 64 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS on first review. TDD chronology is a non-blocking warning because the interactive changes are uncommitted.
+- Next task: task 7, add origin-aware article navigation.
+
 ## 2026-10-22 - feat-blog-content-and-pages: Task 5 - Render static responsive blog posts
 
 - Replaced the blog detail scaffold with static canonical MDX articles, build-time slug generation, 404 handling for unknown slugs, and metadata derived from each post record.

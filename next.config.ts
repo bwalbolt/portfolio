@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
 };
 
-const withMDX = createMDX();
+const withMDX = createMDX({
+  options: {
+    // Turbopack requires plugin names instead of function references.
+    remarkPlugins: ["remark-frontmatter"],
+  },
+});
 
 export default withMDX(nextConfig);

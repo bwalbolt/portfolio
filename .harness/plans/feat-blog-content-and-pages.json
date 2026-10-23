@@ -124,7 +124,7 @@
     {
       "id": "6",
       "title": "Address feedback on task 5: Move post metadata into validated frontmatter",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "Every `src/content/blog/*.mdx` post owns validated YAML frontmatter with required `title`, `description`, quoted `publishedAt` in `YYYY-MM-DD` format, and `tags` fields; an optional `socialImage` object is accepted only when it supplies both a public-root `src` and non-empty `alt` text.",
         "The post loader discovers MDX files at build time, derives each slug from its lowercase kebab-case filename, rejects malformed filenames or metadata with actionable errors, and requires no hand-maintained metadata array or content import map.",

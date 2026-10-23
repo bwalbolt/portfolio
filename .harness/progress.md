@@ -12,6 +12,16 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-23 - feat-blog-content-and-pages: Task 7 - Add origin-aware article navigation
+
+- Added a lightweight marketing-boundary client provider that records Blog or Tutorials entry state without moving local MDX rendering, metadata, or static route generation to the client.
+- Post cards preserve clean canonical `/blog/[slug]` destinations while setting their entry origin; article pages now expose an accessible origin-aware back link and matching desktop/mobile primary-navigation state. The optional `?from=tutorial` hint works for direct/shared links, while invalid or absent hints fall back to Blog.
+- Kept static/no-JavaScript output intact by reading the optional browser query hint through a hydration-safe external-store snapshot instead of suspending the full page shell.
+- Added browser coverage for fresh direct visits, refresh defaults, homepage/blog/tutorial entries, keyboard activation, back links, query hints, static article rendering, and mobile navigation state.
+- Verification: `npm run verify` passed lint, strict TypeScript, production static generation, and all 65 Playwright tests. Focused blog plus no-JavaScript contact coverage also passed; `git diff --check` passed.
+- Evaluator verdict: PASS after two review-driven corrections. The first added fresh-direct-entry coverage; the second removed a duplicated no-JavaScript shell exposed by the contact regression suite.
+- Next task: task 8, add canonical and share metadata.
+
 ## 2026-10-23 - fix-isolated-verification: Task 2 - Make browser runs self-managing and concurrent
 
 - Added a shared harness runtime coordinator that allocates unique ports, Next output directories, temporary TypeScript configurations, and Playwright artifact directories for targeted and full verification runs. Active-run ownership defers restoration and cleanup until overlapping sessions are finished, while stale owners are reclaimed safely.

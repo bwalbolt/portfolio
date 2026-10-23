@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
+import type { ArticleOrigin } from "./article-origin";
+import { useArticleOrigin } from "./article-origin";
 import { Icon, cx } from "./primitives";
 import { projectPointer } from "./panel-perimeter";
 import styles from "./linked-panel-card.module.css";
@@ -14,6 +16,7 @@ interface LinkedPanelCardProps {
   children: ReactNode;
   className?: string;
   linkClassName?: string;
+  articleOrigin?: ArticleOrigin;
   variant?: LinkedPanelVariant;
 }
 
@@ -80,8 +83,10 @@ export function LinkedPanelCard({
   children,
   className,
   linkClassName,
+  articleOrigin,
   variant = "rounded",
 }: LinkedPanelCardProps) {
+  const { setArticleOrigin } = useArticleOrigin();
   const wrapperRef = useRef<HTMLElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
 
@@ -182,7 +187,12 @@ export function LinkedPanelCard({
     <article className={cx(styles.wrapper, variant === "slanted" && styles.slanted)} ref={wrapperRef}>
       <div className={cx(styles.surface, variant === "slanted" && styles.slantedSurface, className)} ref={surfaceRef}>
         {children}
-        <Link href={href} aria-label={linkLabel} className={cx(styles.link, linkClassName)}>
+        <Link
+          href={href}
+          aria-label={linkLabel}
+          className={cx(styles.link, linkClassName)}
+          onClick={articleOrigin ? () => setArticleOrigin(articleOrigin) : undefined}
+        >
           <span className={styles.linkContent}>
             <span>Read more</span>
             <Icon name="arrow" />

@@ -44,6 +44,7 @@ function InsightPanel({ insight }: { insight: Post }) {
       linkLabel={`Read more about ${insight.title}`}
       className={styles.insightCard}
       linkClassName={styles.readMore}
+      articleOrigin="blog"
     >
       <p className={styles.cardLead}>{insight.dateLabel}</p>
       <h3 className={styles.cardTitle}>{insight.title}</h3>

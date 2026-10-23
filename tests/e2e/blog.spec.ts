@@ -154,6 +154,61 @@ test("canonical post cards use the homepage type scale and equal row heights", a
   expect(new Set(homepageHeights.map(Math.round)).size).toBe(1);
 });
 
+test("article navigation preserves its listing origin without polluting canonical URLs", async ({ browser, page }) => {
+  const articlePath = "/blog/margin-top-for-the-win";
+
+  const freshContext = await browser.newContext();
+  const freshPage = await freshContext.newPage();
+  await freshPage.goto(articlePath);
+  await expect(freshPage.getByRole("link", { name: "< Back to Blog" })).toHaveAttribute("href", "/blog");
+  await expect(freshPage.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Blog" })).toHaveAttribute("aria-current", "page");
+  await freshContext.close();
+
+  await page.goto("/blog");
+  const blogCard = page.getByRole("link", { name: "Read more about Margin-top For the Win" });
+  await expect(blogCard).toHaveAttribute("href", articlePath);
+  await blogCard.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(articlePath);
+  await expect(page.getByRole("link", { name: "< Back to Blog" })).toHaveAttribute("href", "/blog");
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Blog" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Tutorials" })).not.toHaveAttribute("aria-current", "page");
+  await page.getByRole("link", { name: "< Back to Blog" }).click();
+  await expect(page).toHaveURL("/blog");
+
+  await page.goto("/tutorial");
+  const tutorialCard = page.getByRole("link", { name: "Read more about Margin-top For the Win" });
+  await expect(tutorialCard).toHaveAttribute("href", articlePath);
+  await tutorialCard.click();
+  await expect(page).toHaveURL(articlePath);
+  await expect(page.getByRole("link", { name: "< Back to Tutorials" })).toHaveAttribute("href", "/tutorial");
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Tutorials" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Blog" })).not.toHaveAttribute("aria-current", "page");
+  await page.getByRole("link", { name: "< Back to Tutorials" }).click();
+  await expect(page).toHaveURL("/tutorial");
+
+  await page.goto("/");
+  await page.getByRole("link", { name: "Read more about Margin-top For the Win" }).click();
+  await expect(page).toHaveURL(articlePath);
+  await expect(page.getByRole("link", { name: "< Back to Blog" })).toBeVisible();
+
+  await page.goto(`${articlePath}?from=tutorial`);
+  await expect(page.getByRole("link", { name: "< Back to Tutorials" })).toHaveAttribute("href", "/tutorial");
+  await expect(page.getByRole("heading", { level: 1, name: "Margin-top For the Win" })).toBeVisible();
+
+  await page.goto(`${articlePath}?from=unrecognized`);
+  await expect(page.getByRole("link", { name: "< Back to Blog" })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("link", { name: "< Back to Blog" })).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto(`${articlePath}?from=tutorial`);
+  await page.getByRole("button", { name: "Toggle navigation" }).click();
+  const mobileNavigation = page.getByRole("navigation", { name: "Mobile" });
+  await expect(mobileNavigation.getByRole("link", { name: "Tutorials" })).toHaveAttribute("aria-current", "page");
+  await expect(mobileNavigation.getByRole("link", { name: "Blog" })).not.toHaveAttribute("aria-current", "page");
+});
+
 test("canonical blog posts are static, semantic, and use the responsive reading scale", async ({
   page,
 }) => {

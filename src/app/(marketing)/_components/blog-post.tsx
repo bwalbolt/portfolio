@@ -7,6 +7,7 @@ import type { ComponentType } from "react";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import { ResponsiveText } from "./responsive-text";
+import { ArticleBackLink } from "./article-back-link";
 import styles from "./blog-post.module.css";
 
 type BlogPostProps = {
@@ -22,6 +23,7 @@ export function BlogPost({ Content, post }: BlogPostProps) {
         <article className={styles.article}>
           <ResponsiveText>
             <header className={styles.header}>
+              <ArticleBackLink />
               <p className={styles.metadata}>{post.dateLabel}</p>
               <h1>{post.title}</h1>
               <p className={styles.description}>{post.description}</p>

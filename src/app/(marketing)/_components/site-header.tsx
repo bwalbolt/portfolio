@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import type { NavigationItem } from "../_content/site-content";
 import { SITE_NAME } from "../_content/site-content";
 import { BrandLogo } from "./brand-logo";
+import { useArticleOrigin, useArticleOriginHint } from "./article-origin";
 import { Button, Icon, VisuallyHidden, cx } from "./primitives";
 import styles from "./site-header.module.css";
 
@@ -22,6 +23,8 @@ export function SiteHeader({
   overlay = false,
 }: SiteHeaderProps) {
   const pathname = usePathname();
+  const { articleOrigin } = useArticleOrigin();
+  const queryOrigin = useArticleOriginHint();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -46,6 +49,17 @@ export function SiteHeader({
     setIsMenuOpen(false);
   };
 
+  const isArticleRoute = /^\/blog\/[^/]+$/.test(pathname);
+  const isActive = (href: string) => {
+    if (isArticleRoute) {
+      const resolvedOrigin = queryOrigin ?? articleOrigin;
+      return (href === "/blog" && resolvedOrigin === "blog")
+        || (href === "/tutorial" && resolvedOrigin === "tutorial");
+    }
+
+    return pathname === href || (href !== "/" && pathname.startsWith(href));
+  };
+
   return (
     <header
       className={cx(
@@ -67,14 +81,13 @@ export function SiteHeader({
         <nav aria-label="Primary" className={styles.desktopNav}>
           <ul className={styles.desktopNavList}>
             {items.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/" && pathname.startsWith(item.href));
+              const active = isActive(item.href);
 
               return (
                 <li key={item.href}>
                   <Link
-                    className={cx(styles.navLink, isActive && styles.navLinkActive)}
+                    aria-current={active ? "page" : undefined}
+                    className={cx(styles.navLink, active && styles.navLinkActive)}
                     href={item.href}
                   >
                     {item.label}
@@ -114,16 +127,15 @@ export function SiteHeader({
         <nav aria-label="Mobile">
           <ul className={styles.mobileNavList}>
             {items.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/" && pathname.startsWith(item.href));
+              const active = isActive(item.href);
 
               return (
                 <li key={item.href}>
                   <Link
+                    aria-current={active ? "page" : undefined}
                     className={cx(
                       styles.mobileNavLink,
-                      isActive && styles.mobileNavLinkActive,
+                      active && styles.mobileNavLinkActive,
                     )}
                     href={item.href}
                     onClick={closeMenu}

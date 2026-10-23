@@ -13,7 +13,7 @@ export default function TutorialPage() {
       <main className={styles.main} id="main-content">
         <Container className={styles.content}>
           <h1 className={styles.heading}>Tutorials</h1>
-          <PostListing posts={getTutorialPosts()} />
+          <PostListing articleOrigin="tutorial" posts={getTutorialPosts()} />
         </Container>
       </main>
       <SiteFooter />

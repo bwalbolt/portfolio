@@ -13,7 +13,7 @@ export default function BlogPage() {
       <main className={styles.main} id="main-content">
         <Container className={styles.content}>
           <h1 className={styles.heading}>Latest Insights</h1>
-          <PostListing posts={getPosts()} />
+          <PostListing articleOrigin="blog" posts={getPosts()} />
         </Container>
       </main>
       <SiteFooter />

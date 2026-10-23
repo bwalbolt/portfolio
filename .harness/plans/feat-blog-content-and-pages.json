@@ -152,7 +152,7 @@
     {
       "id": "7",
       "title": "Add origin-aware article navigation",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "A small client-side provider at the marketing route-group boundary tracks a `blog` or `tutorial` article origin during client navigation without moving article content, metadata loading, or route generation to the client.",
         "Blog and homepage post cards set Blog as the origin, tutorial cards set Tutorials as the origin, and all default card destinations remain clean `/blog/[slug]` URLs without query parameters.",

@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 
 import { getPostBySlug, getPosts } from "../../_content/posts";
 import { BlogPost } from "../../_components/blog-post";
+import {
+  absoluteUrl,
+  DEFAULT_SOCIAL_IMAGE,
+  SITE_AUTHOR,
+} from "../../../site-config";
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -27,9 +32,32 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
     return {};
   }
 
+  const canonicalUrl = absoluteUrl(post.href);
+  const socialImage = post.socialImage ?? DEFAULT_SOCIAL_IMAGE;
+  const socialImageUrl = absoluteUrl(socialImage.src);
+
   return {
     description: post.description,
     title: post.title,
+    keywords: [post.title, ...post.tags],
+    authors: [{ name: SITE_AUTHOR }],
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      type: "article",
+      url: canonicalUrl,
+      title: post.title,
+      description: post.description,
+      publishedTime: post.publishedAt,
+      authors: [SITE_AUTHOR],
+      tags: [...post.tags],
+      images: [{ url: socialImageUrl, alt: socialImage.alt, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [{ url: socialImageUrl, alt: socialImage.alt }],
+    },
   };
 }
 

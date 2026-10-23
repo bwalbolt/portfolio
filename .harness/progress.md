@@ -12,6 +12,16 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-23 - feat-blog-content-and-pages: Task 8 - Add blog SEO and social sharing metadata
+
+- Added the canonical site URL and author identity to root metadata, then derived post canonical URLs, keywords, Open Graph article fields, Twitter cards, and BlogPosting JSON-LD from the validated filesystem post registry.
+- Added static crawlable `/robots.txt` and `/sitemap.xml` route metadata, including the blog collection and primary static marketing routes. The sitemap’s post entries use their authored publication dates.
+- Created the shared 1200 × 630 navy social card at `public/images/social-card.png`; `hello-world` now provides a frontmatter social-image override that exercises both the metadata and JSON-LD fallback paths.
+- Added browser coverage for root and listing metadata, every post’s social/structured metadata, shared/custom image selection and alt text, canonical query exclusion, crawler routes, sitemap inventory, and unknown post 404 behavior.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 66 Playwright tests. `git diff --check` passed.
+- Evaluator verdict: PASS after one review-driven coverage expansion. The initial evaluator found the implementation correct but test coverage incomplete; a fresh evaluator confirmed every acceptance criterion after the expanded assertions. TDD history is a non-blocking warning because this interactive task is uncommitted.
+- Next task: task 9, document and verify the complete blog flow.
+
 ## 2026-10-23 - feat-blog-content-and-pages: Task 7 - Add origin-aware article navigation
 
 - Added a lightweight marketing-boundary client provider that records Blog or Tutorials entry state without moving local MDX rendering, metadata, or static route generation to the client.

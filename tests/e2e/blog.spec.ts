@@ -284,3 +284,74 @@ test("responsive article text is bounded on mobile and protects rich MDX content
   ).toHaveCSS("box-shadow", /rgba\(2, 20, 29, 0\.92\).*rgba\(0, 176, 255, 0\.7\)/);
   expect(await page.locator("html").evaluate((element) => element.scrollWidth)).toBeLessThanOrEqual(390);
 });
+
+test("blog pages publish canonical social metadata, structured data, and crawl routes", async ({ page, request }) => {
+  const publishedPosts = [
+    { slug: "margin-top-for-the-win", title: "Margin-top For the Win", description: "Most frontend devs agree on one-side margin, but which side?", publishedAt: "2026-04-06", tags: ["tutorial"], image: "/images/social-card.png", imageAlt: "Brent Walbolt — Hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows." },
+    { slug: "working-on-old-hardware", title: "Working on Old Hardware", description: "How practical can a 2015 MacBook Air be for full-stack work?", publishedAt: "2026-04-05", tags: [], image: "/images/social-card.png", imageAlt: "Brent Walbolt — Hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows." },
+    { slug: "hello-world", title: "Hello World", description: "It's been a while since I had a site live. It's time to start fresh.", publishedAt: "2026-04-04", tags: [], image: "/images/hero-background.jpg", imageAlt: "A dark navy and cyan abstract portfolio backdrop." },
+  ] as const;
+
+  await page.goto("/");
+  await expect(page.locator('meta[name="author"]')).toHaveAttribute("content", "Brent Walbolt");
+  await expect(page.locator('meta[name="creator"]')).toHaveAttribute("content", "Brent Walbolt");
+  await expect(page.locator('meta[name="publisher"]')).toHaveAttribute("content", "Brent Walbolt");
+
+  for (const post of publishedPosts) {
+    const canonicalUrl = `https://brent.walbolt.com/blog/${post.slug}`;
+    await page.goto(`/blog/${post.slug}${post.slug === "margin-top-for-the-win" ? "?from=tutorial" : ""}`);
+    await expect(page).toHaveTitle(`${post.title} | Brent Walbolt`);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", post.description);
+    await expect(page.locator('meta[name="keywords"]')).toHaveAttribute("content", [post.title, ...post.tags].join(","));
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonicalUrl);
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "article");
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", canonicalUrl);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", post.title);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute("content", post.description);
+    await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", post.publishedAt);
+    await expect(page.locator('meta[property="article:author"]')).toHaveAttribute("content", "Brent Walbolt");
+    await expect(page.locator('meta[property="article:tag"]')).toHaveCount(post.tags.length);
+    if (post.tags.length) await expect(page.locator('meta[property="article:tag"]')).toHaveAttribute("content", post.tags[0]);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", `https://brent.walbolt.com${post.image}`);
+    await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", post.imageAlt);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", post.title);
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute("content", post.description);
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", `https://brent.walbolt.com${post.image}`);
+    await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", post.imageAlt);
+
+    const structuredData = JSON.parse(await page.locator('main article script[type="application/ld+json"]').textContent() ?? "{}");
+    expect(structuredData).toMatchObject({
+      "@type": "BlogPosting", author: { name: "Brent Walbolt" }, datePublished: post.publishedAt,
+      description: post.description, headline: post.title, image: `https://brent.walbolt.com${post.image}`,
+      keywords: post.tags, mainEntityOfPage: canonicalUrl, url: canonicalUrl,
+    });
+  }
+
+  for (const route of [
+    ["/blog", "Latest Insights | Brent Walbolt", "Notes on design engineering, accessible interfaces, performance, and practical frontend workflows.", "https://brent.walbolt.com/blog"],
+    ["/tutorial?from=tutorial", "Tutorials | Brent Walbolt", "Practical design engineering tutorials from Brent Walbolt.", "https://brent.walbolt.com/tutorial"],
+  ] as const) {
+    await page.goto(route[0]);
+    await expect(page).toHaveTitle(route[1]);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", route[2]);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", route[3]);
+  }
+
+  const robots = await request.get("/robots.txt");
+  expect(robots.ok()).toBeTruthy();
+  expect(await robots.text()).toMatch(/Allow: \/[\s\S]*Sitemap: https:\/\/brent\.walbolt\.com\/sitemap\.xml/);
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.ok()).toBeTruthy();
+  const sitemapText = await sitemap.text();
+  for (const route of ["/", "/blog", "/tutorial", "/case-studies", "/privacy-policy", "/terms-of-use"]) {
+    expect(sitemapText).toContain(`<loc>https://brent.walbolt.com${route}</loc>`);
+  }
+  for (const post of publishedPosts) {
+    expect(sitemapText).toContain(`<loc>https://brent.walbolt.com/blog/${post.slug}</loc>`);
+    expect(sitemapText).toContain(`<lastmod>${post.publishedAt}</lastmod>`);
+  }
+
+  const missingPost = await page.goto("/blog/not-a-post");
+  expect(missingPost?.status()).toBe(404);
+});

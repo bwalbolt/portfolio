@@ -178,7 +178,7 @@
     {
       "id": "8",
       "title": "Add blog SEO and social sharing metadata",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "The root metadata uses `https://brent.walbolt.com` as `metadataBase` and identifies Brent Walbolt as the site author, creator, and publisher.",
         "Every post derives its title, description, canonical `/blog/[slug]` URL, keywords, Open Graph article fields, publication date, author, tags, and Twitter `summary_large_image` fields from validated post data.",

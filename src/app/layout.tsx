@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { SITE_AUTHOR, SITE_URL } from "./site-config";
 
 const switzer = localFont({
   src: "../../public/fonts/Switzer-Variable.woff2",
@@ -34,12 +35,16 @@ const sourceCode = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: SITE_URL,
   title: {
     default: "Brent Walbolt | Senior Design Engineer",
     template: "%s | Brent Walbolt",
   },
   description:
     "A senior design engineer portfolio focused on hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows.",
+  authors: [{ name: SITE_AUTHOR, url: SITE_URL.toString() }],
+  creator: SITE_AUTHOR,
+  publisher: SITE_AUTHOR,
 };
 
 export default function RootLayout({

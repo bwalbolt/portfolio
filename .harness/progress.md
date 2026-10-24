@@ -12,6 +12,25 @@ Session notes are appended here after each completed task.
 - What to work on next
 -->
 
+## 2026-10-24 - feat-blog-content-and-pages: Task 10 - Document and verify the complete blog flow
+
+- Expanded browser coverage across every shared responsive boundary, including overflow, grid transitions, responsive reading-scale values, desktop prose measure, and keyboard-focusable origin controls.
+- Added keyboard activation coverage for article back links and recorded desktop blog/article visual baselines, with DESIGN.md documenting the Figma references and intentional mobile/back-link adaptations.
+- Documented the filesystem/frontmatter pipeline, deterministic ordering, tutorial classification, separate listing ownership, origin behavior, social metadata, responsive-text convention, and deferred legal-page migration in ARCHITECTURE.md and DESIGN.md.
+- The live same-day authored dates now let the real `/blog` route directly verify filename tie-breaking and automatic sequences without a synthetic route fixture.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 68 Playwright tests.
+- Evaluator verdict: PASS after two review-driven coverage improvements and one verification-capture retry. The final evaluator found no issues.
+- Next task: none; plan complete.
+
+## 2026-10-24 - feat-blog-content-and-pages: Task 7 - Address feedback on task 6: Update authored publication dates
+
+- Updated `hello-world` and `working-on-old-hardware` to 2026-10-24, and `margin-top-for-the-win` to 2026-10-31.
+- The real `/blog` route now exercises the filename-derived same-day order: `hello-world` (001) precedes `working-on-old-hardware` (002), while the newer tutorial remains 003.
+- Updated article, metadata, JSON-LD, sitemap, and visual-regression expectations for the authored dates.
+- Verification: `npm run verify` passed lint, strict TypeScript, static production generation, and all 68 Playwright tests.
+- Evaluator verdict: PASS on first review. TDD history is a non-blocking warning because the interactive changes are uncommitted.
+- Next task: task 10, document and verify the complete blog flow.
+
 ## 2026-10-23 - feat-blog-content-and-pages: Task 8 - Add blog SEO and social sharing metadata
 
 - Added the canonical site URL and author identity to root metadata, then derived post canonical URLs, keywords, Open Graph article fields, Twitter cards, and BlogPosting JSON-LD from the validated filesystem post registry.

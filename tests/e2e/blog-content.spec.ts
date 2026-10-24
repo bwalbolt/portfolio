@@ -44,9 +44,9 @@ test("registry derives sequences chronologically and lists same-day posts by fil
 
 test("authored files own canonical frontmatter and render without duplicate page headings", async ({ page }) => {
   const authoredPosts = [
-    ["margin-top-for-the-win", "Margin-top For the Win", "APR 06, 2026 // 003"],
-    ["working-on-old-hardware", "Working on Old Hardware", "APR 05, 2026 // 002"],
-    ["hello-world", "Hello World", "APR 04, 2026 // 001"],
+    ["margin-top-for-the-win", "Margin-top For the Win", "OCT 31, 2026 // 003"],
+    ["working-on-old-hardware", "Working on Old Hardware", "OCT 24, 2026 // 002"],
+    ["hello-world", "Hello World", "OCT 24, 2026 // 001"],
   ] as const;
 
   for (const [slug, title, dateLabel] of authoredPosts) {

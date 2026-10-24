@@ -3,7 +3,7 @@
   "title": "Add the blog content system and pages",
   "type": "feature",
   "created": "2026-10-21",
-  "status": "in_progress",
+  "status": "complete",
   "context": "Replace the scaffolded blog routes with a static, repository-authored MDX collection and Figma-aligned listing and article experiences. The blog listing follows Figma file 0J2JF0nYrI8EJrttdHNes4 node 652:141, and the article follows node 652:448. The initial collection uses the three existing homepage insights, lists every post without pagination, and models tutorials as tagged blog posts. `/blog` and `/tutorial` may share low-level post-card/grid primitives, but they must remain separate route compositions so the tutorial experience can diverge later. Long-form content introduces a reusable `responsive-text` wrapper sized from a responsive root and constrained with character-based width; migrating the existing legal pages to it is explicitly deferred. Because no tutorial assignment was supplied, this plan uses `margin-top-for-the-win` as the initial tutorial so the filtered route has a real, testable result.",
   "tasks": [
     {
@@ -151,6 +151,27 @@
     },
     {
       "id": "7",
+      "title": "Address feedback on task 6: Update authored publication dates",
+      "status": "complete",
+      "acceptance_criteria": [
+        "`hello-world` (001) and `working-on-old-hardware` (002) both publish on 2026-10-24, while `margin-top-for-the-win` (003) publishes on 2026-10-31.",
+        "The canonical blog listing retains newest-first ordering, with the two same-day posts ordered by their filename-derived slugs and retaining their chronological display sequences.",
+        "Article metadata, JSON-LD, sitemap last-modified dates, and focused browser coverage all reflect the revised frontmatter dates.",
+        "`npm run verify` passes with lint, strict TypeScript, static generation, and Playwright coverage."
+      ],
+      "files": [
+        "src/content/blog/hello-world.mdx",
+        "src/content/blog/working-on-old-hardware.mdx",
+        "src/content/blog/margin-top-for-the-win.mdx",
+        "tests/e2e/blog-content.spec.ts",
+        "tests/e2e/blog.spec.ts"
+      ],
+      "depends_on": [
+        "6"
+      ]
+    },
+    {
+      "id": "8",
       "title": "Add origin-aware article navigation",
       "status": "complete",
       "acceptance_criteria": [
@@ -172,11 +193,11 @@
         "tests/e2e/blog.spec.ts"
       ],
       "depends_on": [
-        "6"
+        "7"
       ]
     },
     {
-      "id": "8",
+      "id": "9",
       "title": "Add blog SEO and social sharing metadata",
       "status": "complete",
       "acceptance_criteria": [
@@ -199,13 +220,13 @@
         "tests/e2e/blog.spec.ts"
       ],
       "depends_on": [
-        "6"
+        "7"
       ]
     },
     {
-      "id": "9",
+      "id": "10",
       "title": "Document and verify the complete blog flow",
-      "status": "pending",
+      "status": "complete",
       "acceptance_criteria": [
         "Browser coverage verifies all three frontmatter-derived blog cards and routes, newest-first and same-day ordering, automatic display sequences, the tutorial-only filter, an unknown-slug 404, card and back-link keyboard navigation, semantic headings, and the absence of pagination.",
         "Browser coverage verifies clean and query-assisted article-origin navigation, Blog-versus-Tutorials back links and active navigation states, canonical URLs, Open Graph/Twitter metadata, JSON-LD, sitemap coverage, and shared/custom social-image behavior.",
@@ -222,9 +243,9 @@
         "tests/e2e/smoke.spec.ts"
       ],
       "depends_on": [
-        "6",
         "7",
-        "8"
+        "8",
+        "9"
       ]
     }
   ]

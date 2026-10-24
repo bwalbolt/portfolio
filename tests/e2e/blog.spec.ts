@@ -2,26 +2,40 @@ import { expect, test } from "@playwright/test";
 
 const allPosts = [
   {
-    date: "APR 06, 2026 // 003",
+    date: "OCT 31, 2026 // 003",
     body: "When a vertical stack is made of independent components",
     description: "Most frontend devs agree on one-side margin, but which side?",
     slug: "margin-top-for-the-win",
     title: "Margin-top For the Win",
   },
   {
-    date: "APR 05, 2026 // 002",
-    body: "The best improvements were unglamorous",
-    description: "How practical can a 2015 MacBook Air be for full-stack work?",
-    slug: "working-on-old-hardware",
-    title: "Working on Old Hardware",
-  },
-  {
-    date: "APR 04, 2026 // 001",
+    date: "OCT 24, 2026 // 001",
     body: "The goal is not to publish for the sake of it.",
     description: "It's been a while since I had a site live. It's time to start fresh.",
     slug: "hello-world",
     title: "Hello World",
   },
+  {
+    date: "OCT 24, 2026 // 002",
+    body: "The best improvements were unglamorous",
+    description: "How practical can a 2015 MacBook Air be for full-stack work?",
+    slug: "working-on-old-hardware",
+    title: "Working on Old Hardware",
+  },
+] as const;
+
+// Exercise each shared boundary and its immediate lower width so the grid and
+// long-form scale remain tied to the documented responsive system.
+const blogResponsiveWidths = [
+  [390, 1],
+  [479, 1],
+  [480, 1],
+  [767, 1],
+  [768, 2],
+  [991, 2],
+  [992, 3],
+  [1279, 3],
+  [1280, 3],
 ] as const;
 
 test("blog lists every canonical post once in newest-first order", async ({ page }) => {
@@ -63,7 +77,7 @@ test("tutorial lists only tutorial-tagged posts", async ({ page }) => {
 test("post cards retain a single keyboard-accessible destination and responsive grid", async ({
   page,
 }) => {
-  for (const [width, columns] of [[390, 1], [768, 2], [992, 3]] as const) {
+  for (const [width, columns] of blogResponsiveWidths) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/blog");
 
@@ -75,6 +89,7 @@ test("post cards retain a single keyboard-accessible destination and responsive 
     expect(new Set(positions).size, `${width}px grid`).toBe(
       Math.ceil(allPosts.length / columns),
     );
+    expect(await page.locator("html").evaluate((element) => element.scrollWidth), `${width}px listing overflow`).toBeLessThanOrEqual(width);
   }
 
   const firstCard = page.locator("main article").first();
@@ -94,6 +109,34 @@ test("post cards retain a single keyboard-accessible destination and responsive 
 
   await destination.click();
   await expect(page).toHaveURL("/blog/margin-top-for-the-win");
+});
+
+test("blog long-form layout stays usable at every shared responsive boundary", async ({ page }) => {
+  for (const [width] of blogResponsiveWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/blog/margin-top-for-the-win?from=tutorial");
+
+    const responsiveText = page.locator("main article .responsive-text");
+    const expectedRootSize = Math.min(21.632, Math.max(14, 13.456 + width * 0.00301));
+    expect(
+      await responsiveText.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+      `${width}px responsive text root`,
+    ).toBeCloseTo(expectedRootSize, 1);
+    expect(
+      await page.locator("html").evaluate((element) => element.scrollWidth),
+      `${width}px article overflow`,
+    ).toBeLessThanOrEqual(width);
+    const backLink = page.getByRole("link", { name: "< Back to Tutorials" });
+    await expect(backLink, `${width}px origin control`).toBeVisible();
+    await backLink.focus();
+    await expect(backLink, `${width}px origin control keyboard focus`).toBeFocused();
+  }
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/blog/margin-top-for-the-win");
+  expect(
+    await page.locator("main article .responsive-text").evaluate((element) => Number.parseFloat(getComputedStyle(element).width)),
+  ).toBeCloseTo(776.5, 0);
 });
 
 test("canonical post cards use the homepage type scale and equal row heights", async ({ page }) => {
@@ -173,7 +216,8 @@ test("article navigation preserves its listing origin without polluting canonica
   await expect(page.getByRole("link", { name: "< Back to Blog" })).toHaveAttribute("href", "/blog");
   await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Blog" })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Tutorials" })).not.toHaveAttribute("aria-current", "page");
-  await page.getByRole("link", { name: "< Back to Blog" }).click();
+  await page.getByRole("link", { name: "< Back to Blog" }).focus();
+  await page.keyboard.press("Enter");
   await expect(page).toHaveURL("/blog");
 
   await page.goto("/tutorial");
@@ -184,7 +228,8 @@ test("article navigation preserves its listing origin without polluting canonica
   await expect(page.getByRole("link", { name: "< Back to Tutorials" })).toHaveAttribute("href", "/tutorial");
   await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Tutorials" })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Blog" })).not.toHaveAttribute("aria-current", "page");
-  await page.getByRole("link", { name: "< Back to Tutorials" }).click();
+  await page.getByRole("link", { name: "< Back to Tutorials" }).focus();
+  await page.keyboard.press("Enter");
   await expect(page).toHaveURL("/tutorial");
 
   await page.goto("/");
@@ -207,6 +252,21 @@ test("article navigation preserves its listing origin without polluting canonica
   const mobileNavigation = page.getByRole("navigation", { name: "Mobile" });
   await expect(mobileNavigation.getByRole("link", { name: "Tutorials" })).toHaveAttribute("aria-current", "page");
   await expect(mobileNavigation.getByRole("link", { name: "Blog" })).not.toHaveAttribute("aria-current", "page");
+});
+
+test("desktop blog and article compositions retain their recorded Figma baselines", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  await page.goto("/blog");
+  await expect(page.locator("main")).toHaveScreenshot("blog-listing-1280.png", {
+    // Font rasterization varies slightly between isolated dev and production servers.
+    maxDiffPixelRatio: 0.001,
+  });
+
+  await page.goto("/blog/margin-top-for-the-win");
+  await expect(page.locator("main")).toHaveScreenshot("blog-article-1280.png", {
+    maxDiffPixelRatio: 0.001,
+  });
 });
 
 test("canonical blog posts are static, semantic, and use the responsive reading scale", async ({
@@ -287,9 +347,9 @@ test("responsive article text is bounded on mobile and protects rich MDX content
 
 test("blog pages publish canonical social metadata, structured data, and crawl routes", async ({ page, request }) => {
   const publishedPosts = [
-    { slug: "margin-top-for-the-win", title: "Margin-top For the Win", description: "Most frontend devs agree on one-side margin, but which side?", publishedAt: "2026-04-06", tags: ["tutorial"], image: "/images/social-card.png", imageAlt: "Brent Walbolt — Hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows." },
-    { slug: "working-on-old-hardware", title: "Working on Old Hardware", description: "How practical can a 2015 MacBook Air be for full-stack work?", publishedAt: "2026-04-05", tags: [], image: "/images/social-card.png", imageAlt: "Brent Walbolt — Hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows." },
-    { slug: "hello-world", title: "Hello World", description: "It's been a while since I had a site live. It's time to start fresh.", publishedAt: "2026-04-04", tags: [], image: "/images/hero-background.jpg", imageAlt: "A dark navy and cyan abstract portfolio backdrop." },
+    { slug: "margin-top-for-the-win", title: "Margin-top For the Win", description: "Most frontend devs agree on one-side margin, but which side?", publishedAt: "2026-10-31", tags: ["tutorial"], image: "/images/social-card.png", imageAlt: "Brent Walbolt — Hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows." },
+    { slug: "hello-world", title: "Hello World", description: "It's been a while since I had a site live. It's time to start fresh.", publishedAt: "2026-10-24", tags: [], image: "/images/hero-background.jpg", imageAlt: "A dark navy and cyan abstract portfolio backdrop." },
+    { slug: "working-on-old-hardware", title: "Working on Old Hardware", description: "How practical can a 2015 MacBook Air be for full-stack work?", publishedAt: "2026-10-24", tags: [], image: "/images/social-card.png", imageAlt: "Brent Walbolt — Hand-crafted interfaces, accessibility, performance, and AI-accelerated workflows." },
   ] as const;
 
   await page.goto("/");

@@ -149,6 +149,25 @@ Typography uses three local font families loaded in [src/app/layout.tsx](src/app
 
 Headlines should be confident and compact. Section titles use Switzer Bold with a white-to-muted gradient text treatment and tight tracking. Body copy should remain comfortable and readable, generally Source Serif 4 at `1rem` to `1.125rem` with `1.5` line height.
 
+### Long-form articles
+
+Blog articles use the reusable literal `.responsive-text` root so long-form
+copy scales continuously instead of stepping at a breakpoint. Its bounded root
+is calibrated from 3.75vw at the 390px mobile reference to 1.352vw at the
+1280px desktop reference; headings, prose, spacing, and rich MDX treatments
+inside it are em-relative. The blog article composition limits its Source Serif
+reading column to `87.5ch`, approximately 776px at 1280px, while preserving the
+page gutters and horizontal containment for long code or media.
+
+The blog listing follows Figma node `652:141` and the article follows node
+`652:448` at the 1280px reference. On smaller screens, cards use the shared
+one-column flow and article origin controls remain a compact text back link;
+these are intentional design-system adaptations rather than scaled desktop
+layouts. The Playwright desktop visual baselines `blog-listing-1280.png` and
+`blog-article-1280.png` record those two reference compositions. Legal pages
+deliberately do not use `.responsive-text` yet, so their future migration can
+be reviewed separately.
+
 Use uppercase labels for navigation affordances, small metadata, and CTAs only when the element is short. Do not uppercase long prose or paragraph-style calls to action.
 
 ## Layout
